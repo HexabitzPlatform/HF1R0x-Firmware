@@ -1,4 +1,5 @@
 #include "hal/Serial.h"
+#include "Config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +27,8 @@
  *		cc_t c_cc[NCCS];
  * };
  *
- *
+ * The termios functions describe a general terminal interface that is
+ * provided to control asynchronous communications ports.
  *
  *
  *
@@ -36,6 +38,7 @@
  *
  */
 
+// https://stackoverflow.com/questions/6947413/how-to-open-read-and-write-from-serial-port-in-c/38318768#38318768
 
 static inline speed_t toSpeed_t(unsigned long baud)
 {
@@ -202,7 +205,7 @@ int HardwareSerial::available(void)
 
 int HardwareSerial::peek(void)
 {
-
+	return -1;
 }
 
 int HardwareSerial::read(void)
@@ -240,10 +243,15 @@ std::string HardwareSerial::readLine(void)
 	return str;
 }
 
-#ifdef __MAIN__
+
+#ifdef USE_TEST_MAIN
+
 int main(int argc, char *argv[])
 {
 	std::cout << "Program Started" << std::endl;
+	std::cout << "Major: " << VERSION_MAJOR << std::endl;
+	std::cout << "Minor: " << VERSION_MINOR << std::endl;
+
 	if (argc != 2) {
 		std::cout << "Two arguments required" << std::endl;
 		exit(EXIT_FAILURE);
@@ -256,4 +264,5 @@ int main(int argc, char *argv[])
 	std::cout << "Reply: " << serial.available() << " " <<	 serial.readLine() << std::endl;
 	return 0;
 }
+
 #endif
