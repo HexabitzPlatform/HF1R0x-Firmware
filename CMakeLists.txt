@@ -9,6 +9,6 @@ project(hexabitz)
 
 configure_file ( ${PROJECT_SOURCE_DIR}/Config.h.in ${PROJECT_SOURCE_DIR}/include/Config.h )
 
-add_executable(boscomm src/hal/Serial.cpp)
+add_executable(boscomm src/hal/Serial.cpp src/helper/helper.cpp)
 
 include_directories(include/ "${PROJECT_BINARY_DIR}")
