@@ -1,4 +1,5 @@
 #include "hal/Serial.h"
+#include "helper/helper.h"
 #include "Config.h"
 
 #include <stdio.h>
@@ -256,6 +257,9 @@ int main(int argc, char *argv[])
 		std::cout << "Two arguments required" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+
+
+	std::cout << hstd::make_bitset(123456) << std::endl;
 
 	HardwareSerial serial(argv[1]);
 	serial.begin(115200);

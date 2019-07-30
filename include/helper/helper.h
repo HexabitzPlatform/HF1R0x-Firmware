@@ -8,6 +8,7 @@
 #include <stdbool.h>
 
 #include <algorithm>
+#include <bitset>
 
 
 #define HIGH							true
@@ -75,6 +76,12 @@ namespace hstd {
 	template <typename T>
 	static inline T map(T x, T in_min, T in_max, T out_min, T out_max) { return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }
 
+
+	template <typename T>
+	std::bitset<sizeof(T) * 8> make_bitset(const T& value)
+	{
+		return std::bitset<sizeof(T) * 8>(value);
+	}
 
 
 	uint64_t pack754(float f, const unsigned bits, const unsigned expbits);
