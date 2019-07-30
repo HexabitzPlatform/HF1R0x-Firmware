@@ -7,7 +7,7 @@
 // TODO: Check the standard of Float and issue error if appriopriate
 // TODO: Handle Subnormal Number, Infinity, NaN
 
-uint64_t hstd::pack754(float f, const unsigned bits, const unsigned expbits)
+uint32_t hstd::pack754(float f, const unsigned bits, const unsigned expbits)
 {
 	if (f == 0.0)  // Get this special case out of the way
 		return 0;

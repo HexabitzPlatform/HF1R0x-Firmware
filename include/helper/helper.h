@@ -84,7 +84,7 @@ namespace hstd {
 	}
 
 
-	uint64_t pack754(float f, const unsigned bits, const unsigned expbits);
+	uint32_t pack754(float f, const unsigned bits, const unsigned expbits);
 	float unpack754(uint32_t data, const unsigned bits, const unsigned expbits);
 }
 
