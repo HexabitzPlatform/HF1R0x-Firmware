@@ -71,7 +71,7 @@ namespace hstd {
 	static inline T constrainUpper(T value, T upper) { return std::min(value, upper); }
 
 	template <typename T>
-	static inline T mask(T value, T start, T end) { return (value >> start) & (~(~0 << (end - start + 1))); }
+	static inline T mask(T value, long start, long end) { return (value >> start) & (~(~0 << (end - start + 1))); }
 
 	template <typename T>
 	static inline T map(T x, T in_min, T in_max, T out_min, T out_max) { return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }

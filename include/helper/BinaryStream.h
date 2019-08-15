@@ -2,6 +2,7 @@
 #define BINARYSTREAM_H
 
 #include "hal/Serial.h"
+#include "helper/GenericStream.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -10,52 +11,45 @@
 #include <vector>
 
 
-class BinaryStream {
+class BinaryBuffer: virtual public IBinaryStream, virtual public OBinaryStream {
 
 public:
 	size_t getLength(void) const
 	{
 		return data_.size();
 	}
+	void flush(void)
+	{
 
-	void setReadNdx(size_t newNdx)
-	{
-		readNdx_ = newNdx;
 	}
-	void resetNdx(void)
-	{
-		readNdx_ = 0;
-	}
-	void resetData(void)
+
+	void reset(void)
 	{
 		data_.clear();
-		readNdx_ = 0;
+	}
+
+	uint8_t& operator[](int ndx)
+	{
+		return data_[ndx];
+	}
+
+	const uint8_t& operator[](int ndx) const
+	{
+		return data_[ndx];
 	}
 
 public:
-	size_t append(uint8_t ui8);
-	size_t append(uint16_t ui16);
-	size_t append(uint32_t ui32);
-	size_t append(float f);
-	size_t append(const uint8_t *array, size_t num);
-	size_t append(const std::vector<uint8_t>& v);
-
-public:
+	using IBinaryStream::append;
+	
+	IBinaryStream& append(uint8_t ui8);
 	uint8_t popui8(void);
-	uint16_t popui16(void);
-	uint32_t popui32(void);
-	float popfloat(void);
-
-	uint8_t getValue(size_t ndx) const;
-	const std::vector<uint8_t>& getVector(void) const;
 
 public:
-	BinaryStream(void);
-	~BinaryStream(void);
+	BinaryBuffer(void);
+	~BinaryBuffer(void);
 
 private:
 	std::vector<uint8_t> data_;
-	std::size_t readNdx_;
 };
 
 
