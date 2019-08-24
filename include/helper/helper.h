@@ -65,6 +65,9 @@ namespace hstd {
 	static inline T constrain(T value, T lower, T upper) { return std::max(lower, std::min(value, upper)); }
 
 	template <typename T>
+	static inline T constrain(T value, size_t lower, size_t upper) { return std::max(lower, std::min(value, upper)); }
+
+	template <typename T>
 	static inline T constrainLower(T value, T lower, T upper) { return std::max(lower, value); }
 
 	template <typename T>
