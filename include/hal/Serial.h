@@ -36,6 +36,9 @@
 class HardwareSerial {
 
 public:
+    bool open(const char *pathname);
+
+public:
 	void begin(unsigned long baud) { begin(baud, SERIAL_8N1); }
     void begin(unsigned long baud, uint8_t cfg);
     void end(void);
@@ -57,7 +60,7 @@ public:
     operator bool(void) 					{ return true; }
 
 public:
-    int println(const char *cstr);
+    int println(const char *cstr = nullptr);
     std::string readLine(void);
 
 public:

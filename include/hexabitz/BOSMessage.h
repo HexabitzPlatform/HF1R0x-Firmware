@@ -13,145 +13,138 @@
 
 #include <ostream>
 #include <iostream>
-#include <sstream> 
+#include <sstream>
+#include <map>
 
-#include <endian.h>
 
 
 /***********************************************/
 
+// TODO: See if invalidating the object in destructor is good approach
+
 namespace hstd {
 
-// TODO: Add struct for code_
-struct Message {
+struct Addr_t {
 
 public:
-	uint8_t getSource(void) const { return src_; }
-	void setSource(uint8_t newSrc) { src_ = newSrc; }
+	bool hasValidUID(void) const 		{ return uid <= MAX_UID and uid >= MIN_UID; }
+	bool hasValidPort(void) const 		{ return port <= MAX_PORT and port >= MIN_PORT; }
+	bool isValid(void) const 			{ return hasValidUID() and hasValidPort(); }
 
-	uint8_t getDest(void) const { return dest_; }
-	void setDest(uint8_t newDest) { dest_ = newDest; }
+public:
+	int getUID(void) const				{ return uid; }
+	int getPort(void) const				{ return port; }
 
-	uint16_t getCode(void) const { return code_; }
-	void setCode(uint16_t newCode) { code_ = newCode; }
+	void setUID(int newID) 				{ uid = newID; }
+	void setPort(int newPort)			{ port = newPort; }
 
-	void setLongFlag(bool flag) { bitWrite(code_, 15, flag); }
-	bool getLongFlag(void) { return bitRead(code_, 15); }
+public:
+	Addr_t& operator=(const Addr_t& other) = default;
+	Addr_t& operator=(Addr_t&& other) = default;
 
-	void setMessOnlyFlag(bool flag) { bitWrite(code_, 14, flag); }
-	bool getMessOnlyFlag(void) { return bitRead(code_, 14); }
+public:
+	Addr_t(void): uid(INVALID_UID), port(INVALID_PORT)				{ }
+	Addr_t(int uidIn): uid(uidIn), port(INVALID_PORT)				{ }
+	Addr_t(int uidIn, int portIn): uid(uidIn), port(portIn)			{ }
+	Addr_t(const Addr_t& other) = default;
+	Addr_t(Addr_t&& other) = default;
 
-	void setCLIOnlyFlag(bool flag) { bitWrite(code_, 13, flag); }
-	bool getCLIOnlyFlag(void) { return bitRead(code_, 13); }
+	~Addr_t(void) = default;
 
-	void setTraceFlag(bool flag) { bitWrite(code_, 12, flag); }
-	bool getTraceFlag(void) { return bitRead(code_, 12); }
+private:		
+	int uid;
+	int port;
 
-	BinaryBuffer& getParams(void) { return param_; }
+public:
+	const static int BROADCAST_UID = 255;
+	const static int MULTICAST_UID = 254;
+	const static int ACCEPTALL_UID = 0;
 
-	uint8_t getTotalLength(void) const { return param_.getLength() + getMinLength(); }
-	static uint8_t getMinLength(void) { return sizeof(src_) + sizeof(dest_) + sizeof(code_) + sizeof(crc8_); }
-	static uint8_t getParamLength(uint8_t totalLen) { return totalLen - getMinLength(); }
+private:
+	const static int MAX_UID = 255;
+	const static int MIN_UID = 0;
+
+	const static int MAX_PORT = 8;
+	const static int MIN_PORT = 1;
+
+	const static int INVALID_UID = -1;
+	const static int INVALID_PORT = -1;
+};
 
 
-	bool parse(BinaryBuffer buffer)
-	{
-		if (buffer.getLength() < getMinLength())
-			return false;
+struct Message {
+public:
+	Addr_t getSource(void) const 		{ return src_; }
+	void setSource(Addr_t newSrc) 		{ src_ = newSrc; }
 
-		uint8_t len = buffer.popui8();
-		if (len != buffer.getLength())
-			return false;
+	Addr_t getDest(void) const 			{ return dest_; }
+	void setDest(Addr_t newDest) 		{ dest_ = newDest; }
 
-		dest_ = buffer.popui8();
-		src_ = buffer.popui8();
-		code_ = buffer.popui16();
-		param_.append(buffer, getParamLength(len));
-		crc8_ = buffer.popui8();
+	uint16_t getCode(void) const 		{ return code_; }
+	void setCode(uint16_t newCode) 		{ code_ = newCode; }
 
-		return true;
-	}
+	void setMessOnlyFlag(bool flag) 	{ setFlag("messonly", flag); }
+	bool getMessOnlyFlag(void) 			{ return getFlag("messonly"); }
 
-	void sanitize(void)
-	{
-		if (getTotalLength() == 13)
-			param_.append(uint8_t(0));
+	void setCLIOnlyFlag(bool flag) 		{ setFlag("clionly", flag); }
+	bool getCLIOnlyFlag(void) 			{ return getFlag("clionly"); }
 
-		// TODO: Calculate CRC
-		crc8_ = 0x75; // Fixed Value of CRC
-	}
+	void setTraceFlag(bool flag) 		{ setFlag("trace", flag); }
+	bool getTraceFlag(void) 			{ return getFlag("trace"); }
 
-	bool validate(void) const
-	{
-		// Check againt mimumum size
-		if (getTotalLength() == 13)
-			return false;
+	BinaryBuffer& getParams(void) 				{ return param_; }
+	const BinaryBuffer& getParams(void) const 	{ return param_; }
 
-		uint8_t calCRC = 0x75;
-		if (calCRC != crc8_)
-			return false;
+public:
+	void setFlag(std::string name, bool value);
+	bool getFlag(std::string name);
 
-		return true;
-	}
- 
-	BinaryBuffer getBinaryStream(void) const
-	{
-		BinaryBuffer buffer;
-		BinaryBuffer temp(param_);
-		buffer.append(getTotalLength());
-		buffer.append(dest_);
-		buffer.append(src_);
-		buffer.append(code_);
-		buffer.append(temp);
-		buffer.append(crc8_);
-		return buffer;
-	}
+public:
+	void invalidate(void);
 
+public:
 	friend std::ostream& operator<<(std::ostream& stream, Message& m)
 	{
-		BinaryBuffer buffer = m.getBinaryStream();
-		stream << "Packet: " << buffer.getLength() << " (";
-		for (int i = 0; i < buffer.getLength(); i++)
-			stream << std::hex << "0x" << int(buffer[i]) << " ";
-
-		stream << ")" << std::endl;
+		stream << std::string(m) << std::endl;
 		return stream;
 	}
 
 	operator std::string(void)
 	{
-		std::stringstream stream;
-		stream << ">>> Header (Len: " << std::hex << int(getTotalLength()) << " | ";
-		stream << "Destination: 0x"  << std::hex << int(getDest()) << " | ";
-		stream << "Source: 0x" << std::hex << int(getSource()) << " | ";
-		stream << "Code: 0x"  << std::hex << int(getCode()) << ")" << std::endl;
-
-		stream << "Parameters: ";
-		for (int i = 0; (i < param_.getLength()); i++)
-			stream << std::hex << "0x" << int(param_[i]) << " ";
-		if (!param_.getLength()) 
-			stream << "--";
-		stream  << std::endl;
-
-		stream << "CRC: 0x" << std::hex << int(crc8_) << " <<<" << std::endl;
-
-		return stream.str();
+		return to_string();
 	}
 
+	std::string to_string(void) const;
+
+public:
+	Message& operator=(const Message& other) = default;
+	Message& operator=(Message&& other) = default;
+
+public:
+	Message(void);
+	Message(Addr_t dest, Addr_t src, uint16_t code);
+	Message(uint8_t dest, uint8_t src, uint16_t code);
+	Message(const Message& other) = default;
+	Message(Message&& other) = default;
+
+	~Message(void) = default;
 
 private:
-	uint8_t src_;
-	uint8_t dest_;
+	Addr_t src_;
+	Addr_t dest_;
 	uint16_t code_;
 	BinaryBuffer param_;
-	uint8_t crc8_;
+
+	std::map<std::string, bool> flags_;
 };
+
 /***********************************************/
 
 
 
-Message read(HardwareSerial& serial_);
-bool write(HardwareSerial& serial_, Message& m);
+bool parseMessage(BinaryBuffer buffer, Message& msg);
+std::vector<Message> getSanitizedMessages(Message msg);
+Message buildMessage(uint8_t dst, uint8_t src, BinaryBuffer buffer);
 
 }
 
