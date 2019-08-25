@@ -21,7 +21,7 @@
 Service *Service::self_ = nullptr;
 uint8_t Service::myID = 0;
 
-enum modulePartNumbers_e Service::partNumber = _H01R0;
+enum BOS::module_pn_e Service::partNumber = BOS::_H01R0;
 
 uint8_t Service::numModules = 50;
 uint16_t Service::neighbors[NUM_OF_PORTS][2] = { { 0 } };

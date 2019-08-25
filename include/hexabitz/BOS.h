@@ -38,5 +38,34 @@
 #define	CODE_write_remote_force							34
 
 
+namespace BOS {
+
+static const int MAX_NUM_OF_PORTS = 8;
+static const int MAX_NUM_OF_MODULES = 25;
+
+enum module_pn_e {
+	_H01R0 = 1, 
+	_P01R0, 
+	_H23R0, 
+	_H23R1, 
+	_H07R3, 
+	_H08R6, 
+	_H09R0, 
+	_H1BR6, 
+	_H12R0, 
+	_H13R7, 
+	_H0FR6, 
+	_H1AR2, 
+	_H0AR9, 
+	_H1DR1, 
+	_H1DR5, 
+	_H0BR4, 
+	_H18R0, 
+	_H26R0
+};
+
+}
+
+
 
 #endif /* BOS_H */
