@@ -1,9 +1,11 @@
 #ifndef BOSFRAME_H
 #define BOSFRAME_H
 
-#include "helper/BinaryStream.h"
-#include "hexabitz/BOSMessage.h"
+#include "hexabitz/BOS.h"
 #include "helper/helper.h"
+
+#include "hexabitz/BOSMessage.h"
+#include "helper/BinaryStream.h"
 
 #include <stdint.h>
 #include <stddef.h>

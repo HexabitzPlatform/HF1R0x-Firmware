@@ -5,6 +5,8 @@
 #include "helper/helper.h"
 #include "hal/Serial.h"
 
+#include "hexabitz/BOS.h"
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
