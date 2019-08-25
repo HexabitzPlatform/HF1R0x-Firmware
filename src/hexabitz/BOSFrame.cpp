@@ -68,6 +68,17 @@ BinaryBuffer hstd::Frame::toBuffer(void) const
 	return b;
 }
 
+std::ostream& operator<<(std::ostream& stream, hstd::Frame& f)
+{
+	BinaryBuffer buffer = f.toBuffer();
+	stream << "Packet (";
+	for (int i = 0; i < buffer.getLength(); i++)
+		stream << " " << std::hex << int(buffer[i]);
+	stream << " )";
+
+	return stream;
+}
+
 std::vector<hstd::Frame> hstd::buildFramesFromMessage(hstd::Message message)
 {
 	std::vector<hstd::Frame> vec;

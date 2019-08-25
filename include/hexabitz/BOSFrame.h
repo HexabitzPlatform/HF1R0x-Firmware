@@ -38,6 +38,8 @@ public:
 	void sanitize(void);
 	bool isValid(void) const;
 
+	friend std::ostream& operator<<(std::ostream& stream, Frame& f);
+
 public:
 	bool fromBuffer(BinaryBuffer& buffer);
 	BinaryBuffer toBuffer(void) const;
