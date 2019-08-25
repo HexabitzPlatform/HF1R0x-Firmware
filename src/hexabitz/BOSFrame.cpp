@@ -59,6 +59,7 @@ BinaryBuffer hstd::Frame::toBuffer(void) const
 	BinaryBuffer b;
 	BinaryBuffer t(param);
 
+	b.append(uint8_t(getTotalLength()));
 	b.append(destID);
 	b.append(srcID);
 	b.append(code);
