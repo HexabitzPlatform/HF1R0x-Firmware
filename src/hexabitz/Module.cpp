@@ -65,6 +65,7 @@ bool Service::send(const hstd::Message& msg)
 {
 	std::vector<hstd::Frame> list = hstd::buildFramesFromMessage(msg);
 	for (auto& f: list) {
+		std::cout << "Sending Frame: " << f << std::endl;
 		if (!send(f)) return false;
 	}
 
@@ -87,12 +88,12 @@ bool Service::send(const hstd::Frame& f)
 bool Service::receive(hstd::Message& msg, long timeout)
 {
 	std::vector<hstd::Frame> list;
-
 	while (1) {
 		hstd::Frame f;
 		if (!receive(f, timeout))
 			return false;
 
+		std::cout << "Received: " << f << std::endl;
 		list.push_back(f);
 
 		if (hstd::buildMessageFromFrames(list, msg))
@@ -109,8 +110,9 @@ bool Service::receive(hstd::Frame& f, long timeout)
 		if (!serial_.available())
 			continue;
 
+		uint8_t c = serial_.read();
 		f.param.reset();
-		buffer.append(uint8_t(serial_.read()));
+		buffer.append(c);
 		if (f.fromBuffer(buffer))
 			return true;
 	}
@@ -607,15 +609,15 @@ void testBinaryMessage(void)
 {
 	while (1) {
 		hstd::Message m;
-		m.setSource(uint8_t(0));
-		m.setDest(uint8_t(1));
+		m.setSource(hstd::Addr_t(0,1));
+		m.setDest(hstd::Addr_t(1,1));
 		m.setCode(CODE_hi);
 		m.setMessOnlyFlag(true);
 		m.setCLIOnlyFlag(true);
-		m.setTraceFlag(true);
+		// m.setTraceFlag(true);
 
-		// std::cout << "Sending..." << std::endl;
-		// std::cout << m << std::endl;
+		std::cout << "Sending... " << std::endl;
+		std::cout << m << std::endl;
 		// std::cout << std::string(m) << std::endl;
 		Service::getInstance()->send(m);
 		if (Service::getInstance()->receive(m)) {

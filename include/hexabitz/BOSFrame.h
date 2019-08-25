@@ -38,7 +38,16 @@ public:
 	void sanitize(void);
 	bool isValid(void) const;
 
-	friend std::ostream& operator<<(std::ostream& stream, Frame& f);
+	friend std::ostream& operator<<(std::ostream& stream, Frame& f)
+	{
+		BinaryBuffer buffer = f.toBuffer();
+		stream << "Frame (";
+		for (int i = 0; i < buffer.getLength(); i++)
+			stream << " 0x" << std::hex << int(buffer[i]);
+		stream << " )";
+
+		return stream;
+	}
 
 public:
 	bool fromBuffer(BinaryBuffer& buffer);
