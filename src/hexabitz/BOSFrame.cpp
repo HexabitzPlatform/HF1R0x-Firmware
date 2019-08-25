@@ -118,7 +118,7 @@ bool hstd::buildMessageFromFrames(std::vector<hstd::Frame>& vec, hstd::Message& 
 
 		lastFrameLong = f.getFlag(Frame::LONG_FLAG_BITPOS);
 
-		if (f.isValid())
+		if (!f.isValid())
 			return false;
 		if (lastFrameLong)
 			isLong = true;
