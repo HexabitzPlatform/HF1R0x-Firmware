@@ -11,7 +11,7 @@ configure_file ( ${PROJECT_SOURCE_DIR}/Config.h.in ${PROJECT_SOURCE_DIR}/include
 
 
 add_executable(boscomm src/hal/Serial.cpp src/helper/helper.cpp src/helper/BinaryStream.cpp src/helper/GenericStream.cpp src/hexabitz/BOSMessage.cpp
-						src/hexabitz/Module.cpp src/hexabitz/BOSFrame.cpp)
+						src/hexabitz/Module.cpp src/hexabitz/BOSFrame.cpp src/hexabitz/BOSMessageBuilder.cpp)
 
 include_directories(include/ "${PROJECT_BINARY_DIR}")
 

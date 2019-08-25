@@ -3,6 +3,7 @@
 
 #include "hal/Serial.h"
 #include "hexabitz/BOSMessage.h"
+#include "hexabitz/BOSMessageBuilder.h"
 
 #include "Config.h"
 
@@ -609,21 +610,17 @@ void exampleTerminal(HardwareSerial& serial)
 
 void testBinaryMessage(void)
 {
+	hstd::setCLIRespDefault(true);
+	hstd::setTraceDefault(true);
+
 	while (1) {
-		hstd::Message m;
-		m.setSource(hstd::Addr_t(0,1));
-		m.setDest(hstd::Addr_t(1,1));
-		m.setCode(CODE_hi);
-		m.setMessOnlyFlag(true);
-		m.setCLIOnlyFlag(true);
-		m.setTraceFlag(true);
+		hstd::Message m = hstd::make_message(hstd::Addr_t(1,1), hstd::Addr_t(0,1), CODE_hi);
 
 		std::cout << "Sending: " << m << std::endl;
-	
 		Service::getInstance()->send(m);
-		if (Service::getInstance()->receive(m)) {
+
+		if (Service::getInstance()->receive(m))
 			std::cout << "Received: " << m << std::endl;
-		}
 
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 	}
