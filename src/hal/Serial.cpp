@@ -132,10 +132,8 @@ static inline unsigned long toBaudLong(speed_t speed)
 
 HardwareSerial::HardwareSerial(const char *pathname): fd_(0)
 {
-	if (!open(pathname))
+	if ((pathname != nullptr) and !open(pathname))
 		std::cerr << "Can't open the File" << std::endl;
-
-
 }
 
 HardwareSerial::~HardwareSerial(void)

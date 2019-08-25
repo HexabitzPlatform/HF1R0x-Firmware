@@ -64,8 +64,10 @@ int Service::setProxy(ProxyModule *owner)
 bool Service::send(const hstd::Message& msg)
 {
 	std::vector<hstd::Frame> list = hstd::buildFramesFromMessage(msg);
-	for (auto& f: list) {
-		std::cout << "Sending Frame: " << f << std::endl;
+
+	for (int i = 0; i < list.size(); i++) {
+		hstd::Frame& f = list[i];
+		std::cout << "Sending (" << i << "th): " << f << std::endl;
 		if (!send(f)) return false;
 	}
 
@@ -614,14 +616,13 @@ void testBinaryMessage(void)
 		m.setCode(CODE_hi);
 		m.setMessOnlyFlag(true);
 		m.setCLIOnlyFlag(true);
-		// m.setTraceFlag(true);
+		m.setTraceFlag(true);
 
-		std::cout << "Sending... " << std::endl;
-		std::cout << m << std::endl;
-		// std::cout << std::string(m) << std::endl;
+		std::cout << "Sending: " << m << std::endl;
+	
 		Service::getInstance()->send(m);
 		if (Service::getInstance()->receive(m)) {
-			std::cout << "Received message " << m << std::endl;
+			std::cout << "Received: " << m << std::endl;
 		}
 
 		std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -630,14 +631,9 @@ void testBinaryMessage(void)
 
 int main(int argc, char *argv[])
 {
-	std::cout << "Program Started" << std::endl;
-	std::cout << "Major: " << VERSION_MAJOR << std::endl;
-	std::cout << "Minor: " << VERSION_MINOR << std::endl;
-
-	if (argc != 2) {
-		std::cout << "Two arguments required" << std::endl;
-		// exit(EXIT_FAILURE);
-	}
+	std::cout << "Program Started (";
+	std::cout << "Major: " << VERSION_MAJOR << " ";
+	std::cout << "Minor: " << VERSION_MINOR << ")" << std::endl;
 
 	Service::getInstance()->init("/dev/ttyUSB0");
 

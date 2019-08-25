@@ -51,20 +51,20 @@ void hstd::Message::invalidate(void)
 std::string hstd::Message::to_string(void) const
 {
 	std::stringstream stream;
-	stream << "Src (ID: " << src_.getUID() << ", Port: " << src_.getPort() << ") ";
-	stream << "Dest (ID: " << dest_.getUID() << ", Port: " << dest_.getPort() << ") ";
-	stream << "Code (0x"  << std::hex << code_ << ") ";
+	stream << "<<<< Src (ID: " << src_.getUID() << ", Port: " << src_.getPort() << ") | ";
+	stream << "Dest (ID: " << dest_.getUID() << ", Port: " << dest_.getPort() << ") | ";
+	stream << "Code (0x"  << std::hex << code_ << ") | ";
 
-	stream << "Flags ( ";
+	stream << "Flags (";
 	for (auto& [name, value]: flags_)
-		stream << " (" << name << ", " << value << ") ";
-	stream << ") ";
+		stream << " (" << name << ", " << (value ? "true" : "false") << ")";
+	stream << " ) | ";
 
-	stream << "Parameters (";
+	stream << "Parameters ( ";
 	for (int i = 0; (i < param_.getLength()); i++)
 		stream << std::hex << "0x" << int(param_[i]) << " ";
 
-	stream << ") ";
+	stream << ") >>>>";
 
 	return stream.str();
 }
