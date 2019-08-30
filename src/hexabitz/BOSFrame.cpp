@@ -17,7 +17,7 @@ void hstd::Frame::sanitize(void)
 
 void hstd::Frame::setCodeOnly(uint16_t newCode)
 {
-	const uint16_t clearMask = ~ CODE_ONLY_MASK;
+	const uint16_t clearMask = uint16_t(~ (unsigned(CODE_ONLY_MASK)));
 	code &= clearMask;
 	code |= (newCode & CODE_ONLY_MASK);
 }

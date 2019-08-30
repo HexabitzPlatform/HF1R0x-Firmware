@@ -53,7 +53,7 @@ std::string hstd::Message::to_string(void) const
 	std::stringstream stream;
 	stream << "<<<< Src (ID: " << src_.getUID() << ", Port: " << src_.getPort() << ") | ";
 	stream << "Dest (ID: " << dest_.getUID() << ", Port: " << dest_.getPort() << ") | ";
-	stream << "Code (0x"  << std::hex << code_ << ") | ";
+	stream << "Code (0x"  << std::hex << int(code_) << ") | ";
 
 	stream << "Flags (";
 	for (auto& [name, value]: flags_)
