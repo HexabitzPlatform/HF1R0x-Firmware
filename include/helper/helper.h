@@ -26,6 +26,9 @@
 #define CR								('\r')   // Carriage Return Character
 #define LF								('\n')   // Line Feed or New Line Character
 
+#define TO_STR(token)					#token
+#define TO_ENUM(token)					token,
+
 
 #define radians(deg)					((deg) * DEG_TO_RAD)
 #define degrees(rad)					((rad) * RAD_TO_DEG)
