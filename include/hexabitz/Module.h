@@ -54,6 +54,10 @@ public:
 			arrayPortsDir[id - 1] &= (~(0x8000 >> (port - 1)));	
 
 	}
+	static hstd::Addr_t getAddrConnTo(hstd::Addr_t addr)
+	{
+		return hstd::Addr_t(getIDConnTo(addr.getUID(), addr.getPort()));
+	}
 
 
 public:

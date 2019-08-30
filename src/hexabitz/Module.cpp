@@ -154,6 +154,103 @@ bool ProxyModule::receive(hstd::Message& m, long timeout)
 }
 
 
+std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src)
+{
+	uint8_t Q[MAX_NUM_OF_MODULES] = { 0 };		// All nodes initially in Q (unvisited nodes)
+
+	auto minUnvisitedUID = [](uint8_t *arr, uint8_t *Q) -> uint8_t {
+		uint8_t index = 0, smallest = 0xFF; 
+
+		if (!Q[0]) smallest = arr[0];	/* Consider first element as smallest */
+
+		for (int i = 0; i < Service::numModules; i++) {
+			if ((arr[i] < smallest) && !Q[i]) {
+				smallest = arr[i];
+				index = i;
+			}
+		}
+		return index;
+	};
+
+	auto isQNotEmpty = [](uint8_t *Q) {
+		char temp = 1;
+		for (int i = 0; i < Service::numModules; i++)
+			temp &= Q[i];
+		return temp;
+	};
+
+	std::vector<hstd::Addr_t> route;
+	hstd::Addr_t routePrev[MAX_NUM_OF_MODULES];
+	uint8_t routeDist[MAX_NUM_OF_MODULES] = { 0 };
+
+	uint8_t sourceID = src.getUID();
+	uint8_t destID = dest.getUID();
+	
+	/* Initialization */
+	// memset(Service::route, 0, sizeof(Service::route));
+	memset(routeDist, 0xFF, sizeof(routeDist));
+	// memset(routePrev, 0, sizeof(routePrev));
+
+	routeDist[sourceID - 1] = 0;       				// Distance from source to source
+	routePrev[sourceID - 1] = hstd::Addr_t();       // Previous node in optimal path initialization undefined
+	
+	/* Algorithm */
+	uint8_t currentID = 0;
+	while (!isQNotEmpty(Q)) {
+
+		currentID = minUnvisitedUID(routeDist, Q) + 1;		// Source node in first case
+		if (currentID == destID)
+			goto finishedRoute;
+
+		Q[currentID - 1] = 1;								// Remove u from Q 																					
+		/* For each neighbor v where v is still in Q. */
+		for (uint8_t p = 1; p <= 6; p++) {     				// Check all module ports
+			if (!Service::hasValidInfoAt(currentID, p))		// There's a neighbor v at this port n
+				continue;
+			
+			uint8_t nID = Service::getIDConnTo(currentID, p);
+			if (Q[nID - 1])		// v is not in Q
+				continue;												
+				
+			uint8_t newDist = routeDist[currentID - 1] + 1;		// Add one hop
+			if (newDist < routeDist[nID - 1]) {     	// A shorter path to v has been found
+				routeDist[nID - 1] = newDist; 
+				routePrev[nID - 1] = hstd::Addr_t(currentID, p); 
+			}
+		}
+	}	
+		
+finishedRoute:
+		
+	/* Build the virtual route */
+	// currentID = routePrev[currentID - 1].getUID();
+	route.push_back(hstd::Addr_t(Service::getAddrConnTo(routePrev[currentID - 1])));
+	while (routePrev[currentID - 1].isValid()) {  		// Construct the shortest path with a stack route
+		route.push_back(routePrev[currentID - 1]);		// Push the vertex onto the stack
+		currentID = routePrev[currentID - 1].getUID(); 	// Traverse from target to source
+	}
+
+	std::reverse(route.begin(), route.end());
+	return route;			
+}
+
+
+uint8_t FindRoute(uint8_t src, uint8_t dest)
+{
+	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(dest, 1), hstd::Addr_t(src, 1));
+	if (route.size() <= 0)
+		return 0;
+	return route.at(0).getPort();
+}
+
+uint8_t FindSourcePort(uint8_t srcID, uint8_t destID)
+{
+	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(destID, 1), hstd::Addr_t(srcID, 1));
+	if (route.size() <= 0)
+		return 0;
+	return route.at(0).getPort();
+}
+
 
 // int ping(uint8_t destID)
 // {
@@ -274,91 +371,6 @@ bool ProxyModule::receive(hstd::Message& m, long timeout)
 // 	return 0;
 // }
 
-// uint8_t QnotEmpty(uint8_t *Q)
-// {		
-// 	char temp = 1;
-// 	for (int i = 0; i < Service::numModules; i++)
-// 		temp &= Q[i];
-	
-// 	return temp;
-// }
-
-
-// uint8_t minArr(uint8_t *arr, uint8_t *Q)
-// {
-// 	uint8_t index = 0;
-// 	uint8_t smallest = 0xFF; 
-
-// 	/* Consider first element as smallest */
-// 	if (!Q[0])						// Not visited yet
-// 		smallest = arr[0];
-
-// 	for (int i = 0; i < Service::numModules; i++) {
-// 		if ((arr[i] < smallest) && !Q[i]) {
-// 			smallest = arr[i];
-// 			index = i;
-// 		}
-// 	}
-	
-// 	return index;
-// }
-
-// uint8_t FindRoute(uint8_t sourceID, uint8_t desID)
-// {
-// 	uint8_t Q[50] = {0};		// All nodes initially in Q (unvisited nodes)
-// 	uint8_t routePrev[MAX_NUM_OF_MODULES] = { 0 };
-	
-// 	/* Initialization */
-// 	memset(Service::route, 0, sizeof(Service::route));
-// 	memset(Service::routeDist, 0xFF, sizeof(Service::routeDist));
-// 	memset(routePrev, 0, sizeof(routePrev));
-
-// 	Service::routeDist[sourceID - 1] = 0;       // Distance from source to source
-// 	routePrev[sourceID - 1] = 0;      	// Previous node in optimal path initialization undefined
-	
-// 	/* Algorithm */
-// 	uint8_t currentID = 0;
-// 	while (!QnotEmpty(Q)) {
-
-// 		currentID = minArr(Service::routeDist, Q) + 1;						// Source node in first case
-// 		if (currentID == desID)
-// 			goto finishedRoute;
-
-// 		Q[currentID - 1] = 1;													// Remove u from Q 																					
-// 		/* For each neighbor v where v is still in Q. */
-// 		for (uint8_t p = 1; p <= 6; p++) {     		// Check all module ports
-// 			if (!Service::hasValidInfoAt(currentID, p))					// There's a neighbor v at this port n
-// 				continue;
-			
-// 			uint8_t nID = Service::getIDConnTo(currentID, p);
-// 			if (Q[nID - 1])		// v is still in Q
-// 				continue;												
-				
-// 			uint8_t newDist = Service::routeDist[currentID - 1] + 1;					// Add one hop
-// 			if (newDist < Service::routeDist[nID - 1]) {     		// A shorter path to v has been found
-// 				Service::routeDist[nID - 1] = newDist; 
-// 				routePrev[nID - 1] = currentID; 
-// 			}
-// 		}
-// 	}	
-		
-// finishedRoute:
-		
-// 	/* Build the virtual route */
-// 	uint8_t j = 0;
-// 	while (routePrev[currentID - 1]) {  		// Construct the shortest path with a stack route
-// 		Service::route[j++] = currentID;					// Push the vertex onto the stack
-// 		currentID = routePrev[currentID - 1];  	// Traverse from target to source
-// 	}
-	
-// 	/* Check which port leads to the correct module */
-// 	for(uint8_t p = 1; p <= 6; p++)	{					
-// 		if (Service::hasValidInfoAt(sourceID, p) and (Service::getIDConnTo(sourceID, p) == Service::route[Service::routeDist[desID - 1] - 1]))
-// 			return p;
-// 	}	
-
-// 	return 0;			
-// }
 
 // int Explore(void)
 // {
