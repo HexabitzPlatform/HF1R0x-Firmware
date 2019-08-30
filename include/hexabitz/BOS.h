@@ -1,8 +1,13 @@
 #ifndef BOS_H
 #define BOS_H
 
+#include "helper/helper.h"
+
 #include <stdint.h>
 #include <stdbool.h>
+
+#include <vector>
+#include <string>
 
 #define	CODE_unknown_message							0
 #define	CODE_ping										1
@@ -38,31 +43,40 @@
 #define	CODE_write_remote_force							34
 
 
+#define SEQ(OPERATION) 					\
+		OPERATION(		INVALID		)  	\
+		OPERATION(		H01R0		) 	\
+		OPERATION(		P01R0		) 	\
+		OPERATION(		H23R0		) 	\
+		OPERATION(		H23R1		) 	\
+		OPERATION(		H07R3		) 	\
+		OPERATION(		H08R6		) 	\
+		OPERATION(		H09R0		) 	\
+		OPERATION(		H1BR6		) 	\
+		OPERATION(		H12R0		) 	\
+		OPERATION(		H13R7		) 	\
+		OPERATION(		H0FR6		) 	\
+		OPERATION(		H1AR2		) 	\
+		OPERATION(		H0AR9		) 	\
+		OPERATION(		H1DR1		) 	\
+		OPERATION(		H1DR5		) 	\
+		OPERATION(		H0BR4		) 	\
+		OPERATION(		H18R0		) 	\
+		OPERATION(		H26R0		)
+
+
 namespace BOS {
 
 static const int MAX_NUM_OF_PORTS = 8;
 static const int MAX_NUM_OF_MODULES = 25;
 
 enum module_pn_e {
-	_H01R0 = 1, 
-	_P01R0, 
-	_H23R0, 
-	_H23R1, 
-	_H07R3, 
-	_H08R6, 
-	_H09R0, 
-	_H1BR6, 
-	_H12R0, 
-	_H13R7, 
-	_H0FR6, 
-	_H1AR2, 
-	_H0AR9, 
-	_H1DR1, 
-	_H1DR5, 
-	_H0BR4, 
-	_H18R0, 
-	_H26R0
+	SEQ(TO_ENUM)
 };
+
+std::string toString(enum module_pn_e pn);
+enum module_pn_e toPartNumberEnum(std::string str);
+std::vector<std::string> getPartNumberList(void);
 
 }
 

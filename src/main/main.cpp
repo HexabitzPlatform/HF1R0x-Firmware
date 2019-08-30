@@ -2,6 +2,7 @@
 #include "helper/helper.h"
 
 #include "hal/Serial.h"
+#include "hexabitz/BOS.h"
 #include "hexabitz/BOSMessage.h"
 #include "hexabitz/BOSMessageBuilder.h"
 
@@ -57,6 +58,9 @@ int main(int argc, char *argv[])
 	std::cout << "Program Started (";
 	std::cout << "Major: " << VERSION_MAJOR << " ";
 	std::cout << "Minor: " << VERSION_MINOR << ")" << std::endl;
+
+	for (auto& s: BOS::getPartNumberList())
+		std::cout << "Part number: " << s << std::endl;
 
 	Service::getInstance()->init("/dev/ttyUSB1");
 
