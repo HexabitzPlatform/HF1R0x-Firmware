@@ -2,6 +2,7 @@
 #define PROXYMODULE_H
 
 #include "hal/Serial.h"
+#include "hexabitz/Service.h"
 #include "hexabitz/BOS.h"
 #include "hexabitz/BOSFrame.h"
 #include "hexabitz/BOSMessage.h"
@@ -17,36 +18,41 @@
 #define NUM_OF_PORTS 					1
 
 
-enum UartDirection_e {
-	NORMAL, 
-	REVERSED
-};
-
 
 /*************************************************************/
 
 class ProxyModule {
+public:
+	hstd::uid_t getUID(void) const;
+	void setUID(hstd::uid_t newID);
+
+	int getNumOfPorts(void) const;
+
+	bool isMaster(void) const;
+
+protected:
+	bool isValidID(void) const;
+	void setNumOfPorts(int ports);
 
 public:
-	long getID(void) const;
-	long setID(long newID);
-
-	bool isMaster(void) const { return (id_ == 1); }
-	bool isValidID(void) const { return (id_ >= 1); }
-
-	std::string getPartStr(void) const { return info_; }
+	std::string getPartStr(void) const;
+	BOS::module_pn_e getPartNum(void) const;
 
 public:
 	virtual bool send(const hstd::Message& m);
 	virtual bool receive(hstd::Message& m, long timeout = -1);
 
 public:
-	ProxyModule(std::string partStr);
+	ProxyModule(hstd::uid_t idIn, int ports, std::string partStr);
+	ProxyModule(std::string partStr, int ports);
+	ProxyModule(BOS::module_pn_e partNum, int ports);
+
 	~ProxyModule(void);
 
 protected:
-	long id_;
-	const std::string info_;
+	hstd::uid_t id_;
+	int numOfPorts_ = 0;
+	std::string info_;
 };
 
 /*************************************************************/
@@ -67,7 +73,7 @@ public:
 	}
 
 public:
-	H09R0(std::string partName): ProxyModule(partName)
+	H09R0(void): ProxyModule(BOS::H09R0, 6)
 	{
 
 	}
@@ -90,7 +96,7 @@ public:
 	}
 
 public:
-	H01R0(std::string partName): ProxyModule(partName)
+	H01R0(void): ProxyModule(BOS::H01R0, 6)
 	{
 
 	}

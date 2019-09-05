@@ -26,19 +26,28 @@
 
 namespace hstd {
 
+typedef int uid_t;
+typedef int port_t;
+
+
 struct Addr_t {
+public:
+	static bool isValidUID(uid_t id)	{ return id <= MAX_UID and id >= MIN_UID; }
+	static bool isValidPort(port_t p)	{ return p <= MAX_PORT and p >= MIN_PORT; }
+	static bool isMaster(uid_t id)		{ return id == MASTER_UID; }
 
 public:
 	bool hasValidUID(void) const 		{ return uid <= MAX_UID and uid >= MIN_UID; }
 	bool hasValidPort(void) const 		{ return port <= MAX_PORT and port >= MIN_PORT; }
 	bool isValid(void) const 			{ return hasValidUID() and hasValidPort(); }
+	bool isMaster(void) const 			{ return uid  == MASTER_UID; }
 
 public:
-	int getUID(void) const				{ return uid; }
-	int getPort(void) const				{ return port; }
+	uid_t getUID(void) const				{ return uid; }
+	port_t getPort(void) const				{ return port; }
 
-	void setUID(int newID) 				{ uid = newID; }
-	void setPort(int newPort)			{ port = newPort; }
+	void setUID(uid_t newID) 				{ uid = newID; }
+	void setPort(port_t newPort)			{ port = newPort; }
 
 public:
 	Addr_t& operator=(const Addr_t& other) = default;
@@ -46,31 +55,32 @@ public:
 
 public:
 	Addr_t(void): uid(INVALID_UID), port(INVALID_PORT)				{ }
-	Addr_t(int uidIn): uid(uidIn), port(INVALID_PORT)				{ }
-	Addr_t(int uidIn, int portIn): uid(uidIn), port(portIn)			{ }
+	Addr_t(uid_t uidIn): uid(uidIn), port(INVALID_PORT)				{ }
+	Addr_t(uid_t uidIn, port_t portIn): uid(uidIn), port(portIn)			{ }
 	Addr_t(const Addr_t& other) = default;
 	Addr_t(Addr_t&& other) = default;
 
 	~Addr_t(void) = default;
 
 private:		
-	int uid;
-	int port;
+	uid_t uid;
+	port_t port;
 
 public:
-	const static int BROADCAST_UID = 255;
-	const static int MULTICAST_UID = 254;
-	const static int ACCEPTALL_UID = 0;
+	constexpr static uid_t ACCEPTALL_UID = 0;
+	constexpr static uid_t MASTER_UID = 1;
+	constexpr static uid_t MULTICAST_UID = 254;
+	constexpr static uid_t BROADCAST_UID = 255;
 
-private:
-	const static int MAX_UID = 255;
-	const static int MIN_UID = 0;
+public:
+	constexpr static uid_t MAX_UID = 255;
+	constexpr static uid_t MIN_UID = 0;
 
-	const static int MAX_PORT = 8;
-	const static int MIN_PORT = 1;
+	constexpr static port_t MAX_PORT = 8;
+	constexpr static port_t MIN_PORT = 1;
 
-	const static int INVALID_UID = -1;
-	const static int INVALID_PORT = -1;
+	constexpr static uid_t INVALID_UID = -1;
+	constexpr static port_t INVALID_PORT = -1;
 };
 
 

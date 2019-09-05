@@ -2,19 +2,18 @@
 #define SERVICE_H
 
 #include "helper/helper.h"
-#include "hexabitz/ProxyModule.h"
 
 #include "hal/Serial.h"
+#include "hexabitz/BOSFrame.h"
 #include "hexabitz/BOSMessage.h"
 #include "hexabitz/BOSMessageBuilder.h"
 
 #include <memory>
 
 
-
-
 #define	NumberOfHops(i)					(Service::routeDist[i - 1])
 
+class ProxyModule;
 
 class Service {
 
@@ -30,15 +29,10 @@ public:
 	static bool hasValidInfoAt(uint8_t id, uint8_t port)				{ return array[id - 1][port] != 0; }
 	static uint8_t getIDConnTo(uint8_t id, uint8_t port)				{ return (array[id - 1][port] >> 3); }
 	static uint8_t getPortConnTo(uint8_t id, uint8_t port)				{ return (array[id - 1][port] & 0x0007); }
-	static uint8_t getPortDir(uint8_t id, uint8_t port)					{ return arrayPortsDir[id - 1] & (0x8000 >> (port - 1));}
-	static void setPortDir(uint8_t id, uint8_t port, uint8_t dir)
-	{
-		if (dir == REVERSED)
-			arrayPortsDir[id - 1] |= (0x8000 >> (port - 1));
-		else
-			arrayPortsDir[id - 1] &= (~(0x8000 >> (port - 1)));	
 
-	}
+	static BOS::PortDir getPortDir(uint8_t id, uint8_t port);
+	static void setPortDir(uint8_t id, uint8_t port, BOS::PortDir dir);
+
 	static hstd::Addr_t getAddrConnTo(hstd::Addr_t addr)
 	{
 		return hstd::Addr_t(getIDConnTo(addr.getUID(), addr.getPort()));
@@ -70,7 +64,7 @@ public:
 	static uint8_t myID;
 	static uint8_t numModules;
 
-	static uint16_t neighbors[NUM_OF_PORTS][2];
+	static uint16_t neighbors[BOS::MAX_NUM_OF_PORTS][2];
 	static uint16_t neighbors2[BOS::MAX_NUM_OF_PORTS][2];
 	static uint16_t array[BOS::MAX_NUM_OF_MODULES][BOS::MAX_NUM_OF_PORTS + 1];
 	static uint16_t arrayPortsDir[BOS::MAX_NUM_OF_MODULES];

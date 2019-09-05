@@ -19,10 +19,19 @@
 #include <errno.h>
 
 
-
-ProxyModule::ProxyModule(std::string partStr): id_(-1), info_(partStr)
+ProxyModule::ProxyModule(hstd::uid_t idIn, int ports, std::string partStr): id_(idIn), numOfPorts_(ports), info_(partStr)
 {
 
+}
+
+ProxyModule::ProxyModule(std::string partStr, int ports): id_(hstd::Addr_t::INVALID_UID), numOfPorts_(ports), info_(partStr)
+{
+
+}
+
+ProxyModule::ProxyModule(BOS::module_pn_e partNum, int ports): id_(hstd::Addr_t::INVALID_UID), numOfPorts_(ports), info_()
+{
+	info_ = BOS::toString(partNum);
 }
 
 ProxyModule::~ProxyModule(void)
@@ -30,26 +39,54 @@ ProxyModule::~ProxyModule(void)
 
 }
 
-long ProxyModule::getID(void) const
+hstd::uid_t ProxyModule::getUID(void) const
 {
 	return id_;
 }
 
-long ProxyModule::setID(long newID)
+void ProxyModule::setUID(hstd::uid_t newID)
 {
-	long oldID = id_;
 	id_ = newID;
-	return oldID;
+}
+
+int ProxyModule::getNumOfPorts(void) const
+{
+	return numOfPorts_;
+}
+
+bool ProxyModule::isMaster(void) const
+{
+	return hstd::Addr_t::isMaster(id_);
+}
+
+bool ProxyModule::isValidID(void) const
+{
+	return hstd::Addr_t::isValidUID(id_);
+}
+
+void ProxyModule::setNumOfPorts(int ports)
+{
+	numOfPorts_ = ports;
+}
+
+std::string ProxyModule::getPartStr(void) const
+{
+	return info_;
+}
+
+BOS::module_pn_e ProxyModule::getPartNum(void) const
+{
+	return BOS::toPartNumberEnum(info_);
 }
 
 bool ProxyModule::send(const hstd::Message& m)
 {
-	return false;
+	return Service::getInstance()->send(m);
 }
 
 bool ProxyModule::receive(hstd::Message& m, long timeout)
 {
-	return false;
+	return Service::getInstance()->receive(m, timeout);
 }
 
 
@@ -252,8 +289,8 @@ int reverseAllButInPort(uint8_t destID)
 	msg.setCode(CODE_port_dir);
 
 	for (uint8_t p = 1 ; p <= BOS::MAX_NUM_OF_PORTS; p++)
-		msg.getParams().append(uint8_t(REVERSED));
-	msg.getParams().append(uint8_t(NORMAL)); /* Make sure the inport is not reversed */
+		msg.getParams().append(uint8_t(BOS::PortDir::REVERSED));
+	msg.getParams().append(uint8_t(BOS::PortDir::NORMAL)); /* Make sure the inport is not BOS::PortDir::REVERSED */
 
 	Service::getInstance()->send(msg);
 	return 0;
@@ -423,7 +460,7 @@ int Explore(void)
 	if (result)
 		goto END;
 
-	/* Step 5a - Virtually reset the state of master ports to Normal */
+	/* Step 5a - Virtually reset the state of master ports to BOS::PortDir::NORMAL */
 	for (uint8_t p = 1; p <= NUM_OF_PORTS; p++)
 		Service::arrayPortsDir[0] &= (~(0x8000 >> (p - 1)));		/* Set bit to zero */
 
@@ -434,24 +471,24 @@ int Explore(void)
 			uint8_t nID = Service::getIDConnTo(i, p);				/* Neighbor ID */
 			uint8_t nPort = Service::getPortConnTo(i, p);			/* Neighbor port */	
 
-			if (!Service::hasValidInfoAt(i, p) or (Service::getPortDir(nID, nPort) == REVERSED))	{
-				/* If empty port leave normal */
-				portMsg.getParams().append(uint8_t(NORMAL));
-				Service::setPortDir(i, p, NORMAL);
+			if (!Service::hasValidInfoAt(i, p) or (Service::getPortDir(nID, nPort) == BOS::PortDir::REVERSED))	{
+				/* If empty port leave BOS::PortDir::NORMAL */
+				portMsg.getParams().append(uint8_t(BOS::PortDir::NORMAL));
+				Service::setPortDir(i, p, BOS::PortDir::NORMAL);
 			} else {
-				portMsg.getParams().append(uint8_t(REVERSED));
-				Service::setPortDir(i, p, REVERSED);			
+				portMsg.getParams().append(uint8_t(BOS::PortDir::REVERSED));
+				Service::setPortDir(i, p, BOS::PortDir::REVERSED);			
 			}
 		}
 		
-		/* Step 5c - Check if an inport is reversed */
+		/* Step 5c - Check if an inport is BOS::PortDir::REVERSED */
 		/* Find out the inport to this module from master */
 		FindRoute(1, i);
 		uint8_t justNextMod = Service::route[NumberOfHops(i)-1];				/* previous module = route[Number of hops - 1] */
 		uint8_t port = FindRoute(i, justNextMod);
-		/* Is the inport reversed? */
-		if ((justNextMod == i) || (portMsg.getParams()[port - 1] == REVERSED) )
-			portMsg.getParams().append(uint8_t(REVERSED));		/* Make sure the inport is reversed */
+		/* Is the inport BOS::PortDir::REVERSED? */
+		if ((justNextMod == i) || (portMsg.getParams()[port - 1] == uint8_t(BOS::PortDir::REVERSED)) )
+			portMsg.getParams().append(uint8_t(BOS::PortDir::REVERSED));		/* Make sure the inport is BOS::PortDir::REVERSED */
 		else
 			portMsg.getParams().append(uint8_t(0));
 		
@@ -463,7 +500,7 @@ int Explore(void)
 		Service::osDelay(10);			
 	}			
 
-	/* Step 5e - Update master ports > all normal */
+	/* Step 5e - Update master ports > all BOS::PortDir::NORMAL */
 	
 			
 	/* >>> Step 6 - Test new port directions by pinging all modules */

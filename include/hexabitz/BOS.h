@@ -74,6 +74,13 @@ enum module_pn_e {
 	SEQ(TO_ENUM)
 };
 
+
+enum class PortDir {
+	NORMAL, 
+	REVERSED
+};
+
+
 std::string toString(enum module_pn_e pn);
 enum module_pn_e toPartNumberEnum(std::string str);
 std::vector<std::string> getPartNumberList(void);

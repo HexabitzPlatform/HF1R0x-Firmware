@@ -1,5 +1,6 @@
 #include "hexabitz/Service.h"
 
+#include "hexabitz/ProxyModule.h"
 
 #include <iostream>
 #include <thread>
@@ -20,7 +21,7 @@ uint8_t Service::myID = 0;
 enum BOS::module_pn_e Service::partNumber = BOS::H01R0;
 
 uint8_t Service::numModules = 50;
-uint16_t Service::neighbors[NUM_OF_PORTS][2] = { { 0 } };
+uint16_t Service::neighbors[BOS::MAX_NUM_OF_PORTS][2] = { { 0 } };
 uint16_t Service::neighbors2[BOS::MAX_NUM_OF_PORTS][2] = { { 0 } };
 uint16_t Service::array[BOS::MAX_NUM_OF_MODULES][BOS::MAX_NUM_OF_PORTS + 1] = { { 0 } };
 uint16_t Service::arrayPortsDir[BOS::MAX_NUM_OF_MODULES] = { 0 };
@@ -56,6 +57,23 @@ int Service::setProxy(ProxyModule *owner)
 	module_ = std::shared_ptr<ProxyModule>(owner);
 	return 0;
 }
+
+BOS::PortDir Service::getPortDir(uint8_t id, uint8_t port)
+{
+	if (arrayPortsDir[id - 1] & (0x8000 >> (port - 1)))
+		return BOS::PortDir::REVERSED;
+	return BOS::PortDir::NORMAL;
+}
+
+void Service::setPortDir(uint8_t id, uint8_t port, BOS::PortDir dir)
+{
+	if (dir == BOS::PortDir::REVERSED)
+		arrayPortsDir[id - 1] |= (0x8000 >> (port - 1));
+	else
+		arrayPortsDir[id - 1] &= (~(0x8000 >> (port - 1)));	
+
+}
+
 
 bool Service::send(const hstd::Message& msg)
 {
