@@ -1,8 +1,9 @@
-#include "hexabitz/Module.h"
+#include "hexabitz/ProxyModule.h"
 #include "helper/helper.h"
 
 #include "hal/Serial.h"
 #include "hexabitz/BOS.h"
+#include "hexabitz/Service.h"
 #include "hexabitz/BOSMessage.h"
 #include "hexabitz/BOSMessageBuilder.h"
 

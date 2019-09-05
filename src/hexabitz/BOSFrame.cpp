@@ -124,6 +124,7 @@ bool hstd::buildMessageFromFrames(std::vector<hstd::Frame>& vec, hstd::Message& 
 			isLong = true;
 
 		// Process the Frame
+		// TODO: Check Source and Dest of Long Frames, Code. They should be same.
 		message.setSource(Addr_t(f.srcID));
 		message.setDest(Addr_t(f.destID));
 		message.setCode(f.getCodeOnly());
