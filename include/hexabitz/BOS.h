@@ -43,26 +43,27 @@
 #define	CODE_write_remote_force							34
 
 
-#define SEQ(OPERATION) 					\
-		OPERATION(		INVALID		)  	\
-		OPERATION(		H01R0		) 	\
-		OPERATION(		P01R0		) 	\
-		OPERATION(		H23R0		) 	\
-		OPERATION(		H23R1		) 	\
-		OPERATION(		H07R3		) 	\
-		OPERATION(		H08R6		) 	\
-		OPERATION(		H09R0		) 	\
-		OPERATION(		H1BR6		) 	\
-		OPERATION(		H12R0		) 	\
-		OPERATION(		H13R7		) 	\
-		OPERATION(		H0FR6		) 	\
-		OPERATION(		H1AR2		) 	\
-		OPERATION(		H0AR9		) 	\
-		OPERATION(		H1DR1		) 	\
-		OPERATION(		H1DR5		) 	\
-		OPERATION(		H0BR4		) 	\
-		OPERATION(		H18R0		) 	\
-		OPERATION(		H26R0		)
+#define SEQ(OPERATION) 							\
+		OPERATION(		INVALID		,		-1		)  	\
+		OPERATION(		H01R0		,		6		) 	\
+		OPERATION(		P01R0		,		6		) 	\
+		OPERATION(		H23R0		,		6		) 	\
+		OPERATION(		H23R1		,		6		) 	\
+		OPERATION(		H07R3		,		6		) 	\
+		OPERATION(		H08R6		,		6		) 	\
+		OPERATION(		H09R0		,		6		) 	\
+		OPERATION(		H1BR6		,		6		) 	\
+		OPERATION(		H12R0		,		6		) 	\
+		OPERATION(		H13R7		,		6		) 	\
+		OPERATION(		H0FR6		,		6		) 	\
+		OPERATION(		H1AR2		,		6		) 	\
+		OPERATION(		H0AR9		,		6		) 	\
+		OPERATION(		H1DR1		,		6		) 	\
+		OPERATION(		H1DR5		,		6		) 	\
+		OPERATION(		H0BR4		,		6		) 	\
+		OPERATION(		H18R0		,		6		) 	\
+		OPERATION(		H26R0		,		6		)
+
 
 
 namespace BOS {
@@ -71,7 +72,11 @@ static constexpr int MAX_NUM_OF_PORTS = 8;
 static constexpr int MAX_NUM_OF_MODULES = 25;
 
 enum module_pn_e {
-	SEQ(TO_ENUM)
+#define TO_ENUM_PART_NUMBER(p,n)					TO_ENUM(p)
+
+	SEQ(TO_ENUM_PART_NUMBER)
+	
+#undef TO_ENUM_PART_NUMBER
 };
 
 
@@ -84,6 +89,7 @@ enum class PortDir {
 std::string toString(enum module_pn_e pn);
 enum module_pn_e toPartNumberEnum(std::string str);
 std::vector<std::string> getPartNumberList(void);
+int getNumOfPorts(enum module_pn_e partNum);
 
 }
 

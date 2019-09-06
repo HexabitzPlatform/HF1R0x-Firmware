@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	std::cout << "Minor: " << VERSION_MINOR << ")" << std::endl;
 
 	for (auto& s: BOS::getPartNumberList())
-		std::cout << "Part number: " << s << std::endl;
+		std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
 
 	Service::getInstance()->init("/dev/ttyUSB1");
 
