@@ -43,9 +43,9 @@ public:
 	virtual bool receive(hstd::Message& m, long timeout = -1);
 
 public:
-	ProxyModule(hstd::uid_t idIn, int ports, std::string partStr);
-	ProxyModule(std::string partStr, int ports);
-	ProxyModule(BOS::module_pn_e partNum, int ports);
+	ProxyModule(std::string part, int numPorts, hstd::uid_t uid);
+	ProxyModule(std::string part, int numPorts = -1);
+	ProxyModule(BOS::module_pn_e part);
 
 	~ProxyModule(void);
 
@@ -73,7 +73,7 @@ public:
 	}
 
 public:
-	H09R0(void): ProxyModule(BOS::H09R0, 6)
+	H09R0(void): ProxyModule(BOS::H09R0)
 	{
 
 	}
@@ -96,7 +96,7 @@ public:
 	}
 
 public:
-	H01R0(void): ProxyModule(BOS::H01R0, 6)
+	H01R0(void): ProxyModule(BOS::H01R0)
 	{
 
 	}

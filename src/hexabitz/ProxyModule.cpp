@@ -19,19 +19,21 @@
 #include <errno.h>
 
 
-ProxyModule::ProxyModule(hstd::uid_t idIn, int ports, std::string partStr): id_(idIn), numOfPorts_(ports), info_(partStr)
+ProxyModule::ProxyModule(std::string part, int numPorts, hstd::uid_t uid): id_(uid), numOfPorts_(numPorts), info_(part)
 {
 
 }
 
-ProxyModule::ProxyModule(std::string partStr, int ports): id_(hstd::Addr_t::INVALID_UID), numOfPorts_(ports), info_(partStr)
+ProxyModule::ProxyModule(std::string part, int numPorts): id_(hstd::Addr_t::INVALID_UID), numOfPorts_(numPorts), info_(part)
 {
-
+	if (numOfPorts_ <= 0)
+		numOfPorts_ = BOS::getNumOfPorts(BOS::toPartNumberEnum(part));
 }
 
-ProxyModule::ProxyModule(BOS::module_pn_e partNum, int ports): id_(hstd::Addr_t::INVALID_UID), numOfPorts_(ports), info_()
+ProxyModule::ProxyModule(BOS::module_pn_e part): id_(hstd::Addr_t::INVALID_UID), numOfPorts_(-1), info_()
 {
-	info_ = BOS::toString(partNum);
+	info_ = BOS::toString(part);
+	numOfPorts_ = BOS::getNumOfPorts(part);
 }
 
 ProxyModule::~ProxyModule(void)
