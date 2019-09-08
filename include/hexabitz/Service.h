@@ -9,6 +9,7 @@
 #include "hexabitz/BOSMessageBuilder.h"
 
 #include <memory>
+#include <vector>
 
 
 #define	NumberOfHops(i)					(Service::routeDist[i - 1])
@@ -19,25 +20,32 @@ class Service {
 
 public:
 	static Service *getInstance(void);
+
+public:
 	static void osDelay(int milliseconds);
 
 public:
 	bool init(const char *pathname);
-	int setProxy(ProxyModule *module);
+
+	void setOwn(std::shared_ptr<ProxyModule> module);
+	std::shared_ptr<ProxyModule> getOwn(void);
 
 public:
-	static bool hasValidInfoAt(uint8_t id, uint8_t port)				{ return array[id - 1][port] != 0; }
-	static uint8_t getIDConnTo(uint8_t id, uint8_t port)				{ return (array[id - 1][port] >> 3); }
-	static uint8_t getPortConnTo(uint8_t id, uint8_t port)				{ return (array[id - 1][port] & 0x0007); }
+	bool hasValidInfoAt(uint8_t id, uint8_t port);
 
-	static BOS::PortDir getPortDir(uint8_t id, uint8_t port);
-	static void setPortDir(uint8_t id, uint8_t port, BOS::PortDir dir);
+	// void setModuleConnAt(hstd::Addr_t module, hstd::Addr_t connectedAt);
+	uint8_t getIDConnTo(uint8_t id, uint8_t port);			
+	uint8_t getPortConnTo(uint8_t id, uint8_t port);				
+	hstd::Addr_t getAddrConnTo(hstd::Addr_t addr);
+	
+	void setPortDir(uint8_t id, uint8_t port, BOS::PortDir dir);
+	BOS::PortDir getPortDir(uint8_t id, uint8_t port);
 
-	static hstd::Addr_t getAddrConnTo(hstd::Addr_t addr)
-	{
-		return hstd::Addr_t(getIDConnTo(addr.getUID(), addr.getPort()));
-	}
 
+private:
+	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src);
+	uint8_t FindRoute(uint8_t src, uint8_t dest);
+	uint8_t FindSourcePort(uint8_t srcID, uint8_t destID);
 
 public:
 	virtual bool send(const hstd::Message& m);
@@ -48,29 +56,24 @@ private:
 	virtual bool receive(hstd::Frame& f, long timeout = -1);
 
 private:
-	Service(void): serial_(nullptr)	{ }
-	~Service(void)  				{ serial_.end(); }
-
-private:
-	// Save Routing Table!
+	Service(void);
+	~Service(void);
 
 private:
 	HardwareSerial serial_;
-	std::shared_ptr<ProxyModule> module_;
 
-public:
+private:
 	static Service *self_;
-	static enum BOS::module_pn_e partNumber;
-	static uint8_t myID;
-	static uint8_t numModules;
+	static const int DEFAULT_BAUDRATE = 921600;
 
-	static uint16_t neighbors[BOS::MAX_NUM_OF_PORTS][2];
-	static uint16_t neighbors2[BOS::MAX_NUM_OF_PORTS][2];
-	static uint16_t array[BOS::MAX_NUM_OF_MODULES][BOS::MAX_NUM_OF_PORTS + 1];
-	static uint16_t arrayPortsDir[BOS::MAX_NUM_OF_MODULES];
+private:
+	std::shared_ptr<ProxyModule> owner_;
+	uint8_t num_modules_;
 
-	static uint8_t route[BOS::MAX_NUM_OF_MODULES];
-	static uint8_t routeDist[BOS::MAX_NUM_OF_MODULES];
+	uint16_t neighbors_[BOS::MAX_NUM_OF_PORTS][2];
+	uint16_t neighbors2_[BOS::MAX_NUM_OF_PORTS][2];
+	uint16_t modulesInfo_[BOS::MAX_NUM_OF_MODULES][BOS::MAX_NUM_OF_PORTS + 1];
+	uint16_t modulesPortsDirInfo_[BOS::MAX_NUM_OF_MODULES];
 };
 
 

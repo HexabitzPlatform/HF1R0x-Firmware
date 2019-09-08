@@ -44,7 +44,7 @@
 
 
 #define SEQ(OPERATION) 							\
-		OPERATION(		INVALID		,		-1		)  	\
+		OPERATION(		INVALID		,	   -1		)  	\
 		OPERATION(		H01R0		,		6		) 	\
 		OPERATION(		P01R0		,		6		) 	\
 		OPERATION(		H23R0		,		6		) 	\
