@@ -6,13 +6,15 @@
 #include "hal/Serial.h"
 #include "hexabitz/BOSFrame.h"
 #include "hexabitz/BOSMessage.h"
+#include "hexabitz/ModuleInfo.h"
 #include "hexabitz/BOSMessageBuilder.h"
+
+#include <errno.h>
 
 #include <memory>
 #include <vector>
 
 
-#define	NumberOfHops(i)					(Service::routeDist[i - 1])
 
 class ProxyModule;
 
@@ -25,22 +27,24 @@ public:
 	static void osDelay(int milliseconds);
 
 public:
-	bool init(const char *pathname);
+	int init(const char *pathname);
 
 	void setOwn(std::shared_ptr<ProxyModule> module);
 	std::shared_ptr<ProxyModule> getOwn(void);
 
-public:
-	bool hasValidInfoAt(uint8_t id, uint8_t port);
-
-	// void setModuleConnAt(hstd::Addr_t module, hstd::Addr_t connectedAt);
-	uint8_t getIDConnTo(uint8_t id, uint8_t port);			
-	uint8_t getPortConnTo(uint8_t id, uint8_t port);				
-	hstd::Addr_t getAddrConnTo(hstd::Addr_t addr);
-	
-	void setPortDir(uint8_t id, uint8_t port, BOS::PortDir dir);
-	BOS::PortDir getPortDir(uint8_t id, uint8_t port);
-
+private:
+	int ping(uint8_t destID);
+	int assignIDToNeigh(hstd::uid_t id, hstd::port_t portNum);
+	int assignIDToAdjacent(uint8_t destID, uint8_t portNum, uint8_t newID);
+	int sayHiToNeighbour(uint8_t portOut, enum BOS::module_pn_e& part, hstd::Addr_t& neigh);
+	NeighboursInfo ExploreNeighbors(uint8_t ignore);
+	int ExploreAdjacentOf(hstd::Addr_t addr, NeighboursInfo& info);
+	void changePortDir(int port, enum BOS::PortDir dir);
+	int syncTopologyTo(hstd::uid_t destID);
+	int synPortDir(hstd::uid_t dest);
+	int reverseAllButInPort(hstd::uid_t destID);
+	int broadcastToSave(void);
+	int Explore(void);
 
 private:
 	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src);
@@ -48,12 +52,12 @@ private:
 	uint8_t FindSourcePort(uint8_t srcID, uint8_t destID);
 
 public:
-	virtual bool send(const hstd::Message& m);
-	virtual bool receive(hstd::Message& m, long timeout = -1);
+	int send(const hstd::Message& m);
+	int receive(hstd::Message& m, long timeout = -1);
 
 private:
-	virtual bool send(const hstd::Frame& f);
-	virtual bool receive(hstd::Frame& f, long timeout = -1);
+	int send(const hstd::Frame& f);
+	int receive(hstd::Frame& f, long timeout = -1);
 
 private:
 	Service(void);
@@ -69,11 +73,7 @@ private:
 private:
 	std::shared_ptr<ProxyModule> owner_;
 	uint8_t num_modules_;
-
-	uint16_t neighbors_[BOS::MAX_NUM_OF_PORTS][2];
-	uint16_t neighbors2_[BOS::MAX_NUM_OF_PORTS][2];
-	uint16_t modulesInfo_[BOS::MAX_NUM_OF_MODULES][BOS::MAX_NUM_OF_PORTS + 1];
-	uint16_t modulesPortsDirInfo_[BOS::MAX_NUM_OF_MODULES];
+	ModulesInfo info_;
 };
 
 

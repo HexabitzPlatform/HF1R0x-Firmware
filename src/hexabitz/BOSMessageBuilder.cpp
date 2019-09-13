@@ -44,3 +44,23 @@ hstd::Message hstd::make_message(Addr_t dest, Addr_t src, uint16_t code)
 
 	return message;
 }
+
+hstd::Message hstd::make_message(hstd::uid_t destID, uint16_t code)
+{
+	return hstd::make_message(hstd::Addr_t(destID), code);
+}
+
+hstd::Message hstd::make_message(hstd::uid_t destID, hstd::uid_t srcID, uint16_t code)
+{
+	return hstd::make_message(hstd::Addr_t(destID), hstd::Addr_t(srcID), code);
+}
+
+hstd::Message hstd::make_broadcast(uint16_t code)
+{
+	return hstd::make_message(hstd::Addr_t::BROADCAST_UID, code);
+}
+
+hstd::Message hstd::make_message_meighbour(hstd::port_t portNum, uint16_t code)
+{
+	return hstd::make_message(hstd::Addr_t(0), hstd::Addr_t(0, portNum), code);
+}

@@ -15,9 +15,6 @@
 #include <memory>
 #include <list>
 
-#define NUM_OF_PORTS 					1
-
-
 
 /*************************************************************/
 
@@ -37,6 +34,7 @@ protected:
 public:
 	std::string getPartStr(void) const;
 	BOS::module_pn_e getPartNum(void) const;
+	uint16_t getPartNum_ui16(void) const;
 
 public:
 	virtual bool send(const hstd::Message& m);

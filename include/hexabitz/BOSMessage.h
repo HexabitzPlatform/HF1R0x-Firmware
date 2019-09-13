@@ -6,7 +6,7 @@
 #include "hal/Serial.h"
 
 #include "hexabitz/BOS.h"
-
+			
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -33,6 +33,7 @@ typedef int port_t;
 struct Addr_t {
 public:
 	static bool isValidUID(uid_t id)	{ return id <= MAX_UID and id >= MIN_UID; }
+	static bool isUIDed(uid_t id)		{ return id <= MAX_UID and id > MIN_UID; }
 	static bool isValidPort(port_t p)	{ return p <= MAX_PORT and p >= MIN_PORT; }
 	static bool isMaster(uid_t id)		{ return id == MASTER_UID; }
 

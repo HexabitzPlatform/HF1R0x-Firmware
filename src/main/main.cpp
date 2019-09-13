@@ -47,7 +47,7 @@ void testBinaryMessage(void)
 		std::cout << "Sending: " << m << std::endl;
 		Service::getInstance()->send(m);
 
-		if (Service::getInstance()->receive(m))
+		if (!Service::getInstance()->receive(m))
 			std::cout << "Received: " << m << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::seconds(2));

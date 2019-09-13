@@ -81,6 +81,11 @@ BOS::module_pn_e ProxyModule::getPartNum(void) const
 	return BOS::toPartNumberEnum(info_);
 }
 
+uint16_t ProxyModule::getPartNum_ui16(void) const
+{
+	return static_cast<uint16_t>(getPartNum());
+}
+
 bool ProxyModule::send(const hstd::Message& m)
 {
 	return Service::getInstance()->send(m);
