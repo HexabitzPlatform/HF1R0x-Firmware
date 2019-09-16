@@ -6,6 +6,7 @@
 #include "hexabitz/BOSMessage.h"
 
 #include <errno.h>
+#include <vector>
 
 class ProxyModule;
 
@@ -91,6 +92,12 @@ public:
 
 	bool isPortDirNormal(hstd::uid_t uid, hstd::port_t port) const;
 	bool isPortDirReversed(hstd::uid_t uid, hstd::port_t port) const;
+
+public:
+	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src) const;
+	hstd::port_t FindSourcePort(hstd::uid_t srcID, hstd::uid_t destID) const;
+
+	hstd::uid_t getMaxUID(void) const;
 
 public:
 	enum BOS::module_pn_e getPartEnumOf(hstd::Addr_t addr) const;
