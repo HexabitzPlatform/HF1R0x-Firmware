@@ -128,78 +128,83 @@ int Service::receive(hstd::Frame& f, long timeout)
 
 std::vector<hstd::Addr_t> Service::FindRoute(hstd::Addr_t dest, hstd::Addr_t src)
 {
-	uint8_t Q[BOS::MAX_NUM_OF_MODULES] = { 0 };		// All nodes initially in Q (unvisited nodes)
+	std::vector<hstd::Addr_t> route;
+	const int NUM_MOD = num_modules_;
+	const int NODE_NODE_DIST = 1;
+	const uint8_t INF_DIST = 0xFF;
 
-	auto minUnvisitedUID = [this](uint8_t *arr, uint8_t *Q) -> uint8_t {
-		uint8_t index = 0, smallest = 0xFF; 
+	hstd::Addr_t routePrev[NUM_MOD];
+	int distance[NUM_MOD];
+	bool nodes[NUM_MOD] = { false };		// All nodes initially in Q (unvisited nodes)
 
-		if (!Q[0]) smallest = arr[0];	/* Consider first element as smallest */
 
-		for (int i = 0; i < this->num_modules_; i++) {
-			if ((arr[i] < smallest) && !Q[i]) {
-				smallest = arr[i];
+	auto minUnvisitedUID = [this](bool *nodes, int *dist, const int length) {
+		hstd::uid_t index = 0, smallest = 0xFF; 
+
+		if (!nodes[0]) smallest = dist[0];	/* Consider first element as smallest */
+
+		for (int i = 0; i < length; i++) {
+			if ((dist[i] < smallest) && !nodes[i]) {
+				smallest = dist[i];
 				index = i;
 			}
 		}
-		return index;
+		return index + 1;
 	};
 
-	auto isQNotEmpty = [this](uint8_t *Q) {
-		char temp = 1;
-		for (int i = 0; i < this->num_modules_; i++)
-			temp &= Q[i];
+	auto isAllVisited = [this](bool *nodes, const int length) {
+		bool temp = true;
+		for (int i = 0; i < length; i++)
+			temp &= nodes[i];
 		return temp;
 	};
 
-	std::vector<hstd::Addr_t> route;
-	hstd::Addr_t routePrev[BOS::MAX_NUM_OF_MODULES];
-	uint8_t routeDist[BOS::MAX_NUM_OF_MODULES] = { 0 };
 
 	hstd::uid_t sourceID = src.getUID();
 	hstd::uid_t destID = dest.getUID();
 	
 	/* Initialization */
-	// memset(Service::route, 0, sizeof(Service::route));
-	memset(routeDist, 0xFF, sizeof(routeDist));
-	// memset(routePrev, 0, sizeof(routePrev));
+	memset(distance, INF_DIST, sizeof(distance));
 
-	routeDist[sourceID - 1] = 0;       				// Distance from source to source
+	distance[sourceID - 1] = 0;       				// Distance from source to source
 	routePrev[sourceID - 1] = hstd::Addr_t();       // Previous node in optimal path initialization undefined
 	
 	/* Algorithm */
-	uint8_t currentID = 0;
-	while (!isQNotEmpty(Q)) {
+	while (!isAllVisited(nodes, NUM_MOD)) {
 
-		currentID = minUnvisitedUID(routeDist, Q) + 1;		// Source node in first case
-		if (currentID == destID)
-			goto finishedRoute;
+		hstd::uid_t uid = minUnvisitedUID(nodes, distance, NUM_MOD);		// Source node in first case
+		if (uid == destID)
+			break;
 
-		Q[currentID - 1] = 1;								// Remove u from Q 																					
-		/* For each neighbor v where v is still in Q. */
-		for (uint8_t p = 1; p <= 6; p++) {     				// Check all module ports
-			if (!info_.hasConnInfo(currentID, p))		// There's a neighbor v at this port n
+		nodes[uid - 1] = true;	// Mark uid as visited																					
+		/* For each neighbor nID where nID is unvisited (i.e., Q[nID is false]) */
+		for (hstd::port_t p = 1; p <= hstd::Addr_t::MAX_PORT; p++) {    // Check all module ports
+			hstd::Addr_t curAddr(uid, p);
+
+			if (!info_.hasConnInfo(curAddr))	// There's a neighbor at this port p
 				continue;
 			
-			hstd::uid_t nID = info_.getUIDConnAt(hstd::Addr_t(currentID, p));
-			if (Q[nID - 1])		// v is not in Q
+			hstd::uid_t nID = info_.getUIDConnAt(curAddr);
+			if (nodes[nID - 1])		// nID has been visited already
 				continue;												
 				
-			uint8_t newDist = routeDist[currentID - 1] + 1;		// Add one hop
-			if (newDist < routeDist[nID - 1]) {     	// A shorter path to v has been found
-				routeDist[nID - 1] = newDist; 
-				routePrev[nID - 1] = hstd::Addr_t(currentID, p); 
+			int newDist = distance[uid - 1] + NODE_NODE_DIST;	// Add one hop
+			if (newDist < distance[nID - 1]) {     				// A shorter path to nID has been found
+				distance[nID - 1] = newDist; 
+				routePrev[nID - 1] = curAddr; 
 			}
 		}
 	}	
 		
-finishedRoute:
+	if (isAllVisited(nodes, NUM_MOD))
+		return route;
 		
 	/* Build the virtual route */
-	// currentID = routePrev[currentID - 1].getUID();
-	route.push_back(hstd::Addr_t(routePrev[currentID - 1]));
-	while (routePrev[currentID - 1].isValid()) {  		// Construct the shortest path with a stack route
-		route.push_back(routePrev[currentID - 1]);		// Push the vertex onto the stack
-		currentID = routePrev[currentID - 1].getUID(); 	// Traverse from target to source
+	// If we are here, then currentID must be destID
+	route.push_back(hstd::Addr_t(destID, info_.getPortConnAt(routePrev[destID - 1])));
+	while (routePrev[destID - 1].isValid()) {  		// Construct the shortest path with a stack route
+		route.push_back(routePrev[destID - 1]);		// Push the vertex onto the stack
+		destID = routePrev[destID - 1].getUID(); 	// Traverse from target to source
 	}
 
 	std::reverse(route.begin(), route.end());
@@ -207,7 +212,7 @@ finishedRoute:
 }
 
 
-uint8_t Service::FindRoute(uint8_t src, uint8_t dest)
+hstd::port_t Service::FindRoute(hstd::uid_t src, hstd::uid_t dest)
 {
 	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(dest, 1), hstd::Addr_t(src, 1));
 	if (route.size() <= 0)
@@ -215,7 +220,7 @@ uint8_t Service::FindRoute(uint8_t src, uint8_t dest)
 	return route.at(0).getPort();
 }
 
-uint8_t Service::FindSourcePort(uint8_t srcID, uint8_t destID)
+hstd::port_t Service::FindSourcePort(hstd::uid_t srcID, hstd::uid_t destID)
 {
 	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(destID, 1), hstd::Addr_t(srcID, 1));
 	if (route.size() <= 0)
