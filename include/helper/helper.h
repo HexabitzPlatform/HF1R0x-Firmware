@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <bitset>
 
+#define H_UNUSED(x)						(x)
 
 #define HIGH							true
 #define LOW								false
