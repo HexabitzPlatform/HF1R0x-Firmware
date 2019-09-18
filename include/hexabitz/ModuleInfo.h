@@ -26,6 +26,7 @@ public:
 	bool hasUnIDedInfo(hstd::port_t port) const;
 	bool hasAllIDedInfo(void) const;
 
+public:
 	void setAddrInfoFor(hstd::port_t port, hstd::Addr_t addr);
 	void setUIDInfoFor(hstd::port_t port, hstd::uid_t uid);
 	void setPortInfoFor(hstd::port_t port, hstd::port_t neighPort);
@@ -62,11 +63,23 @@ public:
 	BinaryBuffer toBinaryBuffer(int num = -1) const;
 	void fromBinaryBuffer(BinaryBuffer buffer);
 
+	hstd::uid_t getMaxUID(void) const;
 	void reset(void);
+
+private:
+	void addConnectionFromTo(hstd::Addr_t fromAddr, hstd::Addr_t toAddr);
+	void clearConnectionInfoAt(hstd::Addr_t addr);
+
+public:
+	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src) const;
+	std::vector<hstd::Addr_t> FindRoute(hstd::uid_t destID, hstd::uid_t srcID) const;
+	hstd::port_t FindSourcePort(hstd::uid_t srcID, hstd::uid_t destID) const;
 
 public:
 	bool hasConnInfo(hstd::Addr_t addr) const;
 	bool hasConnInfo(hstd::uid_t uid, hstd::port_t port) const;
+	bool hasInfo(hstd::uid_t uid) const;
+	bool isConnToAny(hstd::uid_t uid) const;
 
 	bool addConnection(hstd::Addr_t first, hstd::Addr_t second);
 	void removeConnection(hstd::Addr_t first, hstd::Addr_t second);
@@ -94,14 +107,11 @@ public:
 	bool isPortDirReversed(hstd::uid_t uid, hstd::port_t port) const;
 
 public:
-	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src) const;
-	hstd::port_t FindSourcePort(hstd::uid_t srcID, hstd::uid_t destID) const;
-
-	hstd::uid_t getMaxUID(void) const;
-
-public:
 	enum BOS::module_pn_e getPartEnumOf(hstd::Addr_t addr) const;
+	enum BOS::module_pn_e getPartEnumOf(hstd::uid_t uid) const;
+
 	hstd::Addr_t getModuleConnAt(hstd::Addr_t addr) const;
+	hstd::Addr_t getModuleConnAt(hstd::uid_t uid, hstd::port_t port) const;
 
 	hstd::uid_t getUIDConnAt(hstd::Addr_t addr) const;
 	hstd::port_t getPortConnAt(hstd::Addr_t addr) const;

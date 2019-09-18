@@ -126,105 +126,21 @@ int Service::receive(hstd::Frame& f, long timeout)
 }
 
 
-std::vector<hstd::Addr_t> Service::FindRoute(hstd::Addr_t dest, hstd::Addr_t src)
+std::vector<hstd::Addr_t> Service::FindRoute(hstd::Addr_t dest)
 {
-	std::vector<hstd::Addr_t> route;
-	const int NUM_MOD = num_modules_;
-	const int NODE_NODE_DIST = 1;
-	const uint8_t INF_DIST = 0xFF;
-
-	hstd::Addr_t routePrev[NUM_MOD];
-	int distance[NUM_MOD];
-	bool nodes[NUM_MOD] = { false };		// All nodes initially in Q (unvisited nodes)
-
-
-	auto minUnvisitedUID = [this](bool *nodes, int *dist, const int length) {
-		hstd::uid_t index = 0, smallest = 0xFF; 
-
-		if (!nodes[0]) smallest = dist[0];	/* Consider first element as smallest */
-
-		for (int i = 0; i < length; i++) {
-			if ((dist[i] < smallest) && !nodes[i]) {
-				smallest = dist[i];
-				index = i;
-			}
-		}
-		return index + 1;
-	};
-
-	auto isAllVisited = [this](bool *nodes, const int length) {
-		bool temp = true;
-		for (int i = 0; i < length; i++)
-			temp &= nodes[i];
-		return temp;
-	};
-
-
-	hstd::uid_t sourceID = src.getUID();
-	hstd::uid_t destID = dest.getUID();
-	
-	/* Initialization */
-	memset(distance, INF_DIST, sizeof(distance));
-
-	distance[sourceID - 1] = 0;       				// Distance from source to source
-	routePrev[sourceID - 1] = hstd::Addr_t();       // Previous node in optimal path initialization undefined
-	
-	/* Algorithm */
-	while (!isAllVisited(nodes, NUM_MOD)) {
-
-		hstd::uid_t uid = minUnvisitedUID(nodes, distance, NUM_MOD);		// Source node in first case
-		if (uid == destID)
-			break;
-
-		nodes[uid - 1] = true;	// Mark uid as visited																					
-		/* For each neighbor nID where nID is unvisited (i.e., Q[nID is false]) */
-		for (hstd::port_t p = 1; p <= hstd::Addr_t::MAX_PORT; p++) {    // Check all module ports
-			hstd::Addr_t curAddr(uid, p);
-
-			if (!info_.hasConnInfo(curAddr))	// There's a neighbor at this port p
-				continue;
-			
-			hstd::uid_t nID = info_.getUIDConnAt(curAddr);
-			if (nodes[nID - 1])		// nID has been visited already
-				continue;												
-				
-			int newDist = distance[uid - 1] + NODE_NODE_DIST;	// Add one hop
-			if (newDist < distance[nID - 1]) {     				// A shorter path to nID has been found
-				distance[nID - 1] = newDist; 
-				routePrev[nID - 1] = curAddr; 
-			}
-		}
-	}	
-		
-	if (isAllVisited(nodes, NUM_MOD))
-		return route;
-		
-	/* Build the virtual route */
-	// If we are here, then currentID must be destID
-	route.push_back(hstd::Addr_t(destID, info_.getPortConnAt(routePrev[destID - 1])));
-	while (routePrev[destID - 1].isValid()) {  		// Construct the shortest path with a stack route
-		route.push_back(routePrev[destID - 1]);		// Push the vertex onto the stack
-		destID = routePrev[destID - 1].getUID(); 	// Traverse from target to source
-	}
-
-	std::reverse(route.begin(), route.end());
-	return route;			
+	return info_.FindRoute(dest.getUID(), owner_->getUID());		
 }
 
-
-hstd::port_t Service::FindRoute(hstd::uid_t src, hstd::uid_t dest)
+std::vector<hstd::Addr_t> Service::FindRoute(hstd::uid_t destID)
 {
-	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(dest, 1), hstd::Addr_t(src, 1));
-	if (route.size() <= 0)
-		return 0;
-	return route.at(0).getPort();
+	return info_.FindRoute(destID, owner_->getUID());		
 }
 
-hstd::port_t Service::FindSourcePort(hstd::uid_t srcID, hstd::uid_t destID)
+hstd::port_t Service::FindSrcPortFor(hstd::uid_t destID)
 {
-	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(destID, 1), hstd::Addr_t(srcID, 1));
+	std::vector<hstd::Addr_t> route = FindRoute(destID);
 	if (route.size() <= 0)
-		return 0;
+		return hstd::Addr_t::INVALID_PORT;
 	return route.at(0).getPort();
 }
 
@@ -372,9 +288,9 @@ int Service::synPortDir(hstd::uid_t dest)
 	
 	/* Step 5c - Check if an inport is BOS::PortDir::REVERSED */
 	/* Find out the inport to this module from master */
-	std::vector<hstd::Addr_t> route = FindRoute(hstd::Addr_t(1), hstd::Addr_t(dest));
+	std::vector<hstd::Addr_t> route = info_.FindRoute(hstd::Addr_t(1), hstd::Addr_t(dest));
 	hstd::uid_t justNextMod = route[1].getUID();				/* previous module = route[Number of hops - 1] */
-	hstd::port_t portOut = FindRoute(dest, justNextMod);
+	hstd::port_t portOut = info_.FindSourcePort(dest, justNextMod);
 
 	/* Is the inport BOS::PortDir::REVERSED? */
 	if ((justNextMod == dest) or (msg.getParams()[portOut - 1] == uint8_t(BOS::PortDir::REVERSED)) )

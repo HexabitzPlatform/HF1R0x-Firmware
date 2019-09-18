@@ -47,9 +47,9 @@ private:
 	int Explore(void);
 
 private:
-	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest, hstd::Addr_t src);
-	hstd::port_t FindRoute(hstd::uid_t src, hstd::uid_t dest);
-	hstd::port_t FindSourcePort(hstd::uid_t srcID, hstd::uid_t destID);
+	std::vector<hstd::Addr_t> FindRoute(hstd::Addr_t dest);
+	std::vector<hstd::Addr_t> FindRoute(hstd::uid_t destID);
+	hstd::port_t FindSrcPortFor(hstd::uid_t destID);
 
 public:
 	int send(const hstd::Message& m);
