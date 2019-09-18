@@ -77,7 +77,7 @@ public:
 	constexpr static uid_t MAX_UID = 255;
 	constexpr static uid_t MIN_UID = 0;
 
-	constexpr static port_t MAX_PORT = 8;
+	constexpr static port_t MAX_PORT = BOS::MAX_NUM_OF_PORTS;
 	constexpr static port_t MIN_PORT = 1;
 
 	constexpr static uid_t INVALID_UID = -1;
