@@ -2,6 +2,8 @@
 
 #include "hexabitz/ProxyModule.h"
 
+#include <string>
+#include <fstream>
 #include <string.h>
 
 
@@ -256,6 +258,39 @@ void ModulesInfo::fromBinaryBuffer(BinaryBuffer buffer)
 		for (int j = 0; j < BOS::MAX_NUM_OF_PORTS; j++)
 			array_[i][j + 2] = buffer.popui16();
 	}
+}
+
+bool ModulesInfo::toBinaryFile(std::string filename) const
+{
+	std::ofstream stream(filename.c_str(), std::ios::binary);
+	if (!stream.is_open())
+		return false;
+
+	BinaryBuffer buffer = toBinaryBuffer();
+
+	for (int i = 0; i < buffer.getLength(); i++) {
+		char data = buffer[i];
+		stream.write(&data, 1);
+	}
+
+	return true;
+}
+
+bool ModulesInfo::fromBinaryFile(std::string filename)
+{
+	std::ifstream stream(filename.c_str(), std::ios::binary);
+	if (!stream.is_open())
+		return false;
+
+	char data;
+	BinaryBuffer buffer;
+	while (!stream.eof()) {
+		stream.read(&data, 1);
+		buffer.append(uint8_t(data));
+	}
+
+	fromBinaryBuffer(buffer);
+	return true;
 }
 
 void ModulesInfo::reset(void)

@@ -63,6 +63,9 @@ public:
 	BinaryBuffer toBinaryBuffer(int num = -1) const;
 	void fromBinaryBuffer(BinaryBuffer buffer);
 
+	bool toBinaryFile(std::string filename) const;
+	bool fromBinaryFile(std::string filename);
+
 	hstd::uid_t getMaxUID(void) const;
 	void reset(void);
 
