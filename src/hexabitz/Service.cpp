@@ -23,6 +23,11 @@ Service::Service(void): serial_(nullptr)
 {
 	info_.reset();
 	num_modules_ = 50;
+
+	if (info_.fromBinaryFile(DEF_CACHE_FILENAME))
+		std::cout << "Successfully read modules information from " << DEF_CACHE_FILENAME << std::endl;
+	else
+		std::cout << "Failed to parse " << DEF_CACHE_FILENAME << std::endl;
 }
 
 Service::~Service(void)
@@ -497,8 +502,7 @@ int Service::Explore(void)
 	if (result)
 		goto END;
 	/* Save data in the master */
-	// SaveToRO();
-	// SaveEEportsDir();
+	info_.toBinaryFile(DEF_CACHE_FILENAME);
 	osDelay(100);
 	/* Ask other modules to save their data too */
 	broadcastToSave();
