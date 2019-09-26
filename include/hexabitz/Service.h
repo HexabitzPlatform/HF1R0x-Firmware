@@ -35,11 +35,13 @@ public:
 private:
 	int ping(uint8_t destID);
 	int assignIDToNeigh(hstd::uid_t id, hstd::port_t portNum);
-	int assignIDToAdjacent(uint8_t destID, uint8_t portNum, uint8_t newID);
-	int sayHiToNeighbour(uint8_t portOut, enum BOS::module_pn_e& part, hstd::Addr_t& neigh);
-	NeighboursInfo ExploreNeighbors(uint8_t ignore);
+	int assignIDToAdjacent(hstd::uid_t destID, hstd::port_t port, hstd::uid_t newID);
+
+	int sayHiToNeighbour(hstd::port_t port, enum BOS::module_pn_e& part, hstd::Addr_t& neigh);
+	int ExploreNeighbors(hstd::port_t ignore, NeighboursInfo& info);
 	int ExploreAdjacentOf(hstd::Addr_t addr, NeighboursInfo& info);
-	void changePortDir(int port, enum BOS::PortDir dir);
+
+	void changePortDir(hstd::port_t port, enum BOS::PortDir dir);
 	int syncTopologyTo(hstd::uid_t destID);
 	int synPortDir(hstd::uid_t dest);
 	int reverseAllButInPort(hstd::uid_t destID);

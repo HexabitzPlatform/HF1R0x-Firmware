@@ -154,6 +154,8 @@ int Service::ping(uint8_t destID)
 		return ret;
 	if ((ret = receive(msg)))
 		return ret;
+	if (msg.getCode() != CODE_ping_response)
+		return -EAGAIN;
 	return 0;
 }
 
@@ -169,29 +171,34 @@ int Service::assignIDToNeigh(hstd::uid_t id, hstd::port_t portNum)
 
 	if ((ret = send(msg)))
 		return ret;
-	// No response to this message
+	// No response to this message. So Add Delay
+	osDelay(10);
 	return 0;
 }
 
-int Service::assignIDToAdjacent(uint8_t destID, uint8_t portNum, uint8_t newID)
+int Service::assignIDToAdjacent(hstd::uid_t destID, hstd::port_t port, hstd::uid_t newID)
 {
 	int ret = 0;
 	hstd::Message msg = hstd::make_message(destID, CODE_module_id);
 	msg.getParams().append(uint8_t(1));	/* Change own ID */
-	msg.getParams().append(newID);
-	msg.getParams().append(portNum);
+	msg.getParams().append(uint8_t(newID));
+	msg.getParams().append(uint8_t(port));
 
-	return send(msg);	// No response to this message
+	if ((ret = send(msg)))
+		return ret;
+	// No Response to this Message
+	osDelay(10);
+	return ret;	
 }
 
-int Service::sayHiToNeighbour(uint8_t portOut, enum BOS::module_pn_e& part, hstd::Addr_t& neigh)
+int Service::sayHiToNeighbour(hstd::port_t port, enum BOS::module_pn_e& part, hstd::Addr_t& neigh)
 {
 	int ret = 0;
 	/* Port, Source = 0 (myID), Destination = 0 (adjacent neighbor), message code, number of parameters */
-	hstd::Message msg = hstd::make_message_meighbour(portOut, CODE_hi);
+	hstd::Message msg = hstd::make_message_meighbour(port, CODE_hi);
 
 	msg.getParams().append(static_cast<uint16_t>(getOwn()->getPartNum()));
-	msg.getParams().append(portOut);
+	msg.getParams().append(uint8_t(port));
 	
 	if ((ret = send(msg)))
 		return ret;
@@ -208,14 +215,13 @@ int Service::sayHiToNeighbour(uint8_t portOut, enum BOS::module_pn_e& part, hstd
 	return 0;
 }
 
-NeighboursInfo Service::ExploreNeighbors(uint8_t ignore)
+int Service::ExploreNeighbors(hstd::port_t ignore, NeighboursInfo& info)
 {
 	int ret = 0;
-	NeighboursInfo info;
 	const int NUM_PORTS = getOwn()->getNumOfPorts();
 
 	/* Send Hi messages to adjacent neighbors */
-	for (int port = 1; port <= NUM_PORTS; port++) {
+	for (hstd::port_t port = 1; port <= NUM_PORTS; port++) {
 		hstd::Addr_t neigh;
 		enum BOS::module_pn_e part;
 
@@ -227,7 +233,7 @@ NeighboursInfo Service::ExploreNeighbors(uint8_t ignore)
 		info.setAddrInfoFor(port, neigh);
 		info.setPartInfoFor(port, part);
 	}
-	return info;
+	return ret;
 }
 
 int Service::ExploreAdjacentOf(hstd::Addr_t addr, NeighboursInfo& info)
@@ -247,7 +253,7 @@ int Service::ExploreAdjacentOf(hstd::Addr_t addr, NeighboursInfo& info)
 	return ret;
 }
 
-void Service::changePortDir(int port, enum BOS::PortDir dir)
+void Service::changePortDir(hstd::port_t port, enum BOS::PortDir dir)
 {
 	// We don't have anything to do in hardware
 	// We can change the direction of the port
@@ -259,11 +265,17 @@ void Service::changePortDir(int port, enum BOS::PortDir dir)
 
 int Service::syncTopologyTo(hstd::uid_t destID)
 {
+	int ret = 0;
 	hstd::Message msg = hstd::make_message(hstd::Addr_t(destID), CODE_topology);
 	BinaryBuffer buffer = info_.toBinaryBuffer(num_modules_);
 	msg.getParams().append(buffer);
 
-	return send(msg);
+	if ((ret = send(msg)))
+		return ret;
+
+	// No response to this message. So Add Delay
+	osDelay(60);
+	return ret;
 }
 
 int Service::synPortDir(hstd::uid_t dest)
@@ -311,6 +323,7 @@ int Service::broadcastToSave(void)
 	hstd::Message msg = hstd::make_broadcast(CODE_exp_eeprom);
 	if ((ret = send(msg)))
 		return ret;
+	osDelay(100);
 	return 0;
 }
 
@@ -319,12 +332,14 @@ int Service::reverseAllButInPort(hstd::uid_t destID)
 	int ret = 0;
 	hstd::Message msg = hstd::make_message(hstd::Addr_t(destID), CODE_port_dir);
 
-	for (uint8_t p = 1 ; p <= BOS::MAX_NUM_OF_PORTS; p++)
+	for (hstd::port_t p = 1 ; p <= BOS::MAX_NUM_OF_PORTS; p++)
 		msg.getParams().append(uint8_t(BOS::PortDir::REVERSED));
 	msg.getParams().append(uint8_t(BOS::PortDir::NORMAL)); /* Make sure the inport is not BOS::PortDir::REVERSED */
 
 	if ((ret = send(msg)))
 		return ret;
+	// No Response for this Message. Add a Delay
+	osDelay(10);
 	return 0;
 }
 
@@ -344,7 +359,7 @@ int Service::Explore(void)
 	info_.setPartNumOf(*master);
 
 	hstd::uid_t myID = master->getUID();
-	const int NUM_OF_PORTS = getOwn()->getNumOfPorts();
+	const int NUM_OF_PORTS = master->getNumOfPorts();
 
 	hstd::uid_t lastID = 0;
 	hstd::uid_t currentID = myID;
@@ -353,7 +368,7 @@ int Service::Explore(void)
 	for (hstd::port_t port = 1; port <= NUM_OF_PORTS; port++) {
 		if (port != PcPort) changePortDir(port, BOS::PortDir::REVERSED);
 	}
-	neighInfo = ExploreNeighbors(PcPort);
+	ExploreNeighbors(PcPort, neighInfo);
 
 	
 	/* >>> Step 2 - Assign IDs to new modules & update the topology array */
@@ -379,10 +394,8 @@ int Service::Explore(void)
 	}
 	
 	/* Step 2c - Ask neighbors to update their topology array */
-	for (hstd::uid_t i = 2; i <= currentID; i++) {
+	for (hstd::uid_t i = 2; i <= currentID; i++)
 		syncTopologyTo(i);
-		osDelay(60);
-	}
 	
 	
 	/* >>> Step 3 - Ask each new module to explore and repeat */
@@ -424,18 +437,20 @@ int Service::Explore(void)
 			}
 
 			/* Step 3e - Ask all discovered modules to update their topology array */
-			syncTopologyTo(i);
-			osDelay(60);
+			for (hstd::uid_t j = 2; j <= currentID; j++)
+				syncTopologyTo(j);
 		}	
 	}
 
 	
 	/* >>> Step 4 - Make sure all connected modules have been discovered */
 	
-	neighInfo = ExploreNeighbors(PcPort);
+	ExploreNeighbors(PcPort, neighInfo);
 	/* Check for any unIDed neighbors */
-	if (neighInfo.hasAllIDedInfo())
+	if (neighInfo.hasAllIDedInfo()) {
 		result = -EINVAL;
+		goto END;
+	}
 
 	/* Ask other modules for any unIDed neighbors */
 	for (hstd::uid_t i = 2; i <= currentID; i++) {
