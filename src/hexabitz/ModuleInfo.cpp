@@ -262,34 +262,33 @@ void ModulesInfo::fromBinaryBuffer(BinaryBuffer buffer)
 
 bool ModulesInfo::toBinaryFile(std::string filename) const
 {
-	std::ofstream stream(filename.c_str(), std::ios::binary);
-	if (!stream.is_open())
-		return false;
+	BinaryBuffer buffer;
+	for (int i = 0; i < BOS::MAX_NUM_OF_MODULES; i++) {
+		buffer.append(uint16_t(array_[i][PART_NUM_NDX]));
+		buffer.append(uint16_t(array_[i][PORT_DIR_NDX]));
 
-	BinaryBuffer buffer = toBinaryBuffer();
-
-	for (int i = 0; i < buffer.getLength(); i++) {
-		char data = buffer[i];
-		stream.write(&data, 1);
+		for (int j = 0; j < BOS::MAX_NUM_OF_PORTS; j++)
+			buffer.append(uint16_t(array_[i][j + 2]));
 	}
 
-	return true;
+	return buffer.save(filename);
 }
 
 bool ModulesInfo::fromBinaryFile(std::string filename)
 {
-	std::ifstream stream(filename.c_str(), std::ios::binary);
-	if (!stream.is_open())
+	BinaryBuffer buffer;
+	if (!buffer.restore(filename))
 		return false;
 
-	char data;
-	BinaryBuffer buffer;
-	while (!stream.eof()) {
-		stream.read(&data, 1);
-		buffer.append(uint8_t(data));
+	memset(array_, 0, sizeof(array_));
+	for (int i = 0; i < BOS::MAX_NUM_OF_MODULES; i++) {
+		array_[i][PART_NUM_NDX] = buffer.popui16();
+		array_[i][PORT_DIR_NDX] = buffer.popui16();
+
+		for (int j = 0; j < BOS::MAX_NUM_OF_PORTS; j++)
+			array_[i][j + 2] = buffer.popui16();
 	}
 
-	fromBinaryBuffer(buffer);
 	return true;
 }
 

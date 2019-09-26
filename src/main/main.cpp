@@ -12,6 +12,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <memory>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,6 +57,8 @@ void testBinaryMessage(void)
 
 int main(int argc, char *argv[])
 {
+	const char port[] = "/dev/ttyUSB0";
+
 	std::cout << "Program Started (";
 	std::cout << "Major: " << VERSION_MAJOR << " ";
 	std::cout << "Minor: " << VERSION_MINOR << ")" << std::endl;
@@ -63,7 +66,11 @@ int main(int argc, char *argv[])
 	for (auto& s: BOS::getPartNumberList())
 		std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
 
-	Service::getInstance()->init("/dev/ttyUSB1");
+	std::cout << "Connecting to port " << port << std::endl;
+	Service::getInstance()->init(port);
+	std::shared_ptr<ProxyModule> master = std::make_shared<ProxyModule>(BOS::P01R0);
+	Service::getInstance()->setOwn(master);
+	Service::getInstance()->Explore();
 
 	testBinaryMessage();
 

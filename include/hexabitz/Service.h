@@ -46,6 +46,8 @@ private:
 	int synPortDir(hstd::uid_t dest);
 	int reverseAllButInPort(hstd::uid_t destID);
 	int broadcastToSave(void);
+
+public:
 	int Explore(void);
 
 private:
@@ -71,6 +73,7 @@ private:
 private:
 	static Service *self_;
 	static const int DEFAULT_BAUDRATE = 921600;
+	inline static const std::string DEF_CACHE_FILENAME = "cache.bin";
 
 private:
 	std::shared_ptr<ProxyModule> owner_;

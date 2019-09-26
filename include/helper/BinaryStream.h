@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#include <string>
 #include <vector>
 
 
@@ -37,6 +38,10 @@ public:
 	{
 		return data_[ndx];
 	}
+
+public:
+	bool save(std::string filename) const;
+	bool restore(std::string filename);
 
 public:
 	using IBinaryStream::append;
