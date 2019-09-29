@@ -59,6 +59,11 @@ int Service::init(const char *pathname)
 	return 0;
 }
 
+int Service::init(const std::string& pathname)
+{
+	return init(pathname.c_str());
+}
+
 void Service::setOwn(std::shared_ptr<ProxyModule> module)
 {
 	owner_ = module;

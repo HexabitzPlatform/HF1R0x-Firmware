@@ -28,6 +28,7 @@ public:
 
 public:
 	int init(const char *pathname);
+	int init(const std::string& pathname);
 
 	void setOwn(std::shared_ptr<ProxyModule> module);
 	std::shared_ptr<ProxyModule> getOwn(void);

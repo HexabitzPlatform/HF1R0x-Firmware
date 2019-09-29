@@ -37,12 +37,12 @@ void exampleTerminal(HardwareSerial& serial)
 	}
 }
 
-void testBinaryMessage(void)
+void testBinaryMessage(int times = -1)
 {
 	hstd::setCLIRespDefault(true);
 	hstd::setTraceDefault(true);
 
-	while (1) {
+	while (times) {
 		hstd::Message m = hstd::make_message(hstd::Addr_t(1,1), hstd::Addr_t(0,1), CODE_hi);
 
 		std::cout << "Sending: " << m << std::endl;
@@ -52,12 +52,13 @@ void testBinaryMessage(void)
 			std::cout << "Received: " << m << std::endl;
 
 		std::this_thread::sleep_for(std::chrono::seconds(2));
+		times--;
 	}
 }
 
 int main(int argc, char *argv[])
 {
-	const char port[] = "/dev/ttyUSB0";
+	std::string port = "/dev/ttyUSB1";
 
 	std::cout << "Program Started (";
 	std::cout << "Major: " << VERSION_MAJOR << " ";
@@ -66,11 +67,20 @@ int main(int argc, char *argv[])
 	for (auto& s: BOS::getPartNumberList())
 		std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
 
+	if (argc > 1)
+		port = std::string(argv[1]);
+
 	std::cout << "Connecting to port " << port << std::endl;
 	Service::getInstance()->init(port);
-	std::shared_ptr<ProxyModule> master = std::make_shared<ProxyModule>(BOS::P01R0);
+	std::shared_ptr<ProxyModule> master = std::make_shared<ProxyModule>(BOS::HF1R0);
 	Service::getInstance()->setOwn(master);
+
+	// Testing Communication Link
+	testBinaryMessage(1);
+
+	std::cout << "---------------- Start EXPLORE ----------------" << std::endl;
 	Service::getInstance()->Explore();
+	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
 
 	testBinaryMessage();
 
