@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 set(BOSCOMM_VERSION_MAJOR 1)
 set(BOSCOMM_VERSION_MINOR 0)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 option(USE_TEST_MAIN "Enable Testing Mode" OFF)
 
 project(hexabitz)
