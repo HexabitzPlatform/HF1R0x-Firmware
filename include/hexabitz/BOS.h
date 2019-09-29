@@ -62,7 +62,8 @@
 		OPERATION(		H1DR5		,		6		) 	\
 		OPERATION(		H0BR4		,		6		) 	\
 		OPERATION(		H18R0		,		6		) 	\
-		OPERATION(		H26R0		,		6		)
+		OPERATION(		H26R0		,		6		)	\
+		OPERATION(		HF1R0		,		1		)
 
 
 
