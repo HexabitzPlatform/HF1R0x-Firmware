@@ -69,7 +69,7 @@
 
 namespace BOS {
 
-static constexpr int MAX_NUM_OF_PORTS = 8;
+static constexpr int MAX_NUM_OF_PORTS = 10;
 static constexpr int MAX_NUM_OF_MODULES = 25;
 
 enum module_pn_e {
