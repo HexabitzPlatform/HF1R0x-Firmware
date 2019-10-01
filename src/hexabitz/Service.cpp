@@ -406,7 +406,8 @@ int Service::Explore(void)
 	for (hstd::port_t port = 1; port <= NUM_OF_PORTS; port++) {
 		if (port != PcPort) changePortDir(port, BOS::PortDir::REVERSED);
 	}
-	ExploreNeighbors(PcPort, neighInfo);
+	if ((result = ExploreNeighbors(PcPort, neighInfo)))
+		goto END;
 
 	
 	/* >>> Step 2 - Assign IDs to new modules & update the topology array */

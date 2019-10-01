@@ -73,13 +73,16 @@ int main(int argc, char *argv[])
 	std::cout << "Connecting to port " << port << std::endl;
 	Service::getInstance()->init(port);
 	std::shared_ptr<ProxyModule> master = std::make_shared<ProxyModule>(BOS::HF1R0);
+	master->setUID(1);
 	Service::getInstance()->setOwn(master);
 
 	// Testing Communication Link
 	testBinaryMessage(1);
 
 	std::cout << "---------------- Start EXPLORE ----------------" << std::endl;
-	Service::getInstance()->Explore();
+	// Service::getInstance()->ping(2);
+	int status = Service::getInstance()->Explore();
+	std::cout << "Status: " << strerror(-status) << std::endl;
 	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
 
 	testBinaryMessage();
