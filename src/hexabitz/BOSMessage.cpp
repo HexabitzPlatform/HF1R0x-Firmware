@@ -60,7 +60,7 @@ std::string hstd::Message::to_string(void) const
 		stream << " (" << name << ", " << (value ? "true" : "false") << ")";
 	stream << " ) | ";
 
-	stream << "Parameters ( ";
+	stream << "Parameters [ " << std::dec << param_.getLength() << " ] ( ";
 	for (int i = 0; (i < param_.getLength()); i++)
 		stream << std::hex << "0x" << int(param_[i]) << " ";
 
