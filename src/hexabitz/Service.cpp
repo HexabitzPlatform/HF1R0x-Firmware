@@ -118,10 +118,19 @@ int Service::receive(hstd::Message& msg, long timeout)
 {
 	int result = 0;
 	std::vector<hstd::Frame> list;
+
+	using namespace std::chrono;
+	auto currentTime_ms = []() {
+		return duration_cast<milliseconds>( system_clock::now().time_since_epoch() ).count();
+	};
+
 	while (1) {
 		hstd::Frame f;
+		long start = currentTime_ms();
 		if ((result = receive(f, timeout)))
 			return result;
+		if (timeout >= 0)
+			timeout = hstd::constrainLower(timeout - (currentTime_ms() - start), 0L);
 
 		std::cout << "Received: " << f << std::endl;
 		list.push_back(f);
@@ -136,7 +145,16 @@ int Service::receive(hstd::Frame& f, long timeout)
 {
 	BinaryBuffer buffer;
 
+	using namespace std::chrono;
+	auto currentTime_ms = []() {
+		return duration_cast<milliseconds>( system_clock::now().time_since_epoch() ).count();
+	};
+
+	long start = currentTime_ms();
+
 	while (1) {
+		if ((timeout >= 0) and ((currentTime_ms() - start) >= timeout))
+			return -ETIMEDOUT;
 		if (!serial_.available())
 			continue;
 
