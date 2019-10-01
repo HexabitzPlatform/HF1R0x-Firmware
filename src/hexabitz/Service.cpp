@@ -116,11 +116,12 @@ int Service::send(const hstd::Frame& f)
 
 int Service::receive(hstd::Message& msg, long timeout)
 {
+	int result = 0;
 	std::vector<hstd::Frame> list;
 	while (1) {
 		hstd::Frame f;
-		if (!receive(f, timeout))
-			return false;
+		if ((result = receive(f, timeout)))
+			return result;
 
 		std::cout << "Received: " << f << std::endl;
 		list.push_back(f);
