@@ -34,7 +34,6 @@ public:
 	std::shared_ptr<ProxyModule> getOwn(void);
 
 private:
-	int ping(uint8_t destID);
 	int assignIDToNeigh(hstd::uid_t id, hstd::port_t portNum);
 	int assignIDToAdjacent(hstd::uid_t destID, hstd::port_t port, hstd::uid_t newID);
 
@@ -49,6 +48,8 @@ private:
 	int broadcastToSave(void);
 
 public:
+	int ping(hstd::uid_t destID);
+	int ping(hstd::uid_t destID, hstd::uid_t srcID);
 	int Explore(void);
 
 private:

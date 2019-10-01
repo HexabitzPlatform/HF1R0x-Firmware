@@ -168,10 +168,24 @@ hstd::port_t Service::FindSrcPortFor(hstd::uid_t destID)
 }
 
 
-int Service::ping(uint8_t destID)
+int Service::ping(hstd::uid_t destID)
 {
 	int ret = 0;
-	hstd::Message msg = hstd::make_message(destID, CODE_ping);
+	hstd::Message msg = hstd::make_ping_message(destID);
+
+	if ((ret = send(msg)))
+		return ret;
+	if ((ret = receive(msg)))
+		return ret;
+	if (msg.getCode() != CODE_ping_response)
+		return -EAGAIN;
+	return 0;
+}
+
+int Service::ping(hstd::uid_t destID, hstd::uid_t srcID)
+{
+	int ret = 0;
+	hstd::Message msg = hstd::make_ping_message(destID, srcID);
 
 	if ((ret = send(msg)))
 		return ret;

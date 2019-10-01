@@ -45,6 +45,21 @@ hstd::Message hstd::make_message(Addr_t dest, Addr_t src, uint16_t code)
 	return message;
 }
 
+hstd::Message hstd::make_ping_message(Addr_t dest, Addr_t src)
+{
+	return make_message(dest, src, CODE_ping);
+}
+
+hstd::Message hstd::make_ping_message(hstd::uid_t destID, hstd::uid_t srcID)
+{
+	return make_message(destID, srcID, CODE_ping);
+}
+
+hstd::Message hstd::make_ping_message(hstd::uid_t destID)
+{
+	return make_message(destID, CODE_ping);
+}
+
 hstd::Message hstd::make_message(hstd::uid_t destID, uint16_t code)
 {
 	return hstd::make_message(hstd::Addr_t(destID), code);
