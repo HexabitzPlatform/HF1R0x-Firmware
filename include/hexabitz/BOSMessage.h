@@ -87,10 +87,12 @@ public:
 
 struct Message {
 public:
-	Addr_t getSource(void) const 		{ return src_; }
+	const Addr_t& getSource(void) const { return src_; }
+	Addr_t& getSource(void)		 		{ return src_; }
 	void setSource(Addr_t newSrc) 		{ src_ = newSrc; }
 
-	Addr_t getDest(void) const 			{ return dest_; }
+	const Addr_t& getDest(void) const 	{ return dest_; }
+	Addr_t& getDest(void)	 			{ return dest_; }
 	void setDest(Addr_t newDest) 		{ dest_ = newDest; }
 
 	uint16_t getCode(void) const 		{ return code_; }

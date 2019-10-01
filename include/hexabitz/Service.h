@@ -57,7 +57,7 @@ private:
 	hstd::port_t FindSrcPortFor(hstd::uid_t destID);
 
 public:
-	int send(const hstd::Message& m);
+	int send(hstd::Message m);
 	int receive(hstd::Message& m, long timeout = -1);
 
 private:

@@ -74,11 +74,24 @@ std::shared_ptr<ProxyModule> Service::getOwn(void)
 	return owner_;
 }
 
-int Service::send(const hstd::Message& msg)
+int Service::send(hstd::Message msg)
 {
 	int ret = 0;
-	std::vector<hstd::Frame> list = hstd::buildFramesFromMessage(msg);
+	if (owner_ == nullptr)
+		return -EINVAL;
+	if (!msg.getSource().hasValidUID())
+		msg.getSource().setUID(owner_->getUID());
+	if (!msg.getSource().hasValidPort())
+		msg.getSource().setPort(hstd::Addr_t::MIN_PORT);
+	if (!msg.getDest().hasValidPort())
+		msg.getDest().setPort(hstd::Addr_t::MIN_PORT);
 
+	std::cout << "Sending: " << msg << std::endl;
+	std::vector<hstd::Frame> list = hstd::buildFramesFromMessage(msg);
+	if (list.empty()) {
+		std::cout << "Invalid Message/Frame" << std::endl;
+		return -EAGAIN;
+	}
 	for (int i = 0; i < list.size(); i++) {
 		hstd::Frame& f = list[i];
 		std::cout << "Sending (" << i << "th): " << f << std::endl;
