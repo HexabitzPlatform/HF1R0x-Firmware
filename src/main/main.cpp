@@ -45,7 +45,7 @@ void testBinaryMessage(int times = -1)
 	while (times) {
 		hstd::Message m = hstd::make_message(hstd::Addr_t(1,1), hstd::Addr_t(0,1), CODE_hi);
 
-		std::cout << "Sending: " << m << std::endl;
+		// std::cout << "Sending: " << m << std::endl;
 		Service::getInstance()->send(m);
 
 		if (!Service::getInstance()->receive(m))
