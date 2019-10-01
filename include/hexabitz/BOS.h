@@ -63,7 +63,7 @@
 		OPERATION(		H0BR4		,		6		) 	\
 		OPERATION(		H18R0		,		6		) 	\
 		OPERATION(		H26R0		,		6		)	\
-		OPERATION(		HF1R0		,		1		)
+		OPERATION(		HF1R0		,		2		)
 
 
 
