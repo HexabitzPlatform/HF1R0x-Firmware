@@ -63,6 +63,8 @@ public:
 	BinaryBuffer toBinaryBuffer(int num = -1) const;
 	void fromBinaryBuffer(BinaryBuffer buffer);
 
+	std::string toString(int num = -1) const;
+
 	bool toBinaryFile(std::string filename) const;
 	bool fromBinaryFile(std::string filename);
 

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <string.h>
 
 
@@ -292,6 +293,30 @@ bool ModulesInfo::fromBinaryFile(std::string filename)
 	return true;
 }
 
+std::string ModulesInfo::toString(int num) const
+{
+	std::stringstream stream;
+	if (num < 0)
+		num = BOS::MAX_NUM_OF_MODULES;
+
+	for (int i = 0; i < num; i++) {
+		stream << "Module ID: "  << (i + 1) << " [ " << BOS::toString(static_cast<enum BOS::module_pn_e>(array_[i][PART_NUM_NDX])) << " ] ";
+		stream << " Port Direction: " << hstd::make_bitset(array_[i][PORT_DIR_NDX]);
+		stream << " Connected To";
+
+		for (int j = 0; j < BOS::MAX_NUM_OF_PORTS; j++) {
+			hstd::uid_t uid = hstd::uid_t(array_[i][j + 2] >> 3);
+			hstd::port_t port = hstd::port_t(array_[i][j + 2] & 0b111);
+			if (port)
+				stream << " ( " << uid << " , " << port << " ) "; 
+		}
+		stream << std::endl;
+	}
+
+
+	return stream.str();
+}
+
 void ModulesInfo::reset(void)
 {
 	memset(array_, 0, sizeof(array_));
@@ -338,7 +363,7 @@ void ModulesInfo::addConnectionFromTo(hstd::Addr_t fromAddr, hstd::Addr_t toAddr
 	if (!hstd::Addr_t::isValidPort(ui16ToPort))
 		return;
 
-	array_[ui16FromUID - 1][ui16FromPort + 1] = (ui16ToUID << 3 )	 | (ui16ToPort & 0b111);	/* Neighbor ID | Neighbor port */
+	array_[ui16FromUID - 1][ui16FromPort + 1] = (ui16ToUID << 3 ) | (ui16ToPort & 0b111);	/* Neighbor ID | Neighbor port */
 }
 
 void ModulesInfo::clearConnectionInfoAt(hstd::Addr_t addr)
