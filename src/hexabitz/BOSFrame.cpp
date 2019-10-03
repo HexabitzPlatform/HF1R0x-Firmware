@@ -113,6 +113,8 @@ bool hstd::buildMessageFromFrames(std::vector<hstd::Frame>& vec, hstd::Message& 
 	bool isLong = false;
 	bool lastFrameLong = false;
 
+	message.invalidate();
+
 	for (i = 0; i < vec.size(); i++) {
 		Frame f = vec[i];
 

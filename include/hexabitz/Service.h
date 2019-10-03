@@ -79,7 +79,7 @@ private:
 
 private:
 	std::shared_ptr<ProxyModule> owner_;
-	uint8_t num_modules_;
+	int num_modules_;
 	ModulesInfo info_;
 };
 
