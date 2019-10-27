@@ -29,6 +29,7 @@
 
 #define TO_STR(token)					#token
 #define TO_ENUM(token)					token,
+#define TO_ENUM_VALUE(token, v)			token = v,
 
 
 #define radians(deg)					((deg) * DEG_TO_RAD)

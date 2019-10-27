@@ -43,7 +43,7 @@ void testBinaryMessage(int times = -1)
 	hstd::setTraceDefault(true);
 
 	while (times) {
-		hstd::Message m = hstd::make_message(hstd::Addr_t(1,1), hstd::Addr_t(0,1), CODE_hi);
+		hstd::Message m = hstd::make_message(hstd::Addr_t(0,1), hstd::Addr_t(0,1), CODE_hi);
 
 		// std::cout << "Sending: " << m << std::endl;
 		Service::getInstance()->send(m);
@@ -58,14 +58,14 @@ void testBinaryMessage(int times = -1)
 
 int main(int argc, char *argv[])
 {
-	std::string port = "/dev/ttyUSB1";
+	std::string port = "/dev/ttyUSB0";
 
 	std::cout << "Program Started (";
 	std::cout << "Major: " << VERSION_MAJOR << " ";
 	std::cout << "Minor: " << VERSION_MINOR << ")" << std::endl;
 
-	for (auto& s: BOS::getPartNumberList())
-		std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
+	// for (auto& s: BOS::getPartNumberList())
+	// 	std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
 
 	if (argc > 1)
 		port = std::string(argv[1]);
