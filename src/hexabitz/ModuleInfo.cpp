@@ -26,8 +26,12 @@ BinaryBuffer NeighboursInfo::toBinaryBuffer(void) const
 	BinaryBuffer buffer;
 	// Array are stored in Row-Major Order
 	for (int i = 0; i < BOS::MAX_NUM_OF_PORTS; i++) {
-		buffer.append(uint16_t(array_[i][0]));	// ADDR_NDX
-		buffer.append(uint16_t(array_[i][1]));  // PART_NDX
+		if (!array_[i][ADDR_NDX])
+			continue;
+
+		buffer.append(uint8_t(i + 1));
+		buffer.append(uint16_t(array_[i][ADDR_NDX]));	// 0
+		buffer.append(uint16_t(array_[i][PART_NDX]));   // 1
 	}
 	return buffer;
 }
@@ -35,10 +39,10 @@ BinaryBuffer NeighboursInfo::toBinaryBuffer(void) const
 void NeighboursInfo::fromBinaryBuffer(BinaryBuffer buffer)
 {
 	memset(array_, 0, sizeof(array_));
-	
-	for (int i = 0; i < BOS::MAX_NUM_OF_PORTS; i++) {
-		array_[i][0] = buffer.popui16();
-		array_[i][1] = buffer.popui16();
+	while (buffer.getLength() >= 5) {
+		uint8_t p = buffer.popui8();
+		array_[p - 1][ADDR_NDX] = buffer.popui16();
+		array_[p - 1][PART_NDX] = buffer.popui16();
 	}
 }
 
