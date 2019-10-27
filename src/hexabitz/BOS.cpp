@@ -29,6 +29,8 @@ std::string BOS::toString(enum module_pn_e pn)
 {
 	if (pn == BOS::INVALID)
 		return std::string();
+	if (pn >= enumStrMap.size())
+		return std::string();
 	return std::string(enumStrMap[static_cast<int>(pn)]);
 }
 
