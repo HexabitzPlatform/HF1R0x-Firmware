@@ -41,6 +41,8 @@
 #define lowWord(ui32)					((uint16_t)((ui32) & 0xFFFFUL))
 #define highWord(ui32)					((uint16_t)(((ui32) >> 16)) & 0xFFFFUL)
 
+#define swapBytes(ui16)					((lowByte(ui16) << 8) | (highByte(ui16)))
+
 #define bitRead(value,bit) 				(((value) >> (bit)) & 0x01)
 #define bitSet(value,bit) 				((value) |= (1UL << (bit)))
 #define bitClear(value,bit) 			((value) &= ~(1UL << (bit)))
