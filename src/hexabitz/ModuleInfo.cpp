@@ -312,7 +312,7 @@ std::string ModulesInfo::toString(int num) const
 			hstd::uid_t uid = hstd::uid_t(array_[i][j + 2] >> 3);
 			hstd::port_t port = hstd::port_t(array_[i][j + 2] & 0b111);
 			if (port)
-				stream << " ( " << uid << " , " << port << " ) "; 
+				stream << " [ Port: " << (j + 1) << " ] ( " << uid << " , " << port << " ), "; 
 		}
 		stream << std::endl;
 	}

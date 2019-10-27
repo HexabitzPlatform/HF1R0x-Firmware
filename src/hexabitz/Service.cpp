@@ -94,7 +94,7 @@ int Service::send(hstd::Message msg)
 	}
 	for (int i = 0; i < list.size(); i++) {
 		hstd::Frame& f = list[i];
-		// std::cout << "Sending (" << i << "th): " << f << std::endl;
+		std::cout << "Sending (" << i << "th): " << f << std::endl;
 		if ((ret = send(f))) return ret;
 	}
 
@@ -137,8 +137,10 @@ int Service::receive(hstd::Message& msg, long timeout)
 		std::cout << "Received: " << f << std::endl;
 		list.push_back(f);
 
-		if (hstd::buildMessageFromFrames(list, msg))
+		if (hstd::buildMessageFromFrames(list, msg)) {
+			std::cout << "Received Message: " << msg << std::endl;
 			return 0;
+		}
 	}
 	return -EAGAIN;
 }
