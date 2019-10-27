@@ -490,7 +490,9 @@ int Service::Explore(void)
 			for (hstd::port_t p = 1; p <= BOS::MAX_NUM_OF_PORTS; p++) {
 				if (!adjInfo.hasInfo(p))
 					continue;
-
+				std::cout << "Has info for module: " << i << " port: " << p << std::endl;
+				if (info_.getUIDConnAt(i, p) == myID)
+					continue;
 				/* Step 3c - Assign IDs to new modules */
 				std::cout << "<<<< Step 3c: Assign IDs to new modules >>>>" << std::endl;
 				assignIDToAdjacent(i, p, ++currentID);
