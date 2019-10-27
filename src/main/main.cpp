@@ -70,6 +70,20 @@ int main(int argc, char *argv[])
 	if (argc > 1)
 		port = std::string(argv[1]);
 
+	// BinaryBuffer buffer;
+	// buffer.append(uint16_t(700));
+	// buffer.append(uint8_t(5));
+	// buffer.append(uint16_t(20));
+	// buffer.append(uint32_t(50));
+
+	// std::cout << "8: " << unsigned(buffer.popui8()) << std::endl;
+	// std::cout << "8: " << unsigned(buffer.popui8()) << std::endl;
+	// std::cout << "8: " << unsigned(buffer.popui8()) << std::endl;
+	// std::cout << "16: " << unsigned(buffer.popui16()) << std::endl;
+	// std::cout << "32: " << unsigned(buffer.popui32()) << std::endl;
+
+	// return 0;
+
 	std::cout << "Connecting to port " << port << std::endl;
 	Service::getInstance()->init(port);
 	std::shared_ptr<ProxyModule> master = std::make_shared<ProxyModule>(BOS::HF1R0);
@@ -80,7 +94,8 @@ int main(int argc, char *argv[])
 	testBinaryMessage(1);
 
 	std::cout << "---------------- Start EXPLORE ----------------" << std::endl;
-	// Service::getInstance()->ping(2);
+	// Service::getInstance()->ping(1, 0);
+	// Service::getInstance()->osDelay(5000);
 	int status = Service::getInstance()->Explore();
 	std::cout << "Status: " << strerror(-status) << std::endl;
 	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;

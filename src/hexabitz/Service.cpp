@@ -94,7 +94,7 @@ int Service::send(hstd::Message msg)
 	}
 	for (int i = 0; i < list.size(); i++) {
 		hstd::Frame& f = list[i];
-		std::cout << "Sending (" << i << "th): " << f << std::endl;
+		// std::cout << "Sending (" << i << "th): " << f << std::endl;
 		if ((ret = send(f))) return ret;
 	}
 
@@ -107,8 +107,10 @@ int Service::send(const hstd::Frame& f)
 		return -EINVAL;
 
 	BinaryBuffer buffer = f.toBuffer();
-	for (int i = 0; i < buffer.getLength(); i++) 
+	for (int i = 0; i < buffer.getLength(); i++) {
 		serial_.write(buffer[i]);
+		osDelay(1);
+	}
 
 	return 0;
 }
@@ -264,7 +266,8 @@ int Service::sayHiToNeighbour(hstd::port_t port, enum BOS::module_pn_e& part, hs
 		return -EAGAIN;
 
 	/* Neighbor PN */
-	part = static_cast<enum BOS::module_pn_e>(msg.getParams().popui16());
+	uint16_t partNum = msg.getParams().popui16();
+	part = static_cast<enum BOS::module_pn_e>(partNum);
 	/* Neighbor ID + Neighbor own port */
 	neigh.setUID(msg.getSource().getUID());
 	neigh.setPort(msg.getParams().popui8());
@@ -286,6 +289,7 @@ int Service::ExploreNeighbors(hstd::port_t ignore, NeighboursInfo& info)
 		if ((ret = sayHiToNeighbour(port, part, neigh)))
 			break;
 
+		// std::cout << "Hi Neigh: " << neigh.getUID() << " " << neigh.getPort() << std::endl;
 		info.setAddrInfoFor(port, neigh);
 		info.setPartInfoFor(port, part);
 	}
@@ -326,11 +330,13 @@ int Service::syncTopologyTo(hstd::uid_t destID)
 	BinaryBuffer buffer = info_.toBinaryBuffer(num_modules_);
 	msg.getParams().append(buffer);
 
+	std::cout << "<<<< Syncing Modules Information to all nodes >>>>" << std::endl;
+	std::cout  << std::endl << info_.toString(num_modules_) << std::endl;
 	if ((ret = send(msg)))
 		return ret;
 
 	// No response to this message. So Add Delay
-	osDelay(60);
+	osDelay(600);
 	return ret;
 }
 
@@ -421,22 +427,21 @@ int Service::Explore(void)
 	hstd::uid_t currentID = myID;
 	
 	/* >>> Step 1 - Reverse master ports and explore adjacent neighbors */
-	std::cout << "Reverse master ports and explore adjacent neighbors" << std::endl;
+	std::cout << "<<<< Step 1: Reverse master ports and explore neighbors >>>>" << std::endl;
 	for (hstd::port_t port = 1; port <= NUM_OF_PORTS; port++) {
 		if (port != PcPort) changePortDir(port, BOS::PortDir::REVERSED);
 	}
 	if ((result = ExploreNeighbors(PcPort, neighInfo)))
 		goto END;
 
-	
 	/* >>> Step 2 - Assign IDs to new modules & update the topology array */
-	std::cout << "Assign IDs to new modules & update the topology array" << std::endl;
+	std::cout << "<<<< Step 2: Assign IDs to new modules & update the topology array >>>>" << std::endl;
 	for (hstd::port_t port = 1; port <= NUM_OF_PORTS; port++) {
 		if (!neighInfo.hasInfo(port))
 			continue;
 
 		/* Step 2a - Assign IDs to new modules */
-		std::cout << "Assign IDs to new modules" << std::endl;
+		std::cout << "<<<< Step 2a: Assign IDs to new modules >>>>" << std::endl;
 		if (assignIDToNeigh(++currentID, port))
 			continue;
 
@@ -447,21 +452,23 @@ int Service::Explore(void)
 		enum BOS::module_pn_e neighPart = neighInfo.getPartEnumAt(port);
 
 		/* Step 2b - Update master topology array */	
-		std::cout << "Update master topology array" << std::endl;
+		std::cout << "<<<< Step 2b: Update master topology array >>>>" << std::endl;
 		info_.addConnection(ownAddr, neighAddr);
 		info_.setPartNumOf(neighAddr, neighPart);
 
 		num_modules_ = currentID;
+		std::cout << "<<<< Num of modules discovered: " << num_modules_ << " >>>>" << std::endl;
 	}
 	
 	/* Step 2c - Ask neighbors to update their topology array */
-	std::cout << "Ask neighbors to update their topology array" << std::endl;
+	std::cout << "<<<< Step 3: Ask neighbors to update their topology array >>>>" << std::endl;
 	for (hstd::uid_t i = 2; i <= currentID; i++)
 		syncTopologyTo(i);
-	
+
+	osDelay(500);
 	
 	/* >>> Step 3 - Ask each new module to explore and repeat */
-	std::cout << "Ask each new module to explore and repeat" << std::endl;
+	std::cout << "<<<< Step 3: Ask each new module to explore and repeat >>>>" << std::endl;
 	while (lastID != currentID) {
 		/* Update lastID */
 		lastID = currentID;
@@ -469,21 +476,22 @@ int Service::Explore(void)
 		/* Scan all discovered modules */
 		for (hstd::uid_t i = 2 ; i <= currentID; i++) {
 			/* Step 3a - Ask the module to reverse ports */
-			std::cout << "Ask the module to reverse ports" << std::endl;
+			std::cout << "<<<< Step 3a: Ask the module to reverse ports >>>>" << std::endl;
 			reverseAllButInPort(i);
-			osDelay(10);
+			osDelay(100);
 			
 			/* Step 3b - Ask the module to explore adjacent neighbors */
-			std::cout << "Ask the module to explore adjacent neighbors" << std::endl;
+			std::cout << "<<<< Step 3b: Ask the module to explore adjacent neighbors >>>>" << std::endl;
 			NeighboursInfo adjInfo;
-			ExploreAdjacentOf(hstd::Addr_t(i), adjInfo);	
+			if ((result = ExploreAdjacentOf(hstd::Addr_t(i), adjInfo)))
+				goto END;
 		
 			for (hstd::port_t p = 1; p <= BOS::MAX_NUM_OF_PORTS; p++) {
 				if (!adjInfo.hasInfo(p))
 					continue;
 
 				/* Step 3c - Assign IDs to new modules */
-				std::cout << "Assign IDs to new modules" << std::endl;
+				std::cout << "<<<< Step 3c: Assign IDs to new modules >>>>" << std::endl;
 				assignIDToAdjacent(i, p, ++currentID);
 				adjInfo.setUIDInfoFor(p, currentID);
 
@@ -492,7 +500,7 @@ int Service::Explore(void)
 				enum BOS::module_pn_e neighPart = adjInfo.getPartEnumAt(p);
 
 				/* Step 3d - Update master topology array */
-				std::cout << "Update master topology array" << std::endl;
+				std::cout << "<<<< Step 3d: Update master topology array >>>>" << std::endl;
 				if (newAddr.getUID() == hstd::Addr_t::MASTER_UID)
 					continue;
 				info_.addConnection(ithAddr, newAddr);
@@ -503,7 +511,7 @@ int Service::Explore(void)
 			}
 
 			/* Step 3e - Ask all discovered modules to update their topology array */
-			std::cout << "Ask all discovered modules to update their topology array" << std::endl;
+			std::cout << "<<<< Step 3e: Ask all discovered modules to update their topology array >>>>" << std::endl;
 			for (hstd::uid_t j = 2; j <= currentID; j++)
 				syncTopologyTo(j);
 		}	
@@ -511,7 +519,7 @@ int Service::Explore(void)
 
 	
 	/* >>> Step 4 - Make sure all connected modules have been discovered */
-	std::cout << "Make sure all connected modules have been discovered" << std::endl;
+	std::cout << "<<< Step 4: Make sure all connected modules have been discovered >>> " << std::endl;
 	ExploreNeighbors(PcPort, neighInfo);
 	/* Check for any unIDed neighbors */
 	if (neighInfo.hasAllIDedInfo()) {
