@@ -266,8 +266,9 @@ int Service::sayHiToNeighbour(hstd::port_t port, enum BOS::module_pn_e& part, hs
 		return -EAGAIN;
 
 	/* Neighbor PN */
-	uint16_t partNum = msg.getParams().popui16();
-	part = static_cast<enum BOS::module_pn_e>(partNum);
+	uint8_t partNumMSB = msg.getParams().popui8();
+	uint8_t partNumLSB = msg.getParams().popui8();
+	part = static_cast<enum BOS::module_pn_e>((uint16_t(partNumMSB) << 8) | partNumLSB);
 	/* Neighbor ID + Neighbor own port */
 	neigh.setUID(msg.getSource().getUID());
 	neigh.setPort(msg.getParams().popui8());

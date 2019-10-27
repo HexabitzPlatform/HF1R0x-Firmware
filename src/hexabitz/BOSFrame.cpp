@@ -47,7 +47,11 @@ bool hstd::Frame::fromBuffer(BinaryBuffer& buffer)
 
 	destID = buffer.popui8();
 	srcID = buffer.popui8();
-	code = buffer.popui16();
+
+	uint8_t codeMSB = buffer.popui8();
+	uint8_t codeLSB = buffer.popui8();
+	code = (uint16_t(codeMSB) << 8) | codeLSB;
+
 	param.append(buffer, len - getMinLength());
 	crc8 = buffer.popui8();
 
@@ -62,7 +66,8 @@ BinaryBuffer hstd::Frame::toBuffer(void) const
 	b.append(uint8_t(getTotalLength()));
 	b.append(destID);
 	b.append(srcID);
-	b.append(code);
+	b.append(uint8_t(highByte(code)));
+	b.append(uint8_t(lowByte(code)));
 	b.append(t);
 	b.append(crc8);
 

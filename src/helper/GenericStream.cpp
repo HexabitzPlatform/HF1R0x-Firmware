@@ -7,19 +7,19 @@
 
 IBinaryStream& IBinaryStream::append(uint16_t ui16)
 {
-	ui16 = htobe16(ui16);
+	ui16 = htole16(ui16);
 	return append(reinterpret_cast<uint8_t *>(&ui16), sizeof(ui16));
 }
 
 IBinaryStream& IBinaryStream::append(uint32_t ui32)
 {
-	ui32 = htobe32(ui32);
+	ui32 = htole32(ui32);
 	return append(reinterpret_cast<uint8_t *>(&ui32), sizeof(ui32));
 }
 
 IBinaryStream& IBinaryStream::append(float f)
 {
-	uint32_t value = htobe32(hstd::pack754(f, 32, 8));
+	uint32_t value = htole32(hstd::pack754(f, 32, 8));
 	return append(value);
 }
 
@@ -53,7 +53,7 @@ uint16_t OBinaryStream::popui16(void)
 	int sizeOfValue = sizeof(value);
 	while (sizeOfValue--)
 		*ptr++ = popui8();
-	return be16toh(value);
+	return le16toh(value);
 }
 
 uint32_t OBinaryStream::popui32(void)
@@ -63,7 +63,7 @@ uint32_t OBinaryStream::popui32(void)
 	int sizeOfValue = sizeof(value);
 	while (sizeOfValue--)
 		*ptr++ = popui8();
-	return be32toh(value);
+	return le32toh(value);
 }
 
 float OBinaryStream::popfloat(void)
