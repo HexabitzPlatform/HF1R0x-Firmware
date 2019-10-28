@@ -322,6 +322,7 @@ void Service::changePortDir(hstd::port_t port, enum BOS::PortDir dir)
 {
 	// We don't have anything to do in hardware
 	// We can change the direction of the port
+	info_.setPortDir(getOwn()->getUID(), port, dir);
 	if (dir == BOS::PortDir::REVERSED)
 		return;
 	return;
@@ -550,7 +551,7 @@ int Service::Explore(void)
 
 	/* Step 5a - Virtually reset the state of master ports to BOS::PortDir::NORMAL */
 	for (hstd::port_t p = 1; p <= NUM_OF_PORTS; p++)
-		info_.setPortDirNormal(master->getUID(), p);
+		info_.setPortDirReversed(master->getUID(), p);
 	
 	/* Step 5b - Update other modules ports starting from the last one */
 	for (hstd::uid_t i = currentID; i >= 2; i--) {
