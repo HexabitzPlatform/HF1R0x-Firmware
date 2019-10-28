@@ -256,8 +256,10 @@ int Service::sayHiToNeighbour(hstd::port_t port, enum BOS::module_pn_e& part, hs
 	int ret = 0;
 	/* Port, Source = 0 (myID), Destination = 0 (adjacent neighbor), message code, number of parameters */
 	hstd::Message msg = hstd::make_message_meighbour(port, CODE_hi);
+	enum BOS::module_pn_e ownPart = getOwn()->getPartNum();
 
-	msg.getParams().append(static_cast<uint16_t>(getOwn()->getPartNum()));
+	msg.getParams().append(uint8_t(highByte(ownPart)));
+	msg.getParams().append(uint8_t(lowByte(ownPart)));
 	msg.getParams().append(uint8_t(port));
 	
 	if ((ret = send(msg)))
