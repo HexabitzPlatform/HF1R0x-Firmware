@@ -368,15 +368,17 @@ int Service::synPortDir(hstd::uid_t dest)
 	
 	/* Step 5c - Check if an inport is BOS::PortDir::REVERSED */
 	/* Find out the inport to this module from master */
-	std::vector<hstd::Addr_t> route = info_.FindRoute(hstd::Addr_t(1), hstd::Addr_t(dest));
-	hstd::uid_t justNextMod = route[1].getUID();				/* previous module = route[Number of hops - 1] */
-	hstd::port_t portOut = info_.FindSourcePort(dest, justNextMod);
+	std::vector<hstd::Addr_t> route = info_.FindRoute(hstd::Addr_t(dest), hstd::Addr_t(1));
+	if (!route.size())
+		return -EINVAL;
+	hstd::uid_t justNextMod = route[route.size() - 1].getUID();
+	hstd::port_t portOut = route[route.size() - 1].getPort();
 
 	/* Is the inport BOS::PortDir::REVERSED? */
-	if ((justNextMod == dest) or (msg.getParams()[portOut - 1] == uint8_t(BOS::PortDir::REVERSED)) )
+	if (msg.getParams()[portOut - 1] == uint8_t(BOS::PortDir::REVERSED))
 		msg.getParams().append(uint8_t(BOS::PortDir::REVERSED));		/* Make sure the inport is BOS::PortDir::REVERSED */
 	else
-		msg.getParams().append(uint8_t(0));
+		msg.getParams().append(uint8_t(BOS::PortDir::NORMAL));
 
 	if ((ret = send(msg)))
 		return ret;
