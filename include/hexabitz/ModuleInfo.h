@@ -17,6 +17,7 @@ class NeighboursInfo {
 public:
 	BinaryBuffer toBinaryBuffer(void) const;
 	void fromBinaryBuffer(BinaryBuffer buffer);
+	std::string toString(void) const;
 
 	void reset(void);
 

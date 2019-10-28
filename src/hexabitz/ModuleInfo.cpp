@@ -41,9 +41,27 @@ void NeighboursInfo::fromBinaryBuffer(BinaryBuffer buffer)
 	memset(array_, 0, sizeof(array_));
 	while (buffer.getLength() >= 5) {
 		uint8_t p = buffer.popui8();
-		array_[p - 1][ADDR_NDX] = buffer.popui16();
-		array_[p - 1][PART_NDX] = buffer.popui16();
+		uint16_t addr = buffer.popui16();
+		uint16_t part = buffer.popui16();
+		// std::cout << "Addr: " << int(addr) << " " << " Part " << int(part) << std::endl;
+		array_[p - 1][ADDR_NDX] = addr;
+		array_[p - 1][PART_NDX] = part;
 	}
+}
+
+std::string NeighboursInfo::toString(void) const
+{
+	std::stringstream stream;
+	stream << " Neighbours Info: " << std::endl;
+	for (hstd::port_t p = 1; p < BOS::MAX_NUM_OF_PORTS; p++) {
+		if (!hasInfo(p))
+			continue;
+		stream << "        At Port: "  << p << " Module: " << BOS::toString(getPartEnumAt(p));
+		stream << " ( " << getUIDAt(p) << " , " << getPortAt(p)  << " )" << std::endl;
+	}
+
+
+	return stream.str();
 }
 
 void NeighboursInfo::reset(void)
