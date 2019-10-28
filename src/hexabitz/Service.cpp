@@ -517,13 +517,14 @@ int Service::Explore(void)
 				info_.setPartNumOf(newAddr, neighPart);
 
 				num_modules_ = currentID;
-				osDelay(10);
+				osDelay(100);
 			}
 
 			/* Step 3e - Ask all discovered modules to update their topology array */
 			std::cout << "<<<< Step 3e: Ask all discovered modules to update their topology array >>>>" << std::endl;
 			for (hstd::uid_t j = 2; j <= currentID; j++)
 				syncTopologyTo(j);
+			osDelay(500);
 		}	
 	}
 
