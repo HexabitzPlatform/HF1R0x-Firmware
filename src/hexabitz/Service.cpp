@@ -426,6 +426,7 @@ int Service::Explore(void)
 		return -EINVAL;
 	
 	master->setUID(hstd::Addr_t::MASTER_UID);
+	info_.reset();
 	info_.setPartNumOf(*master);
 
 	hstd::uid_t myID = master->getUID();
