@@ -533,7 +533,7 @@ int Service::Explore(void)
 	std::cout << "<<< Step 4: Make sure all connected modules have been discovered >>> " << std::endl;
 	ExploreNeighbors(PcPort, neighInfo);
 	/* Check for any unIDed neighbors */
-	if (neighInfo.hasAllIDedInfo()) {
+	if (!neighInfo.hasAllIDedInfo()) {
 		result = -EINVAL;
 		goto END;
 	}
@@ -543,8 +543,10 @@ int Service::Explore(void)
 		NeighboursInfo adjInfo;
 		ExploreAdjacentOf(hstd::Addr_t(i), adjInfo);
 
-		if (adjInfo.hasAllIDedInfo())
-			result = -EAGAIN;			
+		if (!adjInfo.hasAllIDedInfo()){
+			// result = -EAGAIN;
+			break;			
+		}
 	}
 	
 	
