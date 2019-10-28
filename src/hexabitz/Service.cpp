@@ -532,6 +532,7 @@ int Service::Explore(void)
 	/* >>> Step 4 - Make sure all connected modules have been discovered */
 	std::cout << "<<< Step 4: Make sure all connected modules have been discovered >>> " << std::endl;
 	ExploreNeighbors(PcPort, neighInfo);
+	std::cout << neighInfo.toString() << std::endl;
 	/* Check for any unIDed neighbors */
 	if (!neighInfo.hasAllIDedInfo()) {
 		result = -EINVAL;
@@ -542,6 +543,7 @@ int Service::Explore(void)
 	for (hstd::uid_t i = 2; i <= currentID; i++) {
 		NeighboursInfo adjInfo;
 		ExploreAdjacentOf(hstd::Addr_t(i), adjInfo);
+		std::cout << adjInfo.toString() << std::endl;
 
 		if (!adjInfo.hasAllIDedInfo()){
 			// result = -EAGAIN;
@@ -551,23 +553,29 @@ int Service::Explore(void)
 	
 	
 	/* >>> Step 5 - If no unIDed modules found, generate and distribute port directions */
+	std::cout << "<<<< Step 5: If no unIDed modules found, generate and distribute port directions >>>> " << std::endl;
 	if (result)
 		goto END;
 
 	/* Step 5a - Virtually reset the state of master ports to BOS::PortDir::NORMAL */
+	std::cout << "<<<< Step 5a: Virtually reset the state of master ports to BOS::PortDir::NORMAL >>>> " << std::endl;
 	for (hstd::port_t p = 1; p <= NUM_OF_PORTS; p++)
 		info_.setPortDirReversed(master->getUID(), p);
 	
 	/* Step 5b - Update other modules ports starting from the last one */
+	std::cout << "<<<< Step 5b: Update other modules ports starting from the last one >>>> " << std::endl;
 	for (hstd::uid_t i = currentID; i >= 2; i--) {
 		if (synPortDir(i))
 			continue;		
 	}			
 
 	/* Step 5e - Update master ports > all BOS::PortDir::NORMAL */
+	std::cout << "<<<< Step 5e: Update master ports > all BOS::PortDir::NORMAL >>>> " << std::endl;
 	
 			
 	/* >>> Step 6 - Test new port directions by pinging all modules */
+	std::cout << "<<<< Step 6: Test new port directions by pinging all modules >>>> " << std::endl;
+
 	
 	if (result)
 		goto END; 
