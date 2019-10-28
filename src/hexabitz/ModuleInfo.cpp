@@ -149,9 +149,9 @@ public:
 		hstd::uid_t u = 1;
 		hstd::uid_t index = u;
 
-		int smallest = INF_DIST; 
+		unsigned smallest = INF_DIST; 
 
-		if (isVisited(u))
+		if (!isVisited(u))
 			smallest = getRelDist(u);	/* Consider first element as smallest */
 
 		for (; u <= NUM_NODES; u++) {
@@ -164,12 +164,12 @@ public:
 	}
 
 public:
-	int getRelDist(hstd::uid_t uid) const
+	unsigned getRelDist(hstd::uid_t uid) const
 	{
 		return distance_[uid - 1];
 	}
 
-	void setRelDist(hstd::uid_t uid, int newDistance)
+	void setRelDist(hstd::uid_t uid, unsigned newDistance)
 	{
 		if (uid > NUM_NODES)
 			return;
@@ -213,7 +213,7 @@ public:
 	nodeTree(hstd::uid_t uid, const int nodes): own_(uid), NUM_NODES(nodes)
 	{
 		status_ = new bool[NUM_NODES];
-		distance_ = new int[NUM_NODES];
+		distance_ = new unsigned[NUM_NODES];
 		previous_ = new hstd::Addr_t[NUM_NODES];
 
 		memset(status_, 0, sizeof(*status_) * NUM_NODES);
@@ -225,7 +225,9 @@ public:
 
 	~nodeTree(void)
 	{
-
+		delete[] status_;
+		delete[] distance_;
+		delete[] previous_;
 	}
 
 private:
@@ -234,12 +236,12 @@ private:
 
 private:
 	bool *status_;
-	int *distance_;
+	unsigned *distance_;
 	hstd::Addr_t *previous_;
 
 public:
 	static const int NODE_NODE_DIST = 1;
-	static const uint8_t INF_DIST = 0xFF;
+	static const unsigned INF_DIST = -1;
 };
 
 
