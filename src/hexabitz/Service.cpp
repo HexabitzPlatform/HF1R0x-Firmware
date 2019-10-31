@@ -96,6 +96,7 @@ int Service::send(hstd::Message msg)
 		hstd::Frame& f = list[i];
 		std::cout << "Sending (" << i << "th): " << f << std::endl;
 		if ((ret = send(f))) return ret;
+		osDelay(10);
 	}
 
 	return 0;
@@ -356,7 +357,7 @@ int Service::synPortDir(hstd::uid_t dest)
 		hstd::Addr_t addr = hstd::Addr_t(dest, p);
 		hstd::Addr_t nAddr = info_.getModuleConnAt(addr);
 
-		if (!info_.hasConnInfo(addr) or info_.isPortDirReversed(nAddr))	{
+		if (!info_.hasConnInfo(addr) or info_.isPortDirReversed(nAddr))	{	
 			/* If empty port leave BOS::PortDir::NORMAL */
 			msg.getParams().append(uint8_t(BOS::PortDir::NORMAL));
 			info_.setPortDirNormal(addr);
@@ -434,6 +435,12 @@ int Service::Explore(void)
 
 	hstd::uid_t lastID = 0;
 	hstd::uid_t currentID = myID;
+
+
+	// if ((result = send(hstd::make_broadcast(CODE_def_array))))
+	// 	return result;
+
+	// osDelay(1000);
 	
 	/* >>> Step 1 - Reverse master ports and explore adjacent neighbors */
 	std::cout << "<<<< Step 1: Reverse master ports and explore neighbors >>>>" << std::endl;
@@ -454,6 +461,7 @@ int Service::Explore(void)
 		if (assignIDToNeigh(++currentID, port))
 			continue;
 
+		std::cout << neighInfo.toString() << std::endl;	
 		neighInfo.setUIDInfoFor(port, currentID);
 
 		hstd::Addr_t ownAddr = hstd::Addr_t(myID, port);
@@ -478,56 +486,57 @@ int Service::Explore(void)
 	
 	/* >>> Step 3 - Ask each new module to explore and repeat */
 	std::cout << "<<<< Step 3: Ask each new module to explore and repeat >>>>" << std::endl;
-	while (lastID != currentID) {
+	// while (lastID != currentID) {
 		/* Update lastID */
-		lastID = currentID;
+		// lastID = currentID;
 		
-		/* Scan all discovered modules */
-		for (hstd::uid_t i = 2 ; i <= currentID; i++) {
-			/* Step 3a - Ask the module to reverse ports */
-			std::cout << "<<<< Step 3a: Ask the module to reverse ports >>>>" << std::endl;
-			reverseAllButInPort(i);
+	/* Scan all discovered modules */
+	for (hstd::uid_t i = 2 ; i <= currentID; i++) {
+		/* Step 3a - Ask the module to reverse ports */
+		std::cout << "<<<< Step 3a: Ask the module ( " << i << " ) to reverse ports >>>>" << std::endl;
+		reverseAllButInPort(i);
+		osDelay(100);
+		
+		/* Step 3b - Ask the module to explore adjacent neighbors */
+		std::cout << "<<<< Step 3b: Ask the module ( " << i << " ) to explore adjacent neighbors >>>>" << std::endl;
+		NeighboursInfo adjInfo;
+		if ((result = ExploreAdjacentOf(hstd::Addr_t(i), adjInfo)))
+			goto END;
+	
+		for (hstd::port_t p = 1; p <= BOS::MAX_NUM_OF_PORTS; p++) {
+			if (!adjInfo.hasInfo(p))
+				continue;
+			// std::cout << "Has info for module: " << i << " port: " << p << std::endl;
+			if (info_.hasConnInfo(i, p))
+				continue;
+
+			/* Step 3c - Assign IDs to new modules */
+			std::cout << "<<<< Step 3c: Assign IDs to new module ( " << (currentID + 1) << " ) >>>>" << std::endl;
+			assignIDToAdjacent(i, p, ++currentID);
+			adjInfo.setUIDInfoFor(p, currentID);
+
+			hstd::Addr_t ithAddr = hstd::Addr_t(i, p);
+			hstd::Addr_t newAddr = adjInfo.getAddrAt(p);
+			enum BOS::module_pn_e neighPart = adjInfo.getPartEnumAt(p);
+
+			/* Step 3d - Update master topology array */
+			std::cout << "<<<< Step 3d: Update master topology array >>>>" << std::endl;
+			if (newAddr.getUID() == hstd::Addr_t::MASTER_UID)
+				continue;
+			info_.addConnection(ithAddr, newAddr);
+			info_.setPartNumOf(newAddr, neighPart);
+
+			num_modules_ = currentID;
 			osDelay(100);
-			
-			/* Step 3b - Ask the module to explore adjacent neighbors */
-			std::cout << "<<<< Step 3b: Ask the module to explore adjacent neighbors >>>>" << std::endl;
-			NeighboursInfo adjInfo;
-			if ((result = ExploreAdjacentOf(hstd::Addr_t(i), adjInfo)))
-				goto END;
-		
-			for (hstd::port_t p = 1; p <= BOS::MAX_NUM_OF_PORTS; p++) {
-				if (!adjInfo.hasInfo(p))
-					continue;
-				std::cout << "Has info for module: " << i << " port: " << p << std::endl;
-				if (info_.getUIDConnAt(i, p) == myID)
-					continue;
-				/* Step 3c - Assign IDs to new modules */
-				std::cout << "<<<< Step 3c: Assign IDs to new modules >>>>" << std::endl;
-				assignIDToAdjacent(i, p, ++currentID);
-				adjInfo.setUIDInfoFor(p, currentID);
+		}
 
-				hstd::Addr_t ithAddr = hstd::Addr_t(i, p);
-				hstd::Addr_t newAddr = adjInfo.getAddrAt(p);
-				enum BOS::module_pn_e neighPart = adjInfo.getPartEnumAt(p);
-
-				/* Step 3d - Update master topology array */
-				std::cout << "<<<< Step 3d: Update master topology array >>>>" << std::endl;
-				if (newAddr.getUID() == hstd::Addr_t::MASTER_UID)
-					continue;
-				info_.addConnection(ithAddr, newAddr);
-				info_.setPartNumOf(newAddr, neighPart);
-
-				num_modules_ = currentID;
-				osDelay(100);
-			}
-
-			/* Step 3e - Ask all discovered modules to update their topology array */
-			std::cout << "<<<< Step 3e: Ask all discovered modules to update their topology array >>>>" << std::endl;
-			for (hstd::uid_t j = 2; j <= currentID; j++)
-				syncTopologyTo(j);
-			osDelay(500);
-		}	
-	}
+		/* Step 3e - Ask all discovered modules to update their topology array */
+		std::cout << "<<<< Step 3e: Ask all discovered modules to update their topology array >>>>" << std::endl;
+		for (hstd::uid_t j = 2; j <= currentID; j++)
+			syncTopologyTo(j);
+		osDelay(500);
+	}	
+	// }
 
 	
 	/* >>> Step 4 - Make sure all connected modules have been discovered */
