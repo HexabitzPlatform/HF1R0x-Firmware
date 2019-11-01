@@ -256,7 +256,7 @@ int Service::sayHiToNeighbour(hstd::port_t port, enum BOS::module_pn_e& part, hs
 {
 	int ret = 0;
 	/* Port, Source = 0 (myID), Destination = 0 (adjacent neighbor), message code, number of parameters */
-	hstd::Message msg = hstd::make_message_meighbour(port, CODE_hi);
+	hstd::Message msg = hstd::make_message(hstd::Addr_t(0, 0), hstd::Addr_t(getOwn()->getUID(), port), CODE_hi);
 	enum BOS::module_pn_e ownPart = getOwn()->getPartNum();
 
 	msg.getParams().append(uint8_t(highByte(ownPart)));
@@ -558,7 +558,7 @@ int Service::Explore(void)
 		std::cout << adjInfo.toString() << std::endl;
 
 		if (!adjInfo.hasAllIDedInfo()){
-			// result = -EAGAIN;
+			result = -EAGAIN;
 			break;			
 		}
 	}
