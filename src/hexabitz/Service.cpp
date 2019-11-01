@@ -233,7 +233,7 @@ int Service::assignIDToNeigh(hstd::uid_t id, hstd::port_t portNum)
 	if ((ret = send(msg)))
 		return ret;
 	// No response to this message. So Add Delay
-	osDelay(10);
+	osDelay(50);
 	return 0;
 }
 
@@ -248,7 +248,7 @@ int Service::assignIDToAdjacent(hstd::uid_t destID, hstd::port_t port, hstd::uid
 	if ((ret = send(msg)))
 		return ret;
 	// No Response to this Message
-	osDelay(10);
+	osDelay(50);
 	return ret;	
 }
 
@@ -343,7 +343,7 @@ int Service::syncTopologyTo(hstd::uid_t destID)
 		return ret;
 
 	// No response to this message. So Add Delay
-	osDelay(600);
+	osDelay(100);
 	return ret;
 }
 
