@@ -506,14 +506,16 @@ int Service::Explore(void)
 		for (hstd::port_t p = 1; p <= BOS::MAX_NUM_OF_PORTS; p++) {
 			if (!adjInfo.hasInfo(p))
 				continue;
-			// std::cout << "Has info for module: " << i << " port: " << p << std::endl;
 			if (info_.hasConnInfo(i, p))
 				continue;
+			// std::cout << "Has info for module: " << i << " port: " << p << std::endl;
 
 			/* Step 3c - Assign IDs to new modules */
-			std::cout << "<<<< Step 3c: Assign IDs to new module ( " << (currentID + 1) << " ) >>>>" << std::endl;
-			assignIDToAdjacent(i, p, ++currentID);
-			adjInfo.setUIDInfoFor(p, currentID);
+			if (adjInfo.hasUnIDedInfo(p)) {
+				std::cout << "<<<< Step 3c: Assign IDs to new module ( " << (currentID + 1) << " ) >>>>" << std::endl;
+				assignIDToAdjacent(i, p, ++currentID);
+				adjInfo.setUIDInfoFor(p, currentID);
+			}
 
 			hstd::Addr_t ithAddr = hstd::Addr_t(i, p);
 			hstd::Addr_t newAddr = adjInfo.getAddrAt(p);
@@ -521,10 +523,10 @@ int Service::Explore(void)
 
 			/* Step 3d - Update master topology array */
 			std::cout << "<<<< Step 3d: Update master topology array >>>>" << std::endl;
-			if (newAddr.getUID() == hstd::Addr_t::MASTER_UID)
-				continue;
-			info_.addConnection(ithAddr, newAddr);
-			info_.setPartNumOf(newAddr, neighPart);
+			if (newAddr.getUID() != hstd::Addr_t::MASTER_UID) {
+				info_.addConnection(ithAddr, newAddr);
+				info_.setPartNumOf(newAddr, neighPart);
+			}
 
 			num_modules_ = currentID;
 			osDelay(100);
