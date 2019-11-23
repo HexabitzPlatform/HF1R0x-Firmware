@@ -13,6 +13,7 @@
 #include <math.h>
 #include <float.h>
 #include <errno.h>
+#include <signal.h>
 
 
 
@@ -74,6 +75,26 @@ std::shared_ptr<ProxyModule> Service::getOwn(void)
 	return owner_;
 }
 
+void Service::enterCriticalSection(void)
+{;
+	sigset_t mask;
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGINT);
+
+	if (sigprocmask(SIG_BLOCK, &mask, NULL))
+		perror("sigprocmask");
+}
+
+void Service::exitCriticalSection(void)
+{
+	sigset_t mask;
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGINT);
+
+	if (sigprocmask(SIG_UNBLOCK, &mask, NULL))
+		perror("sigprocmask");
+}
+
 int Service::send(hstd::Message msg)
 {
 	int ret = 0;
@@ -92,14 +113,16 @@ int Service::send(hstd::Message msg)
 		std::cout << "Invalid Message/Frame" << std::endl;
 		return -EAGAIN;
 	}
+	enterCriticalSection();
 	for (int i = 0; i < list.size(); i++) {
 		hstd::Frame& f = list[i];
 		std::cout << "Sending (" << i << "th): " << f << std::endl;
-		if ((ret = send(f))) return ret;
+		if ((ret = send(f))) break;
 		osDelay(10);
 	}
+	exitCriticalSection();
 
-	return 0;
+	return ret;
 }
 
 int Service::send(const hstd::Frame& f)

@@ -57,6 +57,10 @@ private:
 	std::vector<hstd::Addr_t> FindRoute(hstd::uid_t destID);
 	hstd::port_t FindSrcPortFor(hstd::uid_t destID);
 
+private:
+	static void enterCriticalSection(void);
+	static void exitCriticalSection(void);
+
 public:
 	int send(hstd::Message m);
 	int receive(hstd::Message& m, long timeout = -1);
