@@ -106,6 +106,8 @@ int Service::send(const hstd::Frame& f)
 {
 	if (!f.isValid())
 		return -EINVAL;
+	if (!serial_.isOpen())
+		return -EIO;
 
 	BinaryBuffer buffer = f.toBuffer();
 	for (int i = 0; i < buffer.getLength(); i++) {

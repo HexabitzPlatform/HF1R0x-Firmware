@@ -37,6 +37,7 @@ class HardwareSerial {
 
 public:
     bool open(const char *pathname);
+    bool isOpen(void) const;
 
 public:
 	void begin(unsigned long baud) { begin(baud, SERIAL_8N1); }

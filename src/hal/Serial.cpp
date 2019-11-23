@@ -155,6 +155,11 @@ bool HardwareSerial::open(const char *pathname)
 	return fd_ > 0;
 }
 
+bool HardwareSerial::isOpen(void) const
+{
+	return fcntl(fd_, F_GETFD) >= 0;
+}
+ 
 void HardwareSerial::begin(unsigned long baud, uint8_t cfg)
 {
 	if (fd_ <= 0)
