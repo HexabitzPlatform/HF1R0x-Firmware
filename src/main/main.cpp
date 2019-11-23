@@ -21,6 +21,7 @@
 #include <math.h>
 #include <float.h>
 #include <errno.h>
+#include <signal.h>
 
 
 void exampleTerminal(HardwareSerial& serial)
@@ -56,6 +57,31 @@ void testBinaryMessage(int times = -1)
 	}
 }
 
+void sigintHandler(int signum, siginfo_t *info, void *context)
+{
+	H_UNUSED(signum); H_UNUSED(info); H_UNUSED(context);
+	
+	std::cerr << "-------- SIGINT --------" << std::endl;
+	std::cerr << "Waiting for send to exit normally" << std::endl;
+	std::cerr << "-------- Existing --------" << std::endl;
+
+	exit(0);
+}
+
+void init(void)
+{
+	struct sigaction act;
+	memset(&act, 0, sizeof(act));
+
+	act.sa_sigaction = sigintHandler;
+	act.sa_flags |= SA_SIGINFO;
+
+	sigemptyset(&act.sa_mask);
+
+	if (sigaction(SIGINT, &act, NULL))
+		perror("sigaction");
+}
+
 int main(int argc, char *argv[])
 {
 	std::string port = "/dev/ttyUSB0";
@@ -64,25 +90,13 @@ int main(int argc, char *argv[])
 	std::cout << "Major: " << VERSION_MAJOR << " ";
 	std::cout << "Minor: " << VERSION_MINOR << ")" << std::endl;
 
+	init();
+
 	// for (auto& s: BOS::getPartNumberList())
 	// 	std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
 
 	if (argc > 1)
 		port = std::string(argv[1]);
-
-	// BinaryBuffer buffer;
-	// buffer.append(uint16_t(700));
-	// buffer.append(uint8_t(5));
-	// buffer.append(uint16_t(20));
-	// buffer.append(uint32_t(50));
-
-	// std::cout << "8: " << unsigned(buffer.popui8()) << std::endl;
-	// std::cout << "8: " << unsigned(buffer.popui8()) << std::endl;
-	// std::cout << "8: " << unsigned(buffer.popui8()) << std::endl;
-	// std::cout << "16: " << unsigned(buffer.popui16()) << std::endl;
-	// std::cout << "32: " << unsigned(buffer.popui32()) << std::endl;
-
-	// return 0;
 
 	std::cout << "Connecting to port " << port << std::endl;
 	Service::getInstance()->init(port);
@@ -94,8 +108,6 @@ int main(int argc, char *argv[])
 	testBinaryMessage(1);
 
 	std::cout << "---------------- Start EXPLORE ----------------" << std::endl;
-	// Service::getInstance()->ping(1, 0);
-	// Service::getInstance()->osDelay(5000);
 	int status = Service::getInstance()->Explore();
 	std::cout << "Status: " << strerror(-status) << std::endl;
 	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
