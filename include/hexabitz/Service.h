@@ -61,6 +61,8 @@ public:
 	int send(hstd::Message m);
 	int receive(hstd::Message& m, long timeout = -1);
 
+	hstd::uid_t getIDOfPartNum(enum BOS::module_pn_e partNum, unsigned num) const { return info_.getUIDOf(partNum, num); }
+
 private:
 	int send(const hstd::Frame& f);
 	int receive(hstd::Frame& f, long timeout = -1);

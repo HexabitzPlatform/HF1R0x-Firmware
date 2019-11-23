@@ -37,7 +37,7 @@ public:
 	uint16_t getPartNum_ui16(void) const;
 
 public:
-	virtual bool send(const hstd::Message& m);
+	virtual bool send(hstd::Message m);
 	virtual bool receive(hstd::Message& m, long timeout = -1);
 
 public:
@@ -87,16 +87,14 @@ public:
 class H01R0: public ProxyModule {
 
 public:
+	bool setRGB(int red, int green, int blue, int intensity);
 
-	void setRGB(int red, int green, int blue)
-	{
-
-	}
 
 public:
 	H01R0(void): ProxyModule(BOS::H01R0)
 	{
-
+		id_ = Service::getInstance()->getIDOfPartNum(BOS::H01R0, 1);
+		std::cout << "ID to BOS::H01R0: " << id_ << std::endl;
 	}
 
 	~H01R0(void)

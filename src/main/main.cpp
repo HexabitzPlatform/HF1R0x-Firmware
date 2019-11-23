@@ -100,7 +100,14 @@ int main(int argc, char *argv[])
 	std::cout << "Status: " << strerror(-status) << std::endl;
 	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
 
-	testBinaryMessage();
+	// testBinaryMessage();
+
+	H01R0 module;
+	while (true) {
+		int red = 0, green = 0, blue = 0, intensity = 100;
+		std::cin >> red >> green >> blue >> intensity;
+		module.setRGB(red, green, blue, intensity);
+	}
 
 	std::cout << "Closing Program" << std::endl;
 	return 0;

@@ -116,6 +116,8 @@ public:
 	enum BOS::module_pn_e getPartEnumOf(hstd::Addr_t addr) const;
 	enum BOS::module_pn_e getPartEnumOf(hstd::uid_t uid) const;
 
+	hstd::uid_t getUIDOf(enum BOS::module_pn_e partNum, unsigned num) const;
+
 	hstd::Addr_t getModuleConnAt(hstd::Addr_t addr) const;
 	hstd::Addr_t getModuleConnAt(hstd::uid_t uid, hstd::port_t port) const;
 

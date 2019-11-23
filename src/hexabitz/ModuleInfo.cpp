@@ -526,6 +526,18 @@ enum BOS::module_pn_e ModulesInfo::getPartEnumOf(hstd::uid_t uid) const
 	return static_cast<enum BOS::module_pn_e>(array_[uid - 1][PART_NUM_NDX]);
 }
 
+
+hstd::uid_t ModulesInfo::getUIDOf(enum BOS::module_pn_e partNum, unsigned num) const
+{
+	for (hstd::uid_t i = 1; i <= BOS::MAX_NUM_OF_MODULES; i++) {
+		if (partNum != static_cast<enum BOS::module_pn_e>(array_[i - 1][PART_NUM_NDX]))
+			continue;
+		if (!--num)
+			return i;
+	}
+	return hstd::Addr_t::INVALID_UID;
+}
+
 hstd::Addr_t ModulesInfo::getModuleConnAt(hstd::uid_t uid, hstd::port_t port) const
 {
 	if (!hstd::Addr_t::isUIDed(uid))
