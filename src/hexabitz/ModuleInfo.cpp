@@ -341,6 +341,39 @@ std::string ModulesInfo::toString(int num) const
 	return stream.str();
 }
 
+std::string ModulesInfo::toBOSFmtString(int num) const
+{
+	std::stringstream stream;
+	if (num < 0)
+		num = BOS::MAX_NUM_OF_MODULES;
+
+	stream << "Array topology:" << std::endl << std::endl;
+	// Print Header
+	stream << "Module: (Port:\t";
+	for (int p = 1; p <= BOS::MAX_NUM_OF_PORTS; p++) 
+		stream << "\tP" << p;
+	stream << ")" << std::endl << std::endl;
+
+	for (int i = 0; i < num; i++) {
+		if (!hasInfo(i + 1))
+			continue;
+		stream << "Module: "  << (i + 1) << " [ " << BOS::toString(static_cast<enum BOS::module_pn_e>(array_[i][PART_NUM_NDX])) << " ] ";
+
+		for (int j = 0; j < BOS::MAX_NUM_OF_PORTS; j++) {
+			hstd::uid_t uid = hstd::uid_t(array_[i][j + 2] >> 3);
+			hstd::port_t port = hstd::port_t(array_[i][j + 2] & 0b111);
+			if (port)
+				stream << "\t" << uid << ":" << port;
+			else
+				stream << "\t0";
+		}
+		stream << std::endl;
+	}
+
+	stream << std::endl;
+	return stream.str();
+}
+
 void ModulesInfo::reset(void)
 {
 	memset(array_, 0, sizeof(array_));

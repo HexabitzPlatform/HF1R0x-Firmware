@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
 	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
 
 	// testBinaryMessage();
+	std::cout << Service::getInstance()->getModulesInfo().toBOSFmtString();
 
 	H01R0 module;
 	while (true) {

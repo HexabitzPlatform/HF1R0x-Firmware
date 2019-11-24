@@ -65,6 +65,7 @@ public:
 	void fromBinaryBuffer(BinaryBuffer buffer);
 
 	std::string toString(int num = -1) const;
+	std::string toBOSFmtString(int num = -1) const;
 
 	bool toBinaryFile(std::string filename) const;
 	bool fromBinaryFile(std::string filename);

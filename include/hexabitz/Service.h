@@ -33,6 +33,8 @@ public:
 	void setOwn(std::shared_ptr<ProxyModule> module);
 	std::shared_ptr<ProxyModule> getOwn(void);
 
+	const ModulesInfo& getModulesInfo(void) const 	{ return info_; }
+
 private:
 	int assignIDToNeigh(hstd::uid_t id, hstd::port_t portNum);
 	int assignIDToAdjacent(hstd::uid_t destID, hstd::port_t port, hstd::uid_t newID);
