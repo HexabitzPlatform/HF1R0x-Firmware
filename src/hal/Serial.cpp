@@ -39,6 +39,11 @@
 
 // https://stackoverflow.com/questions/6947413/how-to-open-read-and-write-from-serial-port-in-c/38318768#38318768
 
+
+#define _SERIALCNF_GET_DATA(v)      		(v >> 8)
+#define _SERIALCNF_GET_PAR(v)       		((v >> 4) & 0x0F)
+#define _SERIALCNF_GET_STOP(v)      		(v & 0x03)
+
 static inline speed_t toSpeed_t(unsigned long baud)
 {
 	if (baud == 50)
@@ -129,6 +134,50 @@ static inline unsigned long toBaudLong(speed_t speed)
 }
 
 
+static tcflag_t to_c_tcFlag_t(int serialFlags)
+{
+	tcflag_t tflags;
+
+	unsigned dataBits = _SERIALCNF_GET_DATA(serialFlags);
+	unsigned stopBits = _SERIALCNF_GET_STOP(serialFlags);
+	bool parityEnable = _SERIALCNF_GET_PAR(serialFlags) != 0;
+	bool partyOdd = _SERIALCNF_GET_PAR(serialFlags) == 1;
+
+	memset(&tflags, 0, sizeof(tcflag_t));
+
+	switch (dataBits) {
+	case 5: tflags |= CS5; break;
+	case 6: tflags |= CS6; break;
+	case 7: tflags |= CS7; break;
+	default:
+	case 8: tflags |= CS8; break;
+	}
+
+	if (stopBits == 2)
+		tflags |= CSTOPB;
+
+	if (parityEnable)
+		tflags |= PARENB;
+	if (partyOdd)
+		tflags |= PARODD;
+
+	return tflags;
+}
+
+static tcflag_t to_i_tcFlag_t(int serialFlags)
+{
+	tcflag_t tflags;
+
+	bool parityEnable = _SERIALCNF_GET_PAR(serialFlags) != 0;
+	bool partyOdd = _SERIALCNF_GET_PAR(serialFlags) == 1;
+
+	memset(&tflags, 0, sizeof(tcflag_t));
+	
+	if (parityEnable)
+		tflags |= INPCK;
+
+	return tflags;
+}
 
 HardwareSerial::HardwareSerial(const char *pathname): fd_(0)
 {
@@ -160,41 +209,41 @@ bool HardwareSerial::isOpen(void) const
 	return fcntl(fd_, F_GETFD) >= 0;
 }
  
-void HardwareSerial::begin(unsigned long baud, uint8_t cfg)
+bool HardwareSerial::begin(unsigned long baud, unsigned cfg)
 {
 	if (fd_ <= 0)
-		return;
+		return false;
 	if (fcntl(fd_, F_SETFL, O_NONBLOCK))
-		return;
+		return false;
 
 	struct termios attr;
 	speed_t speed = (speed_t)toSpeed_t(baud);
 	memset(&attr, 0, sizeof(attr));
 	
 	if (tcgetattr(fd_, &attr))
-		return;
-	attr.c_iflag = IGNBRK | IGNPAR;
+		return false;
+	attr.c_iflag = IGNBRK | to_i_tcFlag_t(cfg);
 	attr.c_oflag = 0;
-	attr.c_cflag = CS8 | CREAD | CLOCAL; // Character Bits, Stop Bits and Parity Bits
+	attr.c_cflag = CREAD | CLOCAL | to_c_tcFlag_t(cfg); // Character Bits, Stop Bits and Parity Bits
 	attr.c_lflag = 0;	// Non-Canonical Mode
 
 	attr.c_cc[VTIME] = 0;
 	attr.c_cc[VMIN] = 0;
 
 	if (cfsetispeed(&attr, speed))
-		return;
+		return false;
 	if (cfsetospeed(&attr, speed))
-		return;
+		return false;
 	if (tcsetattr(fd_, TCSANOW, &attr))
-		return;
+		return false;
 
 	struct termios readAttr;
 	if (tcgetattr(fd_, &readAttr))
-		return;
+		return false;
 	if (memcmp(&attr, &readAttr, sizeof(attr)))
-		return;
+		return false;
 
-	// std::cout << "Successfull" << std::endl;
+	return true;
 }
 
 void HardwareSerial::end(void)
