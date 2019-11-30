@@ -1,2 +1,12 @@
 a.out
 bin/
+build/
+aux-dir/
+.deps/
+configure
+Makefile
+Makefile.in
+src/Makefile
+src/Makefile.in
+aclocal.m4
+autom4te.cache
