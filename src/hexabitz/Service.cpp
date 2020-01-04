@@ -158,7 +158,7 @@ int Service::receive(hstd::Message& msg, long timeout)
 		if ((result = receive(f, timeout)))
 			return result;
 		if (timeout >= 0)
-			timeout = hstd::constrainLower(timeout - (currentTime_ms() - start), 0L);
+			timeout = hstd::constrainLower(timeout - (currentTime_ms() - start), 0LL);
 
 		std::cout << "Received: " << f << std::endl;
 		list.push_back(f);
