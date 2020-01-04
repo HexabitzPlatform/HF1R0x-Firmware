@@ -84,7 +84,7 @@ void init(void)
 
 int main(int argc, char *argv[])
 {
-	std::string port = "/dev/ttyUSB0";
+	std::string port = "/dev/ttyS0";
 
 	std::cout << "Program Started (";
 	std::cout << "Major: " << VERSION_MAJOR << " ";
