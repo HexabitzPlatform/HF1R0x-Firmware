@@ -148,7 +148,7 @@ int Service::receive(hstd::Message& msg, long timeout)
 	std::vector<hstd::Frame> list;
 
 	using namespace std::chrono;
-	auto currentTime_ms = []() {
+	auto currentTime_ms = []() -> long {
 		return duration_cast<milliseconds>( system_clock::now().time_since_epoch() ).count();
 	};
 
@@ -158,7 +158,7 @@ int Service::receive(hstd::Message& msg, long timeout)
 		if ((result = receive(f, timeout)))
 			return result;
 		if (timeout >= 0)
-			timeout = hstd::constrainLower(timeout - (currentTime_ms() - start), 0LL);
+			timeout = hstd::constrainLower(timeout - (currentTime_ms() - start), 0L);
 
 		std::cout << "Received: " << f << std::endl;
 		list.push_back(f);
