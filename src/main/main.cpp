@@ -116,10 +116,18 @@ int main(int argc, char *argv[])
 	std::cout << Service::getInstance()->getModulesInfo().toBOSFmtString();
 
 	H01R0 module;
+	int r = 50, g = 50, b = 100;
+	int intensity = 0;
+	bool direction = false;
 	while (true) {
-		int red = 0, green = 0, blue = 0, intensity = 100;
-		std::cin >> red >> green >> blue >> intensity;
-		module.setRGB(red, green, blue, intensity);
+		// int red = 0, green = 0, blue = 0, intensity = 100;
+		// std::cin >> red >> green >> blue >> intensity;
+		module.setRGB(r, g, b, intensity);
+		intensity = hstd::constrain(direction ? intensity + 4 : intensity - 4, 0, 100);
+		if (intensity >= 100 or intensity <= 0)
+			direction = !direction;
+		// intensity = std::max(++intensity, 100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 
 	std::cout << "Closing Program" << std::endl;
