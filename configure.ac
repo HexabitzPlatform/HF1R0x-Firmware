@@ -7,6 +7,8 @@ AC_PROG_CXX
 
 AC_CONFIG_FILES(Makefile src/Makefile)
 
+AC_PROG_LIBTOOL
+
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall])
 
 AC_OUTPUT
