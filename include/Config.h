@@ -1,5 +1,5 @@
-#define VERSION_MAJOR 		1
-#define VERSION_MINOR 		3
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 4
 
 
-#define USE_TEST_MAIN
+/* #undef USE_TEST_MAIN */

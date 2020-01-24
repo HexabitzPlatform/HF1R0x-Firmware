@@ -3,7 +3,6 @@
 
 #include "helper/BinaryStream.h"
 #include "helper/helper.h"
-#include "hal/Serial.h"
 
 #include "hexabitz/BOS.h"
 			

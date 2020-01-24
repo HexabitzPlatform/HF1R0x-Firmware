@@ -1,7 +1,6 @@
 #ifndef BINARYSTREAM_H
 #define BINARYSTREAM_H
 
-#include "hal/Serial.h"
 #include "helper/GenericStream.h"
 
 #include <stdint.h>

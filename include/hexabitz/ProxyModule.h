@@ -1,7 +1,6 @@
 #ifndef PROXYMODULE_H
 #define PROXYMODULE_H
 
-#include "hal/Serial.h"
 #include "hexabitz/Service.h"
 #include "hexabitz/BOS.h"
 #include "hexabitz/BOSFrame.h"
