@@ -14,3 +14,6 @@ cd build
 ../configure
 make
 make install
+
+# How to setup CMake for deb package creation
+https://blog.usejournal.com/creating-debian-packages-cmake-e519a0186e87
