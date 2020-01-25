@@ -17,3 +17,6 @@ make install
 
 # How to setup CMake for deb package creation
 https://blog.usejournal.com/creating-debian-packages-cmake-e519a0186e87
+
+# How to compile executable and link with shared library
+g++ demo.cpp -lhexabitz -I/usr/include/hexabitz

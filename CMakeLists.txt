@@ -3,16 +3,18 @@ cmake_minimum_required(VERSION 3.3)
 
 include(GNUInstallDirs)
 
-set(BOSCOMM_VERSION_MAJOR 1)
-set(BOSCOMM_VERSION_MINOR 4)
+set(HEXABITZ_VERSION_MAJOR 1)
+set(HEXABITZ_VERSION_MINOR 5)
 
 # C & C++
 set (CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Debug)
 option(USE_TEST_MAIN "Enable Testing Mode" OFF)
-# configure_file(Config.h.in ${PROJECT_SOURCE_DIR}/include/Config.h)
 
-project(hexabitz VERSION 1.4 DESCRIPTION "Hexabitz Open-Source Libraries to interface modules with Linux")
+project(hexabitz VERSION "${HEXABITZ_VERSION_MAJOR}.${HEXABITZ_VERSION_MINOR}" 
+                DESCRIPTION "Hexabitz Open-Source Libraries to interface modules with Linux")
+
+configure_file(${CMAKE_SOURCE_DIR}/Config.h.in ${PROJECT_SOURCE_DIR}/include/Config.h)
 
 ############################## Shared Library ##############################
 add_library(hexabitz SHARED src/hal/Serial.cpp src/helper/helper.cpp 
