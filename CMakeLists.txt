@@ -35,7 +35,7 @@ set(PUBLIC_INCLUDE_FILES
             include/hexabitz/Service.h include/hexabitz/ModuleInfo.h
 )
 
-set_target_properties(hexabitz PROPERTIES PUBLIC_HEADER "${PUBLIC_INCLUDE_FILES}")
+# set_target_properties(hexabitz PROPERTIES PUBLIC_HEADER "${PUBLIC_INCLUDE_FILES}")
 
 install(TARGETS hexabitz
     RUNTIME DESTINATION bin
@@ -45,11 +45,11 @@ install(TARGETS hexabitz
 install(DIRECTORY "include/" DESTINATION include/hexabitz)
 
 ############################# Demo Application #############################
-add_executable(demo src/tools/demo-H01R0.cpp)
-target_link_libraries(demo hexabitz)
-set_property(TARGET demo PROPERTY CXX_STANDARD 17)
+add_executable(hexabitz-demo src/tools/demo-H01R0.cpp)
+target_link_libraries(hexabitz-demo hexabitz)
+set_property(TARGET hexabitz-demo PROPERTY CXX_STANDARD 17)
 
-install(TARGETS demo RUNTIME DESTINATION bin)
+install(TARGETS hexabitz-demo RUNTIME DESTINATION bin)
 
 # Cpack
 set(CPACK_GENERATOR "DEB")
