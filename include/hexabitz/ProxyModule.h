@@ -96,6 +96,12 @@ public:
 		std::cout << "ID to BOS::H01R0: " << id_ << std::endl;
 	}
 
+	H01R0(unsigned nth): ProxyModule(BOS::H01R0)
+	{
+		id_ = Service::getInstance()->getIDOfPartNum(BOS::H01R0, nth);
+		std::cout << "ID to BOS::H01R0: " << id_ << std::endl;
+	}
+
 	~H01R0(void)
 	{
 
