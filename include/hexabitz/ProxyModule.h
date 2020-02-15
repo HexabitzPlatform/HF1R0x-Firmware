@@ -15,8 +15,6 @@
 #include <list>
 
 
-/*************************************************************/
-
 class ProxyModule {
 public:
 	hstd::uid_t getUID(void) const;
@@ -51,65 +49,5 @@ protected:
 	int numOfPorts_ = 0;
 	std::string info_;
 };
-
-/*************************************************************/
-
-
-class H09R0: public ProxyModule {
-
-
-public:
-	float getTemp(void)
-	{
-		hstd::Message m;
-		m.setSource(1);
-		m.setDest(1);
-		m.setCode(1);
-
-		return 0;
-	}
-
-public:
-	H09R0(void): ProxyModule(BOS::H09R0)
-	{
-
-	}
-
-	~H09R0(void)
-	{
-
-	}
-};
-
-/*************************************************************/
-
-class H01R0: public ProxyModule {
-
-public:
-	bool setRGB(int red, int green, int blue, int intensity);
-
-
-public:
-	H01R0(void): ProxyModule(BOS::H01R0)
-	{
-		id_ = Service::getInstance()->getIDOfPartNum(BOS::H01R0, 1);
-		std::cout << "ID to BOS::H01R0: " << id_ << std::endl;
-	}
-
-	H01R0(unsigned nth): ProxyModule(BOS::H01R0)
-	{
-		id_ = Service::getInstance()->getIDOfPartNum(BOS::H01R0, nth);
-		std::cout << "ID to BOS::H01R0: " << id_ << std::endl;
-	}
-
-	~H01R0(void)
-	{
-
-	}
-};
-
-/*************************************************************/
-
-
 
 #endif /* PROXYMODULE_H */

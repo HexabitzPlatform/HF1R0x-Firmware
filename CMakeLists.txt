@@ -22,7 +22,9 @@ add_library(hexabitz SHARED src/hal/Serial.cpp src/helper/helper.cpp
                     src/helper/GenericStream.cpp src/hexabitz/BOSMessage.cpp
 					src/hexabitz/ProxyModule.cpp src/hexabitz/BOSFrame.cpp 
                     src/hexabitz/BOSMessageBuilder.cpp src/hexabitz/BOS.cpp 
-                    src/hexabitz/Service.cpp src/hexabitz/ModuleInfo.cpp)
+                    src/hexabitz/Service.cpp src/hexabitz/ModuleInfo.cpp
+                    src/hexabitz-modules/H01R0.cpp
+                    src/hexabitz-modules/H08R6.cpp)
 
 target_include_directories(hexabitz PUBLIC include/)
 set_target_properties(hexabitz PROPERTIES VERSION ${PROJECT_VERSION})
@@ -35,6 +37,8 @@ set(PUBLIC_INCLUDE_FILES
             include/hexabitz/ProxyModule.h include/hexabitz/BOSFrame.h 
             include/hexabitz/BOSMessageBuilder.h include/hexabitz/BOS.h 
             include/hexabitz/Service.h include/hexabitz/ModuleInfo.h
+            include/hexabitz-modules/H01R0.h
+            include/hexabitz-modules/H08R6.h
 )
 
 # set_target_properties(hexabitz PROPERTIES PUBLIC_HEADER "${PUBLIC_INCLUDE_FILES}")
@@ -47,11 +51,19 @@ install(TARGETS hexabitz
 install(DIRECTORY "include/" DESTINATION include/hexabitz)
 
 ############################# Demo Application #############################
-add_executable(hexabitz-demo src/tools/demo-H01R0.cpp)
-target_link_libraries(hexabitz-demo hexabitz)
-set_property(TARGET hexabitz-demo PROPERTY CXX_STANDARD 17)
+add_executable(hexabitz-demo-H01R0 src/tools/demo-H01R0.cpp)
+target_link_libraries(hexabitz-demo-H01R0 hexabitz)
+set_property(TARGET hexabitz-demo-H01R0 PROPERTY CXX_STANDARD 17)
 
-install(TARGETS hexabitz-demo RUNTIME DESTINATION bin)
+install(TARGETS hexabitz-demo-H01R0 RUNTIME DESTINATION bin)
+
+
+############################# Demo Application #############################
+add_executable(hexabitz-demo-H08R6 src/tools/demo-H08R6.cpp)
+target_link_libraries(hexabitz-demo-H08R6 hexabitz)
+set_property(TARGET hexabitz-demo-H08R6 PROPERTY CXX_STANDARD 17)
+
+install(TARGETS hexabitz-demo-H08R6 RUNTIME DESTINATION bin)
 
 # Cpack
 set(CPACK_GENERATOR "DEB")

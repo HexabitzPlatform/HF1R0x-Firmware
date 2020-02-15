@@ -48,6 +48,13 @@ std::string BOS::getStrOfCode(int code)
 	return codeStrMap[code];
 }
 
+void BOS::addCode(int code, const std::string& name)
+{
+	if (codeStrMap.count(code))
+		return;
+	codeStrMap[code] = name;
+}
+
 std::vector<std::string> BOS::getPartNumberList(void)
 {
 	return enumStrMap;

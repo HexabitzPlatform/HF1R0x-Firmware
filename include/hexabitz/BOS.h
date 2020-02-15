@@ -100,6 +100,9 @@ std::string getStrOfCode(int code);
 std::vector<std::string> getPartNumberList(void);
 int getNumOfPorts(enum module_pn_e partNum);
 
+void addCode(int code, const std::string& name);
+#define BOS_ADD_CODE(code)	BOS::addCode(code, #code)
+
 }
 
 

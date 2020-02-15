@@ -19,15 +19,6 @@
 #include <errno.h>
 
 
-#define	CODE_H01R0_ON							100
-#define	CODE_H01R0_OFF							101
-#define	CODE_H01R0_TOGGLE						102
-#define	CODE_H01R0_COLOR						103
-#define	CODE_H01R0_PULSE						104
-#define	CODE_H01R0_SWEEP						105
-#define	CODE_H01R0_DIM							106
-
-
 ProxyModule::ProxyModule(std::string part, int numPorts, hstd::uid_t uid): id_(uid), numOfPorts_(numPorts), info_(part)
 {
 
@@ -99,23 +90,10 @@ bool ProxyModule::send(hstd::Message m)
 {
 	if (hstd::Addr_t::isValidUID(id_))
 		m.getDest().setUID(id_);
-	return Service::getInstance()->send(m);
+	return Service::getInstance()->send(m) == 0;
 }
 
 bool ProxyModule::receive(hstd::Message& m, long timeout)
 {
-	return Service::getInstance()->receive(m, timeout);
-}
-
-
-bool H01R0::setRGB(int red, int green, int blue, int intensity)
-{
-	hstd::Message msg = hstd::make_message(id_, CODE_H01R0_COLOR);
-	msg.getParams().append(static_cast<uint8_t>(1));
-	msg.getParams().append(static_cast<uint8_t>(red));
-	msg.getParams().append(static_cast<uint8_t>(green));
-	msg.getParams().append(static_cast<uint8_t>(blue));
-	msg.getParams().append(static_cast<uint8_t>(intensity));
-
-	return send(msg);
+	return Service::getInstance()->receive(m, timeout) == 0;
 }
