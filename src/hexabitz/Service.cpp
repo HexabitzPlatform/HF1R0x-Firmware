@@ -220,6 +220,7 @@ hstd::port_t Service::FindSrcPortFor(hstd::uid_t destID)
 int Service::ping(hstd::uid_t destID)
 {
 	int ret = 0;
+	hstd::setMessRespDefault(true);
 	hstd::Message msg = hstd::make_ping_message(destID);
 
 	if ((ret = send(msg)))
