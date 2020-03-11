@@ -94,42 +94,48 @@ int main(int argc, char *argv[])
 
 	// for (auto& s: BOS::getPartNumberList())
 	// 	std::cout << "Part number: " << s  << " | Num of Ports: " << BOS::getNumOfPorts(BOS::toPartNumberEnum(s)) << std::endl;
-
 	if (argc > 1)
 		port = std::string(argv[1]);
-
 	std::cout << "Connecting to port " << port << std::endl;
 	Service::getInstance()->init(port);
 	std::shared_ptr<ProxyModule> master = std::make_shared<ProxyModule>(BOS::HF1R0);
 	master->setUID(1);
 	Service::getInstance()->setOwn(master);
-
 	// Testing Communication Link
 	testBinaryMessage(1);
-
 	std::cout << "---------------- Start EXPLORE ----------------" << std::endl;
 	int status = Service::getInstance()->Explore();
 	std::cout << "Status: " << strerror(-status) << std::endl;
 	std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
-
+	
 	// testBinaryMessage();
 	std::cout << Service::getInstance()->getModulesInfo().toBOSFmtString();
-
+	
+	H0FR6 module1;
 	H01R0 module;
 	int r = 50, g = 50, b = 100;
-	int intensity = 0;
-	bool direction = false;
+	int timeout= 500;
+	int intensity = 80;
+	std::string  pass = "hexabitz";
+    std::string  xx ;
+	std::cout << "Please Enter your password ^_^";
+    std::cin >> xx;
 	while (true) {
-		// int red = 0, green = 0, blue = 0, intensity = 100;
-		// std::cin >> red >> green >> blue >> intensity;
-		module.setRGB(r, g, b, intensity);
-		intensity = hstd::constrain(direction ? intensity + 4 : intensity - 4, 0, 100);
-		if (intensity >= 100 or intensity <= 0)
-			direction = !direction;
-		// intensity = std::max(++intensity, 100);
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	}
-
+		if (xx == pass){
+        std::cout << "Correct" ;
+        module.setRGB(80, 2, 100, intensity);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		module1.relayon(timeout);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    else{
+        std::cout << "Wrong" ;
+        module.setRGB(90, 3, 3, intensity);
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		module1.relayoff();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }}
+		
 	std::cout << "Closing Program" << std::endl;
 	return 0;
-}
+	}
