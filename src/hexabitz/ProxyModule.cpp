@@ -27,6 +27,12 @@
 #define	CODE_H01R0_SWEEP						105
 #define	CODE_H01R0_DIM							106
 
+#define CODE_H0FR6_ON                           1500
+#define CODE_H0FR6_OFF                          1501
+#define CODE_H0FR6_TOGGLE                       1502
+#define CODE_H0FR6_PWM                          1503
+
+
 
 ProxyModule::ProxyModule(std::string part, int numPorts, hstd::uid_t uid): id_(uid), numOfPorts_(numPorts), info_(part)
 {
@@ -117,5 +123,27 @@ bool H01R0::setRGB(int red, int green, int blue, int intensity)
 	msg.getParams().append(static_cast<uint8_t>(blue));
 	msg.getParams().append(static_cast<uint8_t>(intensity));
 
+	return send(msg);
+}
+
+bool H0FR6::relayon(int timeout)
+{
+	hstd::Message msg = hstd::make_message(id_, CODE_H0FR6_ON);
+	msg.getParams().append(static_cast<uint8_t>(1));
+	msg.getParams().append(static_cast<uint8_t>(timeout));
+	return send(msg);
+}
+
+bool H0FR6::relayoff(void)
+{
+	hstd::Message msg = hstd::make_message(id_, CODE_H0FR6_OFF);
+	msg.getParams().append(static_cast<uint8_t>(1));
+	return send(msg);
+}
+bool H0FR6::rpwm(int dutycycle)
+{
+	hstd::Message msg = hstd::make_message(id_, CODE_H0FR6_PWM);
+	msg.getParams().append(static_cast<uint8_t>(1));
+	msg.getParams().append(static_cast<uint8_t>(dutycycle));
 	return send(msg);
 }
