@@ -88,6 +88,7 @@ enum module_pn_e {
 };
 
 
+// Port Directions
 enum class PortDir {
 	NORMAL, 
 	REVERSED

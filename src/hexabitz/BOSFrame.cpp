@@ -6,12 +6,58 @@ hstd::Frame::Frame(void): destID(0), srcID(0), code(0), crc8(0)
 
 }
 
+// compute CRC32 (bitwise algorithm)
+// uint32_t crc32_bitwise(const void* data, size_t length, uint32_t previousCrc32)
+// uint32_t crc32_bitwise(BinaryBuffer& buffer, uint32_t previousCrc32)
+// {
+// 	size_t length = buffer.getLength();
+// 	//std::vector<uint8_t> data = buffer.getData();
+// 	uint32_t crc = ~previousCrc32; // same as previousCrc32 ^ 0xFFFFFFFF
+// 	const uint8_t* current = (const uint8_t*) buffer;
+// 	while (length-- != 0)
+// 	{
+// 		crc ^= *current++;
+// 		for (int j = 0; j < 8; j++)
+// 		{
+// 			// branch-free
+// 			crc = (crc >> 1) ^ (-int32_t(crc & 1) & buffer);
+			
+// 			// branching, much slower:
+// 			//if (crc & 1)
+// 			//  crc = (crc >> 1) ^ Polynomial;
+// 			//else
+// 			//  crc =  crc >> 1;
+// 			}
+// 	}
+// 	return ~crc; // same as crc ^ 0xFFFFFFFF
+// }
+
+// uint32_t crc32_bitwise(BinaryBuffer& buffer)
+// {
+// 	size_t length = buffer.getLength();
+// 	//std::vector<uint8_t> data = buffer.getData();
+// 	size_t i, j;
+// 	uint32_t CRC, MSB;
+// 	CRC = 0xFFFFFFFF;
+// 	for (i = 0; i < length; i++)
+// 	{
+// 		CRC ^= (((uint32_t) buffer[i]) << 24);
+// 		for (j = 0; j < 8; j++)
+// 		{
+// 			MSB = CRC >> 31;
+// 			CRC <<= 1;
+// 			CRC ^= (0 - MSB) & 0x04C11DB7;
+// 		}
+// 	}
+// 	return (uint32_t)CRC;
+// }
+
 void hstd::Frame::sanitize(void)
 {
 	if (getTotalLength() == 13)
 		param.append(uint8_t(0));
 
-	// TODO: Calculate CRC
+	// TODO: Calculate CRC from Buffer
 	crc8 = CRC8_FIXED; // Fixed Value of CRC
 }
 
@@ -47,10 +93,10 @@ bool hstd::Frame::fromBuffer(BinaryBuffer& buffer)
 
 	destID = buffer.popui8();
 	srcID = buffer.popui8();
-
-	uint8_t codeMSB = buffer.popui8();
-	uint8_t codeLSB = buffer.popui8();
-	code = (uint16_t(codeMSB) << 8) | codeLSB;
+	
+	// uint8_t codeMSB = buffer.popui8();
+	// uint8_t codeLSB = buffer.popui8();
+	// code = (uint16_t(codeMSB) << 8) | codeLSB;
 
 	param.append(buffer, len - getMinLength());
 	crc8 = buffer.popui8();
@@ -62,13 +108,23 @@ BinaryBuffer hstd::Frame::toBuffer(void) const
 {
 	BinaryBuffer b;
 	BinaryBuffer t(param);
+	
+	b.append(uint8_t('H'));
+	b.append(uint8_t('Z'));
 
 	b.append(uint8_t(getTotalLength()));
 	b.append(destID);
 	b.append(srcID);
-	b.append(uint8_t(highByte(code)));
-	b.append(uint8_t(lowByte(code)));
-	b.append(t);
+
+	// b.append(uint8_t(highByte(code)));
+	// b.append(uint8_t(lowByte(code)));
+	// Edit Default Options  
+	uint8_t option = 0;
+	b.append(option);
+	b.append(uint8_t(1));
+	b.append(uint8_t(0));
+
+	// TODO: Add CRC32 byte to Buffer
 	b.append(crc8);
 
 	return b;
@@ -96,6 +152,7 @@ std::vector<hstd::Frame> hstd::buildFramesFromMessage(hstd::Message message)
 
 		f.setCodeOnly(message.getCode());
 
+		// TODO: Change Options
 		bitWrite(f.code, Frame::CLI_FLAG_BITPOS, message.getCLIOnlyFlag());
 		bitWrite(f.code, Frame::MESS_FLAG_BITPOS, message.getMessOnlyFlag());
 		bitWrite(f.code, Frame::TRACE_FLAG_BITPOS, message.getTraceFlag());
@@ -136,6 +193,8 @@ bool hstd::buildMessageFromFrames(std::vector<hstd::Frame>& vec, hstd::Message& 
 		message.setDest(Addr_t(f.destID));
 		message.setCode(f.getCodeOnly());
 
+
+		// TODO: Change Options
 		message.setMessOnlyFlag(f.getFlag(Frame::MESS_FLAG_BITPOS));
 		message.setCLIOnlyFlag(f.getFlag(Frame::CLI_FLAG_BITPOS));
 		message.setTraceFlag(f.getFlag(Frame::TRACE_FLAG_BITPOS));

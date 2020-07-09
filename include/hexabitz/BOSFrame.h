@@ -75,7 +75,8 @@ public:
 	static const uint16_t CODE_ONLY_MASK = 0x8FFF;
 	static const uint8_t CRC8_FIXED = 0x75;
 
-	static const uint8_t MIN_LENGTH = 5;
+	// static const uint8_t MIN_LENGTH = 5;
+	static const uint8_t MIN_LENGTH = 4;
 	static const uint8_t MAX_LENGTH = 50;
 
 	static const int TRACE_FLAG_BITPOS = 12;

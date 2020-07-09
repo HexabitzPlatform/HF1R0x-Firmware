@@ -30,6 +30,7 @@ hstd::Message hstd::make_message(Addr_t dest, uint16_t code)
 	return make_message(dest, Addr_t(), code);
 }
 
+// TODO: Check messages buildings (Options)
 hstd::Message hstd::make_message(Addr_t dest, Addr_t src, uint16_t code)
 {
 	hstd::Message message;
@@ -38,6 +39,8 @@ hstd::Message hstd::make_message(Addr_t dest, Addr_t src, uint16_t code)
 	message.setDest(dest);
 	message.setCode(code);
 
+
+	// TODO: Change Options from release 0.1.6 to release 0.2.x
 	message.setCLIOnlyFlag(cliFlag_);
 	message.setMessOnlyFlag(messFlag_);
 	message.setTraceFlag(traceFlag_);

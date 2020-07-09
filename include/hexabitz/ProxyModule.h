@@ -104,6 +104,27 @@ public:
 
 /*************************************************************/
 
+class H0FR6: public ProxyModule {
 
+	public:
+		bool relayon(int timeout);
+		bool relayoff(void);
+		bool rpwm(int dutycycle);
+
+	public:
+		H0FR6(void): ProxyModule(BOS::H01R0)
+		{
+			id_ = Service::getInstance()->getIDOfPartNum(getPartNum(), 1);
+			std::cout << "ID to BOS:: H0FR6: " << id_ << std::endl;
+		}
+		
+		H0FR6(unsigned nth): ProxyModule(BOS::H0FR6)
+		{
+			id_ = Service::getInstance()->getIDOfPartNum(BOS::H0FR6, nth);
+			std::cout << "ID to BOS:: H0FR6: " << id_ << std::endl;
+		}
+};
+
+/*************************************************************/
 
 #endif /* PROXYMODULE_H */
