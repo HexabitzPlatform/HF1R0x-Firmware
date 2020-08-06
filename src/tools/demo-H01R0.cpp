@@ -56,23 +56,6 @@ void testBinaryMessage(int times = -1)
 		times--;
 	}
 }
-
-void testBinaryMessageTopology(int times = -1)
-{
-	while (times) {
-		hstd::Message m = hstd::make_message(hstd::Addr_t(0,1), hstd::Addr_t(0,2), CODE_topology);
-
-		std::cout << "Sending: " << m << std::endl;
-		Service::getInstance()->send(m);
-
-		if (!Service::getInstance()->receive(m))
-			std::cout << "Received: " << m << std::endl;
-
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		times--;
-	}
-}
-
 void testBinaryMessagePing(int times = -1)
 {
 	while (times) {
@@ -140,6 +123,11 @@ int main(int argc, char *argv[])
 
 	// Testing Communication Link
 	testBinaryMessage(1);
+
+	// std::cout << "---------------- Start EXPLORE ----------------" << std::endl;
+	// int status = Service::getInstance()->Explore();
+	// std::cout << "Status: " << strerror(-status) << std::endl;
+	// std::cout << "---------------- Stop  EXPLORE ----------------" << std::endl;
 
 	// testBinaryMessage();
 	std::cout << Service::getInstance()->getModulesInfo().toBOSFmtString();
