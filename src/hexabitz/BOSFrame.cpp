@@ -1,56 +1,10 @@
 #include "hexabitz/BOSFrame.h"
-
+#include <cstring>
 hstd::Frame::Frame(void): destID(0), srcID(0), code(0), crc8(0)
 {
 
 
 }
-
-// compute CRC32 (bitwise algorithm)
-// uint32_t crc32_bitwise(const void* data, size_t length, uint32_t previousCrc32)
-// uint32_t crc32_bitwise(BinaryBuffer& buffer, uint32_t previousCrc32)
-// {
-// 	size_t length = buffer.getLength();
-// 	//std::vector<uint8_t> data = buffer.getData();
-// 	uint32_t crc = ~previousCrc32; // same as previousCrc32 ^ 0xFFFFFFFF
-// 	const uint8_t* current = (const uint8_t*) buffer;
-// 	while (length-- != 0)
-// 	{
-// 		crc ^= *current++;
-// 		for (int j = 0; j < 8; j++)
-// 		{
-// 			// branch-free
-// 			crc = (crc >> 1) ^ (-int32_t(crc & 1) & buffer);
-			
-// 			// branching, much slower:
-// 			//if (crc & 1)
-// 			//  crc = (crc >> 1) ^ Polynomial;
-// 			//else
-// 			//  crc =  crc >> 1;
-// 			}
-// 	}
-// 	return ~crc; // same as crc ^ 0xFFFFFFFF
-// }
-
-// uint32_t crc32_bitwise(BinaryBuffer& buffer)
-// {
-// 	size_t length = buffer.getLength();
-// 	//std::vector<uint8_t> data = buffer.getData();
-// 	size_t i, j;
-// 	uint32_t CRC, MSB;
-// 	CRC = 0xFFFFFFFF;
-// 	for (i = 0; i < length; i++)
-// 	{
-// 		CRC ^= (((uint32_t) buffer[i]) << 24);
-// 		for (j = 0; j < 8; j++)
-// 		{
-// 			MSB = CRC >> 31;
-// 			CRC <<= 1;
-// 			CRC ^= (0 - MSB) & 0x04C11DB7;
-// 		}
-// 	}
-// 	return (uint32_t)CRC;
-// }
 
 void hstd::Frame::sanitize(void)
 {
@@ -61,6 +15,38 @@ void hstd::Frame::sanitize(void)
 	crc8 = CRC8_FIXED; // Fixed Value of CRC
 }
 
+uint32_t crc32b(uint8_t *message, size_t l,unsigned int crc)
+{
+   size_t i, j;
+   unsigned int msb;
+
+   for(i = 0; i < l; i++) {
+      // xor next byte to upper bits of crc
+      crc ^= (((unsigned int)message[i])<<24);
+      for (j = 0; j < 8; j++) {    // Do eight times.
+            msb = crc>>31;
+            crc <<= 1;
+            crc ^= (0 - msb) & 0x4C11DB7;
+      }
+   }
+   return crc;         // don't complement crc on output
+}
+uint8_t *reverse_array( uint8_t *array , uint8_t length){
+	static uint8_t array_temp[8];
+	array[length-1]=0x00;
+	uint8_t jj=3;
+	for(int ii=0;ii<4;ii++){
+			array_temp[ii]=array[jj];
+		jj--;
+		}
+		
+	for(int kk=4;kk<8;kk++){
+			array_temp[kk]=array[length-1];
+		length--;
+		}
+		return array_temp;
+	}
+	
 void hstd::Frame::setCodeOnly(uint16_t newCode)
 {
 	const uint16_t clearMask = uint16_t(~ (unsigned(CODE_ONLY_MASK)));
@@ -122,12 +108,24 @@ BinaryBuffer hstd::Frame::toBuffer(void) const
 	uint8_t option = 0;
 	b.append(option);
 	b.append(uint8_t(1));
-	b.append(uint8_t(0));
-
+	//b.append(uint8_t(0));
+	BinaryBuffer bb;
+	int bL=b.getLength();
+	uint8_t buf[bL+1];
+	uint8_t *buf1;
+	uint8_t *buf2;
+	std::cout<<"getTotalLength="<<bL<<std::endl;
+	for(int k=0;k<=6;k++){
+		uint8_t db = b.popui8();
+		buf[k] = db;
+		bb.append(db);
+		}
 	// TODO: Add CRC32 byte to Buffer
-	b.append(crc8);
-
-	return b;
+	buf1=reverse_array(buf,8);
+	uint32_t crc = crc32b(buf1, 8,0xFFFFFFFF);
+	std::cout<<"CRC1: "<<"0x"<<crc<<std::endl;
+	bb.append(uint8_t(crc));
+	return bb;
 }
 
 // std::ostream& operator<<(std::ostream& stream, hstd::Frame& f)
@@ -153,12 +151,12 @@ std::vector<hstd::Frame> hstd::buildFramesFromMessage(hstd::Message message)
 		f.setCodeOnly(message.getCode());
 
 		// TODO: Change Options
-		bitWrite(f.code, Frame::CLI_FLAG_BITPOS, message.getCLIOnlyFlag());
-		bitWrite(f.code, Frame::MESS_FLAG_BITPOS, message.getMessOnlyFlag());
-		bitWrite(f.code, Frame::TRACE_FLAG_BITPOS, message.getTraceFlag());
-		bitWrite(f.code, Frame::LONG_FLAG_BITPOS, isLong);
+		//bitWrite(f.code, Frame::CLI_FLAG_BITPOS, message.getCLIOnlyFlag());
+		//bitWrite(f.code, Frame::MESS_FLAG_BITPOS, message.getMessOnlyFlag());
+		//bitWrite(f.code, Frame::TRACE_FLAG_BITPOS, message.getTraceFlag());
+		//bitWrite(f.code, Frame::LONG_FLAG_BITPOS, isLong);
 
-		f.param.append(message.getParams(), len);
+		//f.param.append(message.getParams(), len);
 		f.sanitize();
 
 		vec.push_back(f);

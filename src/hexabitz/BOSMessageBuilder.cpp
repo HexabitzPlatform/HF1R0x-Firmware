@@ -41,9 +41,9 @@ hstd::Message hstd::make_message(Addr_t dest, Addr_t src, uint16_t code)
 
 
 	// TODO: Change Options from release 0.1.6 to release 0.2.x
-	message.setCLIOnlyFlag(cliFlag_);
-	message.setMessOnlyFlag(messFlag_);
-	message.setTraceFlag(traceFlag_);
+	//message.setCLIOnlyFlag(cliFlag_);
+	//message.setMessOnlyFlag(messFlag_);
+	//message.setTraceFlag(traceFlag_);
 
 	return message;
 }
