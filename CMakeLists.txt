@@ -17,25 +17,23 @@ project(hexabitz VERSION "${HEXABITZ_VERSION_MAJOR}.${HEXABITZ_VERSION_MINOR}"
 configure_file(${CMAKE_SOURCE_DIR}/Config.h.in ${PROJECT_SOURCE_DIR}/include/Config.h)
 
 ############################## Shared Library ##############################
-add_library(hexabitz SHARED src/hal/Serial.cpp src/helper/helper.cpp 
-                    src/helper/BinaryStream.cpp 
-                    src/helper/GenericStream.cpp src/hexabitz/BOSMessage.cpp
-					src/hexabitz/ProxyModule.cpp src/hexabitz/BOSFrame.cpp 
-                    src/hexabitz/BOSMessageBuilder.cpp src/hexabitz/BOS.cpp 
-                    src/hexabitz/Service.cpp src/hexabitz/ModuleInfo.cpp)
+add_library(hexabitz SHARED 
+		    src/hexabitz/BOS_Message.cpp
+                    src/hexabitz/wiringPi.c 
+		    src/hexabitz/BOS.cpp 
+                    src/hexabitz/wiringSerial.c
+		    )
 
 target_include_directories(hexabitz PUBLIC include/)
 set_target_properties(hexabitz PROPERTIES VERSION ${PROJECT_VERSION})
 set_property(TARGET hexabitz PROPERTY CXX_STANDARD 17)
 
 set(PUBLIC_INCLUDE_FILES 
-            include/hal/Serial.h include/helper/helper.h 
-            include/helper/BinaryStream.h 
-            include/helper/GenericStream.h include/hexabitz/BOSMessage.h
-            include/hexabitz/ProxyModule.h include/hexabitz/BOSFrame.h 
-            include/hexabitz/BOSMessageBuilder.h include/hexabitz/BOS.h 
-            include/hexabitz/Service.h include/hexabitz/ModuleInfo.h
-)
+                    src/hexabitz/BOS_Message.h
+	            src/hexabitz/MessageCode.h 
+                    src/hexabitz/wiringPi.h
+		    src/hexabitz/BOS.h 
+                    src/hexabitz/wiringSerial.h)
 
 # set_target_properties(hexabitz PROPERTIES PUBLIC_HEADER "${PUBLIC_INCLUDE_FILES}")
 
@@ -47,13 +45,14 @@ install(TARGETS hexabitz
 install(DIRECTORY "include/" DESTINATION include/hexabitz)
 
 ############################# Demo Application #############################
-add_executable(hexabitz-demo src/tools/demo-H01R0.cpp)
+add_executable(hexabitz-demo src/Demo/demo.cpp)
 target_link_libraries(hexabitz-demo hexabitz)
+
 set_property(TARGET hexabitz-demo PROPERTY CXX_STANDARD 17)
 
 install(TARGETS hexabitz-demo RUNTIME DESTINATION bin)
 
 # Cpack
 set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "abhiarora")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Najib")
 include(CPack)

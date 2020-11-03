@@ -1,62 +1,62 @@
-#include "hexabitz/BOS.h"
+/*
+    BitzOS (BOS) V0.2.3 - Copyright (C) 2017-2020 Hexabitz
+    All rights reserved
 
-#include <vector>
-#include <map>
+    File Name     : BOS.cpp
+    Description   : Source code for Bitz Operating System (BOS).
+		
+*/
 
-#define CONVERT_TO_STR_PART_NUMBER(x,y)					TO_STR(x), 
-#define CONVERT_TO_NUM_OF_PORTS(x,y)					(y), 
+/* Includes ------------------------------------------------------------------*/
 
-#define CONVERT_TO_CODE_VALUE_PAIR(x,y)					{ y, TO_STR(x) }, 
+#include "BOS.h"
 
-static const std::vector<std::string> enumStrMap = {
-	_PARTNUM_SEQ(CONVERT_TO_STR_PART_NUMBER)
-};
+/* Welcome Message ------------------------------------------------------------*/
 
-static const std::vector<int> enumNumPortsMap = {
-	_PARTNUM_SEQ(CONVERT_TO_NUM_OF_PORTS)
-};
+const char *WelcomeMessage =	
+"\n\r\n\r====================================================	\
+     \n\r====================================================	\
+     \n\r||            Welcome to BitzOS CLI!              ||	\
+	 \n\r||       (C) COPYRIGHT HEXABITZ 2017-2020.        ||	\
+     \n\r||                                                ||	\
+	 \n\r||      Please check the project website at       ||	\
+	 \n\r||             http://hexabitz.com/               ||	\
+     \n\r||                                                ||	\
+     \n\r||   This BitzOS is running on Raspberry Pi       ||	\
+     \n\r====================================================	\
+     \n\r====================================================	\
+     \r";
+     
+/* Function prototypes -------------------------------------------------------*/
+void init(void);
+void delay_s(uint8_t duration);
 
-static std::map<int, std::string> codeStrMap = {
-	_CODE_SEQ(CONVERT_TO_CODE_VALUE_PAIR)
-};
 
-#undef CONVERT_TO_STR_PART_NUMBER
-#undef CONVERT_TO_NUM_OF_PORTS
-#undef CONVERT_TO_CODE_VALUE_PAIR
+BOS_t BOS;
+BOS_t BOS_default = {.response = BOS_RESPONSE_NONE, .trace = TRACE_NONE };
+											 
 
+/*----------------------------------APIS-------------------------------------*/
 
-std::string BOS::toString(enum module_pn_e pn)
-{
-	if (pn == BOS::INVALID)
-		return std::string();
-	if (pn >= enumStrMap.size())
-		return std::string();
-	return std::string(enumStrMap[static_cast<int>(pn)]);
+void init(void){
+  
+  std::cout<<WelcomeMessage<<std::endl;
+  std::cout<<"Bitzos version V"<<_firmMajor<<"."<<_firmMinor<<"."<<_firmPatch<<"\n"<<std::endl;
 }
 
-enum BOS::module_pn_e BOS::toPartNumberEnum(std::string str)
-{
-	for (int i = 0; i < enumStrMap.size(); i++) {
-		if (!enumStrMap[i].compare(str))
-			return static_cast<enum BOS::module_pn_e>(i);
-	}
-	return BOS::INVALID;
-}
+void delay_s(uint8_t duration){
+    
+    using namespace std::this_thread; // sleep_for, sleep_until
+    using namespace std::chrono; // nanoseconds, system_clock, seconds
+    
+    
+    sleep_for(seconds(duration));
+    sleep_until(system_clock::now() + seconds(1));
+  
 
-std::string BOS::getStrOfCode(int code)
-{
-	return codeStrMap[code];
 }
+    
+/*-------------------------APIS----------------------------*/
 
-std::vector<std::string> BOS::getPartNumberList(void)
-{
-	return enumStrMap;
-}
 
-int BOS::getNumOfPorts(enum module_pn_e partNum)
-{
-	int index = static_cast<int>(partNum);
-	if (index >= enumNumPortsMap.size())
-		return -1;
-	return enumNumPortsMap[index];
-}
+/************************ (C) COPYRIGHT HEXABITZ *****END OF FILE****/
