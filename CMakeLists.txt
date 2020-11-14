@@ -22,6 +22,7 @@ add_library(hexabitz SHARED
                     src/hexabitz/wiringPi.c 
 		    src/hexabitz/BOS.cpp 
                     src/hexabitz/wiringSerial.c
+		    src/hexabitz/BOS_Porting.cpp
 		    )
 
 target_include_directories(hexabitz PUBLIC include/)
@@ -33,7 +34,8 @@ set(PUBLIC_INCLUDE_FILES
 	            src/hexabitz/MessageCode.h 
                     src/hexabitz/wiringPi.h
 		    src/hexabitz/BOS.h 
-                    src/hexabitz/wiringSerial.h)
+                    src/hexabitz/wiringSerial.h
+		    src/hexabitz/BOS_Porting.h)
 
 # set_target_properties(hexabitz PROPERTIES PUBLIC_HEADER "${PUBLIC_INCLUDE_FILES}")
 

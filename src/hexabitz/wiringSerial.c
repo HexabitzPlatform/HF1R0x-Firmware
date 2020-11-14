@@ -110,7 +110,7 @@ int serialOpen (const char *device, const int baud)
     options.c_oflag &= ~OPOST ;
 
     options.c_cc [VMIN]  =   0 ;
-    options.c_cc [VTIME] = 10 ;	// Ten seconds (100 deciseconds)
+    options.c_cc [VTIME] = 5 ;	// Ten seconds (100 deciseconds)
 
   tcsetattr (fd, TCSANOW, &options) ;
 

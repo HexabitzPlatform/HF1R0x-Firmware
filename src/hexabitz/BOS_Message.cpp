@@ -5,18 +5,21 @@
     File Name     : BOS_Message.cpp
     Description   : Hexabitz Messaging source file. .
 */
-
 /* Includes ------------------------------------------------------------------*/
 
 #include "BOS_Message.h"
-
+#include <iomanip>
+#include <cassert>
 /* Function prototypes -------------------------------------------------------*/
 
-void SendMessage(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfParams);
+void SendMessageToModule(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfParams);
 uint16_t *reverse_array(uint16_t *array, uint8_t length);
-uint32_t crc32b(uint16_t *message, size_t l);
+uint8_t crc32b(uint16_t *message, size_t l);
 uint8_t *ReceiveMessage(uint8_t *buffer,int length);
 uint8_t *Receivedata(uint8_t *buffer,int length,uint32_t period , uint32_t timeout);
+uint8_t *ReceiveIRdata(uint8_t *buffer,int length,uint32_t period , uint32_t timeout,const std::string& unit);
+uint8_t *ReceiveWeight(uint8_t *buffer,int length,uint32_t period , uint32_t timeout,const std::string& unit);
+
 /*definitions -------------------------------------------------------*/
 
 #define MAX_MESSAGE_SIZE 56
@@ -26,7 +29,7 @@ uint8_t *Receivedata(uint8_t *buffer,int length,uint32_t period , uint32_t timeo
 /*variables ---------------------------------------------------------*/
 uint8_t messageParams[MAX_PARAMS_PER_MESSAGE] = {0};
 int fd;
-typedef unsigned char uchar;
+
 
 /*----------------------------------APIS-------------------------------------*/
 
@@ -38,16 +41,17 @@ typedef unsigned char uchar;
   * @param numberOfParams: number of parameters to be sent.
   * @retval void
   */
-void SendMessage(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfParams)
+void SendMessageToModule(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfParams)
 {
 	uint16_t message[MAX_MESSAGE_SIZE] = {0};
 	uint16_t message1[MAX_MESSAGE_SIZE] = {0};
 	uint8_t length = 0, length1 = 0, shift = 0, ptrshift = 0,crcshift=0;
-	uint16_t *buf1;
+	uint16_t *buf;
 	uint32_t crc=0;
 	bool extendOptions=false,extendCode=false;
 	static uint16_t totalNumberOfParams = 0;
-	
+	uint8_t bcastID = 0;			// Counter for unique broadcast ID
+
 	/*Try to open serial port */
 	if ((fd = serialOpen("/dev/serial0", 921600)) < 0)
 		std::cout << "not Connected successfully" << std::endl;
@@ -98,7 +102,7 @@ void SendMessage(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfPar
 				if ( (totalNumberOfParams/numberOfParams) >= 1) 
 				{	
 					/* Call this function recursively */
-					SendMessage(src,dst,code,numberOfParams);
+					SendMessageToModule(src,dst,code,numberOfParams);
 					delay_s(1);
 					/* Update remaining number of parameters */
 					totalNumberOfParams -= numberOfParams;
@@ -116,6 +120,14 @@ void SendMessage(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfPar
 			}
 		}	
 
+			/* Add unique broadcast ID */
+			if ( (dst == BOS_BROADCAST) && ((numberOfParams+1) < MAX_PARAMS_PER_MESSAGE) )
+				message[7+shift+numberOfParams] = ++bcastID;
+
+			/* Calculate new message length */
+			if (dst == BOS_BROADCAST)
+				length += 1;		// + bcastID
+				
 		length1 = length + 4;
 		message[2] = length;
 		for(int g=0;g<length1;g++){
@@ -126,22 +138,16 @@ void SendMessage(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfPar
 		/* End of message - Calculate CRC8 */	
 		uint8_t totallength=length+3;
 
-		if(totallength%2!=0) totallength++;
-	
-		buf1 = reverse_array(message, totallength);
-		crc= crc32b(buf1,totallength);
-	 
+		crc= crc32b(message,totallength);
+		
 		message1[length+3] = crc;
 		
 	/* Transmit the message from this port */
 
-	for (int i = 0; i <length1; i++)
-	{
+	for (int i = 0; i <length1; i++){
 		serialPutchar(fd, message1[i]);
-		std::cout<<"Message["<<i<<"]=0x"<<std::hex<<(message1[i])<<std::endl;
-	}
-	
-	
+		std::cout<<"Message["<<i<<"]=0x"<<std::hex<<(message1[i])<<std::endl;}
+
 	serialClose(fd);
 }
 
@@ -151,13 +157,39 @@ void SendMessage(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfPar
   * @param length: data buffer length.
   * @retval uint32_t CRC(returned value LSBs for CRC shorter than 32 bits)
   */
-uint32_t crc32b(uint16_t *message, size_t length)
+uint8_t crc32b(uint16_t *message, size_t length)
 {
 	size_t i, j;
 	unsigned int msb;
 	unsigned int crc = 0xFFFFFFFF;
-	for (i = 0; i < length; i++)
-	{
+	static uint16_t array_temp[20]={0};
+	uint8_t shift=0;
+	uint8_t jj=3;
+	
+
+	double l=ceil(double(length)/double(4));
+
+	if(l<=2)l=2;
+		
+	//reverse data of array to use it in CRC calcultion function.//
+
+	for(int i=1;i<=l;i++){
+	
+		for (int ii = shift+0; ii <shift+4; ++ii)
+			{
+				array_temp[ii] = message[jj+shift];
+				jj--;
+			}
+		jj=3;
+		shift=shift+4;
+		}
+	
+	for(int g=0;g<shift;g++){
+		message[g]=array_temp[g];	
+	}
+		
+		//Compute the CRC value of data buffer
+	for (i = 0; i < shift; i++){
 		// xor next byte to upper bits of crc
 		crc ^= (((unsigned int)message[i]) << 24);
 		for (j = 0; j < 8; j++)
@@ -169,53 +201,17 @@ uint32_t crc32b(uint16_t *message, size_t length)
 	}
 	return crc; // don't complement crc on output
 }
-/**
-  * @brief reverse data of array to use it in CRC calcultion function.
-  * @param array: array that you want to reverse.
-  * @param length: the length of array
-  * @retval reversed array
-  */
-uint16_t *reverse_array(uint16_t *array, uint8_t length)
-{
-	int l=ceil(length/4);
 
-	if(l<2)l=2;
-	
-	std::cout<<"l="<<l<<std::endl;
-
-	static uint16_t array_temp[20]={0};
-	uint8_t shift=0;
-	uint8_t jj=3;
-	for(int i=1;i<=l;i++){
-	
-	for (int ii = shift+0; ii <shift+4; ++ii)
-	{
-		array_temp[ii] = array[jj+shift];
-		jj--;
-	}
-	jj=3;
-	shift=shift+4;
-	}
-	
-for(int g=0;g<length;g++){
-			array[g]=array_temp[g];
-		}
-			
-	return array;
-}
 /**
   * @brief Receive an amount of data.
   * @param buffer: pointer to data buffer.
-  * @param length: amount of data to be receeived.
+  * @param dst: amount of data to be receeived.
   * @retval data buffer
   */
-uint8_t *ReceiveMessage(uint8_t *buffer,int length)
+uint8_t *ReceiveMessage(uint8_t *buffer,int length,uint32_t period , uint32_t timeout)
 {
-	fd_set set;
-	int rv,x=0;
-	char array1[length]={0};
-	int data=0,i=0;
-
+		char array1[length]={0};
+		int data=0,i=0;
 		memset(buffer,0,length);
 		serialFlush(fd);
 	
@@ -223,87 +219,23 @@ uint8_t *ReceiveMessage(uint8_t *buffer,int length)
 	if ((fd = serialOpen("/dev/serial0", 921600)) < 0)
 		std::cout << "not Connected successfully" << std::endl;
 		
-		FD_ZERO(&set);
-		FD_SET(fd,&set);
-			
-		struct timeval timeout1;
-		timeout1.tv_sec=0;
-		timeout1.tv_usec=10000;
-		
-		rv=select(fd+1,&set,Null,Null,&timeout1);
-		
-		if(rv==-1)
-		std::cout<<"select"<<std::endl;
-		else if(rv=0)
-		std::cout<<"timout"<<std::endl;
-		else{
-		int rv1=read(fd,array1,sizeof(array1));
-		if(rv1<0) std::cout<<"read failed"<<std::endl;
-		}
-
-		
-	for(int g=0;g<length;g++){
-			buffer[g]=array1[g];
-		}
-	serialClose(fd);
-		
-	return buffer;
-}
-
-
-
-/* convert received Bytes into float */
-float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3)
-{
-    float output;
-
-    *((uchar*)(&output) + 3) = b0;
-    *((uchar*)(&output) + 2) = b1;
-    *((uchar*)(&output) + 1) = b2;
-    *((uchar*)(&output) + 0) = b3;
-
-    return output;
-}
-
-
-uint8_t *Receivedata(uint8_t *buffer,int length ,uint32_t period , uint32_t timeout)
-{
-	  uint8_t array1[length]={0};
-	  float temp1=0, temp2=0,temp3=0;
-
-		memset(buffer,0,length);
-		serialFlush(fd);
-	
-	int i=0;
-	if ((fd = serialOpen("/dev/serial0", 921600)) < 0)
-		std::cout << "not Connected successfully" << std::endl;
-		
-			long numTimes = timeout / period;
+		long numTimes = timeout / period;
 		while(numTimes-- >0){
-			
-			do{
+			while(serialDataAvail(fd)>0){
 			array1[i]=serialGetchar(fd);
 			i++;
-			if(i==3){
-				temp1=bytesToFloat(array1[0], array1[1], array1[2], array1[3]);
-				std::cout<<"Gyro X="<<temp1<<" | ";}
-
-
-			if(i==7){
-				temp2=bytesToFloat(array1[4], array1[5], array1[6], array1[7]);
-				std::cout<<" Y="<<temp2<<" | ";}
-					
-			if(i==11){
-				temp3=bytesToFloat(array1[8], array1[9], array1[10], array1[11]);
-				std::cout<<" Z="<<temp3<<std::endl; i=0;}
-				
-			} while(serialDataAvail(fd)>0);
+			} 
 		}
 		
 		std::cout<<"no more data to receive"<<std::endl;
-
+		
+		//Copy Received Buffer
+		for(int g=0;g<length;g++){
+			buffer[g]=array1[g];
+			}
+		
 	serialClose(fd);
 		
 	return buffer;
 }
-/*-----------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/

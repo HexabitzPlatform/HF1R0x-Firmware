@@ -64,6 +64,15 @@ typedef struct
 } 
 BOS_t;
 
+/* BOS_Status Type Definition */  
+typedef enum 
+{   BOS_OK = 0,
+    BOS_ERR_UnknownMessage = 1,
+    BOS_ERR_NoResponse = 2,
+    BOS_MULTICAST = 254,
+    BOS_BROADCAST = 255,
+    } BOS_Status;
+
 /* Exported internal functions ---------------------------------------------------------*/
 extern void init(void);
 extern void delay_s(uint8_t duration);

@@ -157,7 +157,7 @@
 #define CODE_H26R0_SAMPLE_KGRAM              1907
 #define CODE_H26R0_SAMPLE_OUNCE              1908
 #define CODE_H26R0_SAMPLE_POUND              1909
-#define CODE_H26R0_ZEROCAL                	 1910
+#define CODE_H26R0_ZEROCAL                   1910
 #define CODE_H26R0_STREAM_RAW                1911
 #define CODE_H26R0_SAMPLE_RAW                1912
 #define CODE_H26R0_STREAM_FORMAT             1913
