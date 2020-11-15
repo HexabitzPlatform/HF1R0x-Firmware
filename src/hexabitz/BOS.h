@@ -42,6 +42,7 @@
 /*Hexabitz Libraries */
 #include "MessageCode.h"
 #include "BOS_Message.h"
+#include "BOS_Porting.h"
 
 /* Firmware version */
 #define	_firmMajor			0

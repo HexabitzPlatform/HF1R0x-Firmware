@@ -12,7 +12,7 @@
 #include <cassert>
 /* Function prototypes -------------------------------------------------------*/
 
-void SendMessageToModule(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfParams);
+void SendMessageToModule(uint16_t dst, uint16_t code, uint16_t numberOfParams);
 uint16_t *reverse_array(uint16_t *array, uint8_t length);
 uint8_t crc32b(uint16_t *message, size_t l);
 uint8_t *ReceiveMessage(uint8_t *buffer,int length);
@@ -25,7 +25,7 @@ uint8_t *ReceiveWeight(uint8_t *buffer,int length,uint32_t period , uint32_t tim
 #define MAX_MESSAGE_SIZE 56
 #define MAX_PARAMS_PER_MESSAGE (MAX_MESSAGE_SIZE - 10)    // H + Z + length + Dst + Src + 1 x Options + 2 x Code + CRC + 1 x reserved = 10
 #define Null 0
-
+#define Raspberrypi_id 1
 /*variables ---------------------------------------------------------*/
 uint8_t messageParams[MAX_PARAMS_PER_MESSAGE] = {0};
 int fd;
@@ -41,7 +41,7 @@ int fd;
   * @param numberOfParams: number of parameters to be sent.
   * @retval void
   */
-void SendMessageToModule(uint16_t src, uint16_t dst, uint16_t code, uint16_t numberOfParams)
+void SendMessageToModule(uint16_t dst, uint16_t code, uint16_t numberOfParams)
 {
 	uint16_t message[MAX_MESSAGE_SIZE] = {0};
 	uint16_t message1[MAX_MESSAGE_SIZE] = {0};
@@ -67,7 +67,7 @@ void SendMessageToModule(uint16_t src, uint16_t dst, uint16_t code, uint16_t num
 	
 	/* Header */
 	message[3] = dst;
-	message[4] = src;
+	message[4] = Raspberrypi_id;
 	
 	if(code> 0xFF) extendCode=true;
 
@@ -102,7 +102,7 @@ void SendMessageToModule(uint16_t src, uint16_t dst, uint16_t code, uint16_t num
 				if ( (totalNumberOfParams/numberOfParams) >= 1) 
 				{	
 					/* Call this function recursively */
-					SendMessageToModule(src,dst,code,numberOfParams);
+					SendMessageToModule(dst,code,numberOfParams);
 					delay_s(1);
 					/* Update remaining number of parameters */
 					totalNumberOfParams -= numberOfParams;

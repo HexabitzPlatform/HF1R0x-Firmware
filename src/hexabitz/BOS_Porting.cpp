@@ -5,21 +5,22 @@
     File Name     : BOS_Porting.cpp
     Description   : Hexabitz Messaging source file. .
 */
-/* Includes ------------------------------------------------------------------*/
+/*  ----------------------------Includes--------------------------------------*/
 
 #include "BOS_Porting.h"
 
-/*variables ---------------------------------------------------------*/
+/* -----------------------------variables-------------------------------------*/
 
 typedef unsigned char uchar;
 
-/* Function prototypes -------------------------------------------------------*/
+/*  ------------------------------Function prototypes-------------------------*/
 uint8_t *ReceiveIMU(uint8_t *buffer,int length,uint32_t period , uint32_t timeout);
 uint8_t *ReceiveIR(uint8_t *buffer,int length,uint32_t period , uint32_t timeout,const std::string& unit);
 uint8_t *ReceiveWeight(uint8_t *buffer,int length,uint32_t period , uint32_t timeout,const std::string& unit);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
 
 
+/*------------------------------API ------------------------------------------*/
 
 /**
   * @brief Receive an amount of From IMU Module(H0BR4x).
@@ -32,7 +33,7 @@ float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
 
 uint8_t *ReceiveIMU(uint8_t *buffer,int length,uint32_t period , uint32_t timeout)
 {
-	  uint8_t array1[length]={0};
+	  uint8_t array_temp[length]={0};
 	  float temp1=0, temp2=0,temp3=0;
 
 		memset(buffer,0,length);
@@ -46,21 +47,24 @@ uint8_t *ReceiveIMU(uint8_t *buffer,int length,uint32_t period , uint32_t timeou
 		while(numTimes-- >0){
 			
 			do{
-			array1[i]=serialGetchar(fd);
-			i++;
+			array_temp[i]=serialGetchar(fd);
+			
 			if(i==3){
-				temp1=bytesToFloat(array1[0], array1[1], array1[2], array1[3]);
+				temp1=bytesToFloat(array_temp[0], array_temp[1], array_temp[2], array_temp[3]);
 				std::cout<<"Gyro X="<<temp1<<" | ";}
 
 
 			if(i==7){
-				temp2=bytesToFloat(array1[4], array1[5], array1[6], array1[7]);
+				temp2=bytesToFloat(array_temp[4], array_temp[5], array_temp[6], array_temp[7]);
 				std::cout<<" Y="<<temp2<<" | ";}
 					
 			if(i==11){
-				temp3=bytesToFloat(array1[8], array1[9], array1[10], array1[11]);
-				std::cout<<" Z="<<temp3<<std::endl; i=0;}
+				temp3=bytesToFloat(array_temp[8], array_temp[9], array_temp[10], array_temp[11]);
+				std::cout<<" Z="<<temp3<<std::endl;}
+				i++;
 				
+			if(i==12) i=0;
+			
 			} while(serialDataAvail(fd)>0);
 		}
 		
@@ -81,8 +85,8 @@ uint8_t *ReceiveIMU(uint8_t *buffer,int length,uint32_t period , uint32_t timeou
   */
 uint8_t *ReceiveIR(uint8_t *buffer,int length,uint32_t period , uint32_t timeout,const std::string& unit)
 {
-	  uint8_t array2[length]={0};
-	  float temp1=0;
+	  uint8_t array_temp[length]={0};
+	  float temp1=5;
 
 		memset(buffer,0,length);
 		serialFlush(fd);
@@ -94,17 +98,20 @@ uint8_t *ReceiveIR(uint8_t *buffer,int length,uint32_t period , uint32_t timeout
 		long numTimes = timeout / period;
 		while(numTimes-- >0){
 			
-			do{
-		read (fd,(void*)&array2[i], 1);	
-		std::cout<<"array2 <"<<i<<">:"<<std::dec<<int(array2[i])<<std::endl;
+	 do{
+		array_temp[i]=serialGetchar(fd);
 
-		if(array2[i]==CODE_H08R6_MAX_RANGE) std::cout<<"distance : max"<<std::endl;
-		else if (array2[i]==CODE_H08R6_MIN_RANGE) std::cout<<"distance : min"<<std::endl;
+		if(array_temp[i]=='H') std::cout<<"out of range"<<std::endl;
 		else{	
 		if(i==3){
-		//temp1=( (uint8_t) array1[3] << 24 ) + ( (uint8_t) array1[2] << 16 ) + ( (uint8_t) array1[1] << 8 ) + ((uint8_t) array1[0]);
-		temp1=bytesToFloat(array2[0],array2[1],array2[2],array2[3]);
-		std::cout<<"distance <"<<unit<<">:"<<std::dec<<temp1<<std::endl;
+
+		temp1=bytesToFloat(array_temp[0],array_temp[1],array_temp[2],array_temp[3]);
+		
+		if(temp1>800) 	std::cout<<"distance <"<<unit<<">: MAX"<<std::endl;
+		
+		else if(temp1<5) std::cout<<"distance <"<<unit<<">: MIN"<<std::endl;
+		
+		else std::cout<<"distance <"<<unit<<">:"<<std::dec<<temp1<<std::endl;
 		}
 			
 			i++;
@@ -130,8 +137,9 @@ uint8_t *ReceiveIR(uint8_t *buffer,int length,uint32_t period , uint32_t timeout
 uint8_t *ReceiveWeight(uint8_t *buffer,int length,uint32_t period , uint32_t timeout,const std::string& unit)
 {
 	 
-	  uint8_t array2[length]={0};
-	  uint8_t temp1=0,i=0;	
+	  uint8_t array_temp[length]={0};
+	  float temp1=0;
+	  uint8_t i=0;	
 
 		memset(buffer,0,length);
 		serialFlush(fd);
@@ -143,19 +151,14 @@ uint8_t *ReceiveWeight(uint8_t *buffer,int length,uint32_t period , uint32_t tim
 		while(numTimes-- >0){
 			
 		do{
-		read (fd,(void*)&array2[i], 1);	
-		std::cout<<"array2 <"<<i<<">:"<<std::dec<<int(array2[i])<<std::endl;
+		array_temp[i]=serialGetchar(fd);
 
-		if(array2[i]==CODE_H08R6_MAX_RANGE) std::cout<<"distance : max"<<std::endl;
-		else if (array2[i]==CODE_H08R6_MIN_RANGE) std::cout<<"distance : min"<<std::endl;
-		else{	
 		if(i==3){
-		temp1=( (uint8_t) array2[0] << 24 ) + ( (uint8_t) array2[1] << 16 ) + ( (uint8_t) array2[2] << 8 ) + ((uint8_t) array2[3]);
-		//temp1=bytesToFloat(array2[0],array2[1],array2[2],array2[3]);
-		std::cout<<"Weight <"<<unit<<">:"<<std::dec<<int(temp1)<<std::endl;}
-			
+		temp1=bytesToFloat(array_temp[0],array_temp[1],array_temp[2],array_temp[3]);
+		std::cout<<"Weight <"<<unit<<">:"<<std::dec<<temp1<<std::endl;}
+	
 		i++;
-		if(i==4) i=0;}				
+		if(i==4) i=0;			
 			
 			} while(serialDataAvail(fd)>0);
 		}

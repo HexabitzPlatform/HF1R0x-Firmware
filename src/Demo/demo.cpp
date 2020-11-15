@@ -17,8 +17,6 @@ int main(int argc, char *argv[])
   
       init();	
 
-
-	
 	std::cout<<"Press any Key and enter to exit"<<std::endl;
 	while(1){
 	  
