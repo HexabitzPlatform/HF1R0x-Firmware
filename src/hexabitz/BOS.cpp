@@ -17,7 +17,7 @@ const char *WelcomeMessage =
 "\n\r\n\r====================================================	\
      \n\r====================================================	\
      \n\r||            Welcome to BitzOS CLI!              ||	\
-	 \n\r||       (C) COPYRIGHT HEXABITZ 2017-2020.        ||	\
+	 \n\r||       (C) COPYRIGHT HEXABITZ 2017-2024.        ||	\
      \n\r||                                                ||	\
 	 \n\r||      Please check the project website at       ||	\
 	 \n\r||             http://hexabitz.com/               ||	\
