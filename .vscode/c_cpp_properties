@@ -1,0 +1,32 @@
+{
+  "configurations": [
+      {
+          "name": "Raspberry Pi",
+          "includePath": [
+              "${workspaceFolder}/BOS",
+              "${workspaceFolder}/Pi_library",
+              "${workspaceFolder}/Porting",   // Added Porting folder
+              "${workspaceFolder}/src",
+              "/usr/include/c++/11", 
+              "/usr/include/c++/11/arm-linux-gnueabihf",
+              "/usr/include/arm-linux-gnueabihf"
+          ],
+          "defines": [],
+          "intelliSenseMode": "gcc-arm",
+          "compilerPath": "/usr/bin/g++",
+          "cStandard": "c11",
+          "cppStandard": "c++17",
+          "browse": {
+              "path": [
+                  "${workspaceFolder}/BOS",
+                  "${workspaceFolder}/Pi_library",
+                  "${workspaceFolder}/Porting",  // Added Porting folder
+                  "${workspaceFolder}/src",
+                  "/usr/include/c++/11"
+              ],
+              "limitSymbolsToIncludedHeaders": true
+          }
+      }
+  ],
+  "version": 4
+}

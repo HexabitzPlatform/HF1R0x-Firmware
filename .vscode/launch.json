@@ -1,22 +1,17 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "name": "g++.exe - Build and debug active file",
+            "name": "Debug C++ Program",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "program": "${workspaceFolder}/src/app",  // Change 'app' to your output executable name
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "C:\\Program Files (x86)\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin\\gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -24,7 +19,12 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++.exe build active file"
+            "miDebuggerPath": "/usr/bin/gdb",  // Default gdb path on Raspberry Pi
+            "preLaunchTask": "Build C++ Project",  // Ensure build is done before launching
+            "serverLaunchTimeout": 10000,
+            "filterStdout": true,
+            "filterStderr": true
         }
     ]
-}
+  }
+  
