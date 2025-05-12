@@ -59,7 +59,11 @@ void UARTParser::feed(uint8_t byte)
             if (calculatedCRC == receivedCRC)
             {
                 if (callback)
-                    callback(buffer); // Call callback with valid message
+                {
+                    // Only pass the payload (excluding Length and CRC)
+                    std::vector<uint8_t> payload(crcData.begin() + 1, crcData.end());
+                    callback(payload); // Call callback with valid payload
+                }
             }
             else
             {

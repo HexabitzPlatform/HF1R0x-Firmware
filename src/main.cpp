@@ -1,5 +1,6 @@
 // #include "Porting.h"
 // #include "UARTParser.h"
+// #include "BOS_MessageParser.h"
 // #include <thread>
 // #include <chrono>
 // #include <iostream>
@@ -13,15 +14,12 @@
 //     Porting::initUART(14, 15, 115200); // Adjust TX/RX pins as needed
 
 //     static UARTParser parser;
+//     static BOS_MessageParser bosParser;  // Create BOS message parser instance
 
-//     // Define what to do when a full valid message is received
-//     parser.onMessageReceived([](const std::vector<uint8_t>& message) {
-//         std::cout << "Received valid BOS packet: ";
-//         for (uint8_t byte : message) {
-//             printf("%02X ", byte);
-//         }
-//         std::cout << std::endl;
-//     });
+// Set the callback once
+// parser.onMessageReceived([&](const std::vector<uint8_t> &payload) {
+//     bosParser.parseMessage(payload);
+// });
 
 //     Porting::uartReceive([=](char c) {
 //         parser.feed(static_cast<uint8_t>(c));
