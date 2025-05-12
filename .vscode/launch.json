@@ -5,7 +5,7 @@
             "name": "Debug C++ Program",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/app",  // Change 'app' to your output executable name
+            "program": "${workspaceFolder}/src/app", // Change 'app' to your output executable name
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -19,12 +19,11 @@
                     "ignoreFailures": true
                 }
             ],
-            "miDebuggerPath": "/usr/bin/gdb",  // Default gdb path on Raspberry Pi
-            "preLaunchTask": "Build C++ Project",  // Ensure build is done before launching
+            "miDebuggerPath": "/usr/bin/gdb", // Default gdb path on Raspberry Pi
+            "preLaunchTask": "Build C++ Project", // Ensure build is done before launching
             "serverLaunchTimeout": 10000,
             "filterStdout": true,
             "filterStderr": true
         }
     ]
-  }
-  
+}

@@ -1,35 +1,38 @@
-// src/main.cpp
 #include "Porting.h"
+#include "UARTParser.h"
+#include <thread>
+#include <chrono>
 #include <iostream>
-#include <unistd.h> // for sleep
-#include <cstring>  // for strlen
 
 int main()
 {
     const int ledPin = 17; // GPIO17 (BCM numbering)
-    const std::string message = "Hello from Raspberry Pi!\n";
 
-    std::cout << "Initializing peripherals...\n";
+    std::cout << "Blinking LED and receiving UART data...\n";
 
-    // Send a message over UART
-    Porting::uartSend(message);
+    Porting::initUART(14, 15, 115200); // Adjust TX/RX pins as needed
 
-    // Register a receive callback
-    Porting::setUartReceiveCallback([](char c)
-                                    { std::cout << "Received char over UART: " << c << std::endl; });
+    static UARTParser parser;
 
-    std::cout << "Blinking LED on GPIO" << ledPin << " and sending UART data...\n";
+    // Define what to do when a full valid message is received
+    parser.onMessageReceived([](const std::vector<uint8_t>& message) {
+        std::cout << "Received valid BOS packet: ";
+        for (uint8_t byte : message) {
+            printf("%02X ", byte);
+        }
+        std::cout << std::endl;
+    });
 
-    // Blink LED forever and send periodic messages over UART
+    Porting::uartReceive([=](char c) {
+        parser.feed(static_cast<uint8_t>(c));
+    });
+
     while (true)
     {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         Porting::writeGPIO(ledPin, true); // LED ON
-        Porting::uartSend("LED ON\n");
-        sleep(1);
-
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         Porting::writeGPIO(ledPin, false); // LED OFF
-        Porting::uartSend("LED OFF\n");
-        sleep(1);
     }
 
     return 0;

@@ -5,23 +5,26 @@
 #include <thread>
 #include <atomic>
 #include <iostream>
-#include <cstring>  // for std::memcpy
+#include <cstring>
 #include <unistd.h> // for sleep
 
 #define CHIP_NAME "gpiochip0"
 
+// UART configuration constants
 namespace
 {
-    const int UART_DEVICE = 0; // pigpio UART handle
-    std::atomic<bool> receiving{false};
+    constexpr const char *UART_DEVICE_PATH = "/dev/serial0";
+    constexpr int UART_BAUDRATE = 115200;
 }
 
 namespace Porting
 {
 
+    // ========== GPIO Functions ==========
+
     void initGPIO(int pin)
     {
-        // No explicit init needed for libgpiod, just placeholder
+        // Placeholder for any GPIO init logic, depending on the system
         (void)pin;
     }
 
@@ -30,7 +33,7 @@ namespace Porting
         gpiod_chip *chip = gpiod_chip_open_by_name(CHIP_NAME);
         if (!chip)
         {
-            std::cerr << "Failed to open chip\n";
+            std::cerr << "Failed to open GPIO chip\n";
             return;
         }
 
@@ -50,6 +53,7 @@ namespace Porting
         }
 
         gpiod_line_set_value(line, value ? 1 : 0);
+
         gpiod_line_release(line);
         gpiod_chip_close(chip);
     }
@@ -57,9 +61,27 @@ namespace Porting
     bool readGPIO(int pin)
     {
         gpiod_chip *chip = gpiod_chip_open_by_name(CHIP_NAME);
-        gpiod_line *line = gpiod_chip_get_line(chip, pin);
+        if (!chip)
+        {
+            std::cerr << "Failed to open GPIO chip\n";
+            return false;
+        }
 
-        gpiod_line_request_input(line, "BOS");
+        gpiod_line *line = gpiod_chip_get_line(chip, pin);
+        if (!line)
+        {
+            std::cerr << "Failed to get GPIO line\n";
+            gpiod_chip_close(chip);
+            return false;
+        }
+
+        if (gpiod_line_request_input(line, "BOS") < 0)
+        {
+            std::cerr << "Failed to request line as input\n";
+            gpiod_chip_close(chip);
+            return false;
+        }
+
         int value = gpiod_line_get_value(line);
 
         gpiod_line_release(line);
@@ -68,35 +90,33 @@ namespace Porting
         return value == 1;
     }
 
-    /* UART Functions: */
+    // ========== UART Functions ==========
 
     void initUART(int txPin, int rxPin, int baudrate)
     {
+        (void)txPin;
+        (void)rxPin;
+        (void)baudrate;
+
         if (gpioInitialise() < 0)
         {
             std::cerr << "pigpio initialization failed" << std::endl;
-            return;
         }
-        // Note: pigpio opens serial via gpioSerialOpen with tty name
-        // This example uses default /dev/serial0
-        // For TX/RX pin configuration, you must use `dtoverlay=uartX` in /boot/config.txt
+
+        // TX/RX pin remapping is done via /boot/config.txt overlays on Pi.
     }
 
     void uartSend(const std::string &message)
     {
-        int handle = serOpen((char *)"/dev/serial0", 115200, 0);
+        int handle = serOpen(const_cast<char *>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
+
         if (handle < 0)
         {
-            std::cerr << "Failed to open UART device" << std::endl;
+            std::cerr << "Failed to open UART device for sending\n";
             return;
         }
 
-        char *buffer = new char[message.size()];
-        std::memcpy(buffer, message.c_str(), message.size());
-
-        serWrite(handle, buffer, message.size());
-
-        delete[] buffer;
+        serWrite(handle, const_cast<char *>(message.c_str()), message.size());
         serClose(handle);
     }
 
@@ -104,35 +124,8 @@ namespace Porting
     {
         std::thread([onReceiveChar]()
                     {
-            int handle = serOpen((char*)"/dev/serial0", 115200, 0);
-            if (handle < 0) {
-                std::cerr << "Failed to open UART device" << std::endl;
-                return;
-            }
-    
-            receiving = true;
-            while (receiving) {
-                if (serDataAvailable(handle) > 0) {
-                    char c;
-                    serRead(handle, &c, 1);
-                    onReceiveChar(c);
-                } else {
-                    gpioDelay(1000); // 1ms delay
-                }
-            }
-            serClose(handle); })
-            .detach();
-    }
+                        int handle = serOpen(const_cast<char*>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
 
-    static std::function<void(char)> uartCallback;
-
-    void setUartReceiveCallback(std::function<void(char)> callback)
-    {
-        uartCallback = callback;
-
-        std::thread([]
-                    {
-            int handle = serOpen((char*)"/dev/serial0", 115200, 0);
             if (handle < 0) {
                 std::cerr << "Failed to open UART device for receiving\n";
                 return;
@@ -141,10 +134,40 @@ namespace Porting
             while (true) {
                 if (serDataAvailable(handle) > 0) {
                     char c;
-                    serRead(handle, &c, 1);
-                    uartCallback(c);  // Call your callback
+                    if (serRead(handle, &c, 1) == 1) {
+                        onReceiveChar(c);
+                    }
                 }
-                gpioDelay(1000); // 1ms delay
+                gpioDelay(1000); // 1 ms delay
+            }
+
+            serClose(handle); })
+            .detach();
+    }
+
+    static std::function<void(char)> uartCallback;
+
+    void setUartReceiveCallback(std::function<void(char)> callback)
+    {
+        uartCallback = std::move(callback);
+
+        std::thread([]()
+                    {
+                        int handle = serOpen(const_cast<char*>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
+
+            if (handle < 0) {
+                std::cerr << "Failed to open UART device\n";
+                return;
+            }
+
+            while (true) {
+                if (serDataAvailable(handle) > 0) {
+                    char c;
+                    if (serRead(handle, &c, 1) == 1 && uartCallback) {
+                        uartCallback(c);
+                    }
+                }
+                gpioDelay(1000); // 1 ms delay
             }
 
             serClose(handle); })
