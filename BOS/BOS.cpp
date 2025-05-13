@@ -1,50 +1,45 @@
 #include "BOS.h"
-#include "BOS_MessageParser.h" // Will be used when dispatch logic is added
-#include "Porting.h"           // For hardware-related initialization
-#include "UARTParser.h"        // For UART setup and message handling
+#include "UARTParser.h"
+#include "Porting.h"           // Needed for uartReceiveByte()
+#include "BOS_MessageParser.h" // Needed for processBOSMessage()
 
-#include <iostream> // For debug output
-#include <thread>   // For possible background tasks
-#include <chrono>   // For delays
+#include <thread>
+#include <chrono>
+#include <iostream>
 
 namespace BOS
 {
-    // Forward declaration of message handler
-    void handleBOSMessage(const std::vector<uint8_t> &message);
-
     void initBOS()
     {
-        std::cout << "[BOS] Initializing system..." << std::endl;
-
-        // Create a static UARTParser instance
         static UARTParser parser;
 
-        // Register callback for valid messages
         parser.onMessageReceived([](const std::vector<uint8_t> &message)
-                                 {
-            std::cout << "[BOS] Received message of size " << message.size() << "\n";
-            handleBOSMessage(message); });
+                                 { handleBOSMessage(message); });
 
-        // Start UART receiving thread
-        std::thread uartThread([&parser]()
+        std::thread uartThread([]()
                                {
             while (true)
             {
-                int byte = uartReceiveByte(); // from Porting.cpp
+                int byte = Porting::uartReceiveByte(); // Call with Porting:: namespace
                 if (byte >= 0)
                 {
+                    static UARTParser parser;
                     parser.feed(static_cast<uint8_t>(byte));
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             } });
 
-        uartThread.detach(); // Let the thread run independently
+        uartThread.detach(); // Let it run in the background
     }
 
-    // Handles a full validated BOS message
     void handleBOSMessage(const std::vector<uint8_t> &message)
     {
-        // Pass message to BOS message parser
+        std::cout << "[BOS] Received valid message of size " << message.size() << "\n";
         processBOSMessage(message);
+    }
+
+    void processBOSMessage(const std::vector<unsigned char> &message)
+    {
+        // Your implementation of message processing
     }
 }

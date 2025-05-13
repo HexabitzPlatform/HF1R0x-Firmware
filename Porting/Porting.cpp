@@ -1,4 +1,3 @@
-// Porting/Porting.cpp
 #include "Porting.h"
 #include <gpiod.h>
 #include <pigpio.h>
@@ -19,7 +18,6 @@ namespace
 
 namespace Porting
 {
-
     // ========== GPIO Functions ==========
 
     void initGPIO(int pin)
@@ -173,4 +171,30 @@ namespace Porting
             serClose(handle); })
             .detach();
     }
+
+    // ========== UART Byte Receive Function ==========
+
+    int uartReceiveByte() // Call with Porting:: namespace
+    {
+        int handle = serOpen(const_cast<char *>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
+        if (handle < 0)
+        {
+            std::cerr << "Failed to open UART device for receiving\n";
+            return -1;
+        }
+
+        char byte;
+        if (serDataAvailable(handle) > 0)
+        {
+            if (serRead(handle, &byte, 1) == 1)
+            {
+                serClose(handle);
+                return static_cast<unsigned char>(byte);
+            }
+        }
+
+        serClose(handle);
+        return -1; // Return -1 if no data available
+    }
+
 }
