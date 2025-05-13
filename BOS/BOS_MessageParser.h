@@ -1,4 +1,3 @@
-// BOS_MessageParser.h
 #ifndef BOS_MESSAGE_PARSER_H
 #define BOS_MESSAGE_PARSER_H
 
@@ -13,9 +12,7 @@ public:
 private:
     void handleCode01(uint8_t source, const std::vector<uint8_t> &params);
     void handleCode02(uint8_t source, const std::vector<uint8_t> &params);
-    void handleCodeFF(uint8_t source, const std::vector<uint8_t> &params); // example for 0xFF
-
-    // Add more handler declarations as needed
+    void handleCodeFF(uint8_t source, const std::vector<uint8_t> &params);
 };
 
 #endif // BOS_MESSAGE_PARSER_H

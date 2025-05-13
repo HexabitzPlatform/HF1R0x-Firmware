@@ -1,5 +1,5 @@
-// BOS_MessageParser.cpp
 #include "BOS_MessageParser.h"
+#include "BOS_MessageCodes.h"
 #include <iostream>
 
 void BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
@@ -12,9 +12,15 @@ void BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 
     // Extract fields
     uint8_t source = payload[1];
-    uint8_t code = payload[3];
+
+    // Convert raw byte to BOSMessageCode enum using static_cast.
+    // This is needed because enum class does not implicitly convert from uint8_t,
+    // ensuring strong type safety and preventing invalid enum usage.
+    // this byte (uint8_t) actually represents a valid BOSMessageCode, so let me treat it that way.
+    BOSMessageCode code = static_cast<BOSMessageCode>(payload[3]);
 
     std::vector<uint8_t> params;
+
     if (payload.size() > 4)
     {
         params.insert(params.end(), payload.begin() + 4, payload.end());
@@ -23,17 +29,20 @@ void BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
     // Route based on message code
     switch (code)
     {
-    case 0x01:
+    case BOSMessageCode::CODE_PING:
         handleCode01(source, params);
         break;
-    case 0x02:
+
+    case BOSMessageCode::CODE_1:
         handleCode02(source, params);
         break;
-    case 0xFF:
+
+    case BOSMessageCode::CODE_2:
         handleCodeFF(source, params);
         break;
+
     default:
-        std::cerr << "Unknown message code: 0x" << std::hex << static_cast<int>(code) << "\n";
+        std::cerr << "Unknown message code: 0x" << std::hex << static_cast<int>(payload[3]) << "\n";
         break;
     }
 }
