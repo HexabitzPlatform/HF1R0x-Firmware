@@ -40,7 +40,7 @@ namespace Porting
     // ==============================
 
     /// @brief Receives one byte from UART (blocking or non-blocking, implementation-defined)
-    int uartReceiveByte(); // Add this declaration for uartReceiveByte()
+    // int uartReceiveByte(); // Add this declaration for uartReceiveByte()
 }
 
 #endif // PORTING_H

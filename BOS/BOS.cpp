@@ -7,39 +7,39 @@
 #include <chrono>
 #include <iostream>
 
-namespace BOS
-{
-    void initBOS()
-    {
-        static UARTParser parser;
+// namespace BOS
+// {
+//     void initBOS()
+//     {
+//         static UARTParser parser;
 
-        parser.onMessageReceived([](const std::vector<uint8_t> &message)
-                                 { handleBOSMessage(message); });
+//         parser.onMessageReceived([](const std::vector<uint8_t> &message)
+//                                  { handleBOSMessage(message); });
 
-        std::thread uartThread([]()
-                               {
-            while (true)
-            {
-                int byte = Porting::uartReceiveByte(); // Call with Porting:: namespace
-                if (byte >= 0)
-                {
-                    static UARTParser parser;
-                    parser.feed(static_cast<uint8_t>(byte));
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            } });
+//         std::thread uartThread([]()
+//                                {
+//             while (true)
+//             {
+//                 int byte = Porting::uartReceiveByte(); // Call with Porting:: namespace
+//                 if (byte >= 0)
+//                 {
+//                     static UARTParser parser;
+//                     parser.feed(static_cast<uint8_t>(byte));
+//                 }
+//                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//             } });
 
-        uartThread.detach(); // Let it run in the background
-    }
+//         uartThread.detach(); // Let it run in the background
+//     }
 
-    void handleBOSMessage(const std::vector<uint8_t> &message)
-    {
-        std::cout << "[BOS] Received valid message of size " << message.size() << "\n";
-        processBOSMessage(message);
-    }
+//     void handleBOSMessage(const std::vector<uint8_t> &message)
+//     {
+//         std::cout << "[BOS] Received valid message of size " << message.size() << "\n";
+//         processBOSMessage(message);
+//     }
 
-    void processBOSMessage(const std::vector<unsigned char> &message)
-    {
-        // Your implementation of message processing
-    }
-}
+//     void processBOSMessage(const std::vector<unsigned char> &message)
+//     {
+//         // Your implementation of message processing
+//     }
+// }
