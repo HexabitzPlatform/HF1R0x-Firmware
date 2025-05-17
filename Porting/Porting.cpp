@@ -1,19 +1,19 @@
 #include "Porting.h"
 #include <gpiod.h>
-#include <pigpio.h>
 #include <thread>
 #include <atomic>
 #include <iostream>
 #include <cstring>
-#include <unistd.h> // for sleep
+#include <unistd.h>  // for sleep, read, write, close
+#include <fcntl.h>   // for open
+#include <termios.h> // for termios
 
 #define CHIP_NAME "gpiochip0"
 
-// UART configuration constants
 namespace
 {
-    constexpr const char *UART_DEVICE_PATH = "/dev/serial0";
-    constexpr int UART_BAUDRATE = 115200;
+    constexpr const char *UART_DEVICE_PATH = "/dev/ttyAMA0";
+    int uartFd = -1; // POSIX UART file descriptor
 }
 
 namespace Porting
@@ -88,58 +88,90 @@ namespace Porting
         return value == 1;
     }
 
-    // ========== UART Functions ==========
+    // ========== UART Functions (POSIX) ==========
 
     void initUART(int txPin, int rxPin, int baudrate)
     {
         (void)txPin;
         (void)rxPin;
-        (void)baudrate;
 
-        if (gpioInitialise() < 0)
+        uartFd = open(UART_DEVICE_PATH, O_RDWR | O_NOCTTY | O_NDELAY);
+        if (uartFd == -1)
         {
-            std::cerr << "pigpio initialization failed" << std::endl;
+            std::cerr << "Failed to open UART device: " << strerror(errno) << std::endl;
+            return;
         }
 
-        // TX/RX pin remapping is done via /boot/config.txt overlays on Pi.
+        termios tty{};
+        if (tcgetattr(uartFd, &tty) != 0)
+        {
+            std::cerr << "Error getting UART attributes: " << strerror(errno) << std::endl;
+            close(uartFd);
+            uartFd = -1;
+            return;
+        }
+
+        cfsetospeed(&tty, B115200);
+        cfsetispeed(&tty, B115200);
+
+        tty.c_cflag &= ~PARENB;
+        tty.c_cflag &= ~CSTOPB;
+        tty.c_cflag &= ~CSIZE;
+        tty.c_cflag |= CS8;
+        tty.c_cflag &= ~CRTSCTS;
+        tty.c_cflag |= CREAD | CLOCAL;
+
+        tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY);
+        tty.c_oflag &= ~OPOST;
+
+        tty.c_cc[VMIN] = 1;
+        tty.c_cc[VTIME] = 0;
+
+        if (tcsetattr(uartFd, TCSANOW, &tty) != 0)
+        {
+            std::cerr << "Error setting UART attributes: " << strerror(errno) << std::endl;
+            close(uartFd);
+            uartFd = -1;
+        }
     }
 
     void uartSend(const std::string &message)
     {
-        int handle = serOpen(const_cast<char *>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
-
-        if (handle < 0)
+        if (uartFd == -1)
         {
-            std::cerr << "Failed to open UART device for sending\n";
+            std::cerr << "UART not initialized or failed to open.\n";
             return;
         }
 
-        serWrite(handle, const_cast<char *>(message.c_str()), message.size());
-        serClose(handle);
+        ssize_t bytesWritten = write(uartFd, message.c_str(), message.size());
+
+        if (bytesWritten < 0)
+        {
+            std::cerr << "UART write failed: " << strerror(errno) << std::endl;
+        }
     }
 
     void uartReceive(const std::function<void(char)> &onReceiveChar)
     {
+        if (uartFd == -1)
+        {
+            std::cerr << "UART not initialized or failed to open.\n";
+            return;
+        }
+
         std::thread([onReceiveChar]()
                     {
-                        int handle = serOpen(const_cast<char*>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
-
-            if (handle < 0) {
-                std::cerr << "Failed to open UART device for receiving\n";
-                return;
-            }
-
-            while (true) {
-                if (serDataAvailable(handle) > 0) {
-                    char c;
-                    if (serRead(handle, &c, 1) == 1) {
-                        onReceiveChar(c);
-                    }
+            char c;
+            while (true)
+            {
+                ssize_t bytesRead = read(uartFd, &c, 1);
+                if (bytesRead == 1)
+                {
+                    onReceiveChar(c);
                 }
-                gpioDelay(1000); // 1 ms delay
-            }
-
-            serClose(handle); })
+                usleep(1000);
+            } })
             .detach();
     }
 
@@ -149,52 +181,12 @@ namespace Porting
     {
         uartCallback = std::move(callback);
 
-        std::thread([]()
+        uartReceive([](char c)
                     {
-                        int handle = serOpen(const_cast<char*>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
-
-            if (handle < 0) {
-                std::cerr << "Failed to open UART device\n";
-                return;
-            }
-
-            while (true) {
-                if (serDataAvailable(handle) > 0) {
-                    char c;
-                    if (serRead(handle, &c, 1) == 1 && uartCallback) {
-                        uartCallback(c);
-                    }
-                }
-                gpioDelay(1000); // 1 ms delay
-            }
-
-            serClose(handle); })
-            .detach();
+            if (uartCallback)
+            {
+                uartCallback(c);
+            } });
     }
 
-    // ========== UART Byte Receive Function ==========
-
-    // int uartReceiveByte() // Call with Porting:: namespace
-    // {
-    //     int handle = serOpen(const_cast<char *>(UART_DEVICE_PATH), UART_BAUDRATE, 0);
-    //     if (handle < 0)
-    //     {
-    //         std::cerr << "Failed to open UART device for receiving\n";
-    //         return -1;
-    //     }
-
-    //     char byte;
-    //     if (serDataAvailable(handle) > 0)
-    //     {
-    //         if (serRead(handle, &byte, 1) == 1)
-    //         {
-    //             serClose(handle);
-    //             return static_cast<unsigned char>(byte);
-    //         }
-    //     }
-
-    //     serClose(handle);
-    //     return -1; // Return -1 if no data available
-    // }
-
-}
+} // namespace Porting

@@ -1,37 +1,110 @@
-#include "Porting.h"
-#include "UARTParser.h"
-#include "BOS_MessageParser.h"
+#include "Porting.h"           // GPIO + UART hardware abstraction
+#include "UARTParser.h"        // BOS byte stream parser
+#include "BOS_MessageParser.h" // BOS message payload handler
+
+#include <iostream>
 #include <thread>
 #include <chrono>
-#include <iostream>
 
 int main()
 {
-    const int ledPin = 17; // GPIO17 (BCM numbering)
+    // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
+    Porting::initUART(14, 15, 115200);
 
-    std::cout << "Blinking LED and receiving UART data...\n";
+    std::cout << "? UART initialized. Listening for BOS messages from hardware...\n";
 
-    Porting::initUART(14, 15, 115200); // Adjust TX/RX pins as needed
+    BOS_MessageParser bosParser;
+    UARTParser uartParser;
 
-    static UARTParser parser;
-    static BOS_MessageParser bosParser;  // Create BOS message parser instance
+    // Connect UARTParser to BOS message parser
+    uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
+                                 {
+                                     std::cout << "?? Valid BOS message received. Passing to BOS parser...\n";
+                                     bosParser.parseMessage(payload); });
 
-//Set the callback once
-parser.onMessageReceived([&](const std::vector<uint8_t> &payload) {
-    bosParser.parseMessage(payload);
-});
+    // Setup UART receive callback to feed bytes into UARTParser
+    Porting::setUartReceiveCallback([&uartParser](char byte)
+                                    { uartParser.feed(static_cast<uint8_t>(byte)); });
 
-    Porting::uartReceive([=](char c) {
-        parser.feed(static_cast<uint8_t>(c));
-    });
-
+    // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        Porting::writeGPIO(ledPin, true); // LED ON
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        Porting::writeGPIO(ledPin, false); // LED OFF
     }
 
     return 0;
 }
+
+// #include <iostream>
+// #include <fcntl.h>   // open()
+// #include <termios.h> // termios, tcgetattr, tcsetattr
+// #include <unistd.h>  // write(), close()
+// #include <cstring>   // strerror()
+
+// int main()
+// {
+//     // const char *uartPort = "/dev/ttyAMA10";
+
+//     const char *uartPort = "/dev/ttyAMA0"; // instead of ttyAMA10
+
+//     int serialFd = open(uartPort, O_RDWR | O_NOCTTY | O_NDELAY);
+
+//     if (serialFd == -1)
+//     {
+//         std::cerr << "Failed to open " << uartPort << ": " << strerror(errno) << std::endl;
+//         return 1;
+//     }
+
+//     // Configure UART using termios
+//     termios tty{};
+//     if (tcgetattr(serialFd, &tty) != 0)
+//     {
+//         std::cerr << "Error getting termios attributes: " << strerror(errno) << std::endl;
+//         close(serialFd);
+//         return 1;
+//     }
+
+//     // Set baud rate
+//     cfsetospeed(&tty, B115200);
+//     cfsetispeed(&tty, B115200);
+
+//     // 8N1 Mode: 8 data bits, no parity, 1 stop bit
+//     tty.c_cflag &= ~PARENB; // No parity
+//     tty.c_cflag &= ~CSTOPB; // 1 stop bit
+//     tty.c_cflag &= ~CSIZE;
+//     tty.c_cflag |= CS8; // 8 data bits
+
+//     tty.c_cflag &= ~CRTSCTS;       // No hardware flow control
+//     tty.c_cflag |= CREAD | CLOCAL; // Enable receiver, ignore modem control lines
+
+//     tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); // Raw input
+//     tty.c_iflag &= ~(IXON | IXOFF | IXANY);         // No software flow control
+//     tty.c_oflag &= ~OPOST;                          // Raw output
+
+//     tty.c_cc[VMIN] = 1;
+//     tty.c_cc[VTIME] = 0;
+
+//     // Apply settings
+//     if (tcsetattr(serialFd, TCSANOW, &tty) != 0)
+//     {
+//         std::cerr << "Error setting termios attributes: " << strerror(errno) << std::endl;
+//         close(serialFd);
+//         return 1;
+//     }
+
+//     // Send test message
+//     const char *message = "Hello from Raspberry Pi 5 UART!\r\n";
+//     ssize_t bytesWritten = write(serialFd, message, strlen(message));
+
+//     if (bytesWritten < 0)
+//     {
+//         std::cerr << "Failed to write to UART: " << strerror(errno) << std::endl;
+//     }
+//     else
+//     {
+//         std::cout << "Wrote " << bytesWritten << " bytes to UART.\n";
+//     }
+
+//     close(serialFd);
+//     return 0;
+// }

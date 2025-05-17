@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++17
+CXXFLAGS = -Wall -std=c++17 -g
 
 # Add include paths for header files
 INCLUDES = -I./BOS -I./Pi_library -I./Porting -I./src

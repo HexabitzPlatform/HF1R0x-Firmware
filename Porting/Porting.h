@@ -35,12 +35,6 @@ namespace Porting
     /// @brief Sets the UART receive callback explicitly (advanced)
     void setUartReceiveCallback(std::function<void(char)> callback);
 
-    // ==============================
-    // UART Byte Receive Function
-    // ==============================
-
-    /// @brief Receives one byte from UART (blocking or non-blocking, implementation-defined)
-    // int uartReceiveByte(); // Add this declaration for uartReceiveByte()
 }
 
 #endif // PORTING_H
