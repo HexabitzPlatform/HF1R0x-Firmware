@@ -17,7 +17,7 @@ OBJ = $(SRC:.cpp=.o)
 OUT = src/app
 
 # External libraries
-LIBS = -lgpiod -lpigpio -pthread
+LIBS = -lgpiod -pthread
 
 
 # Default target

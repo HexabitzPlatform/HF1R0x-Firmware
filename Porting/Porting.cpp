@@ -111,8 +111,8 @@ namespace Porting
             return;
         }
 
-        cfsetospeed(&tty, B115200);
-        cfsetispeed(&tty, B115200);
+        cfsetospeed(&tty, B921600);
+        cfsetispeed(&tty, B921600);
 
         tty.c_cflag &= ~PARENB;
         tty.c_cflag &= ~CSTOPB;
@@ -166,10 +166,11 @@ namespace Porting
             while (true)
             {
                 ssize_t bytesRead = read(uartFd, &c, 1);
-                if (bytesRead == 1)
-                {
+                if (bytesRead == 1) {
+                    std::cout << "Received byte: 0x" << std::hex << (int)c << std::endl;
                     onReceiveChar(c);
                 }
+                
                 usleep(1000);
             } })
             .detach();
