@@ -33,11 +33,15 @@ void BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
         handleCode01(source, params);
         break;
 
-    case BOSMessageCode::CODE_1:
+    case BOSMessageCode::CODE_CODE_IND_ON:
         handleCode02(source, params);
         break;
 
-    case BOSMessageCode::CODE_2:
+    case BOSMessageCode::CODE_IND_OFF:
+        handleCodeFF(source, params);
+        break;
+
+    case BOSMessageCode::CODE_IND_TOGGLE:
         handleCodeFF(source, params);
         break;
 
