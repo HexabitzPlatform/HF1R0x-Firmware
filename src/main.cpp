@@ -40,6 +40,25 @@ int main()
 }
 
 // #include <iostream>
+// #include "buildBOSPacket.cpp"
+
+// int main() {
+//     std::vector<uint8_t> params = {0x01, 0x02}; // Example parameters
+//     uint16_t code = 0x1234;
+//     uint8_t destination = 0x01;
+
+//     auto packet = buildBOSPacket(destination, code, params);
+
+//     std::cout << "BOS Packet to send:\n";
+//     for (uint8_t b : packet) {
+//         std::cout << "0x" << std::hex << static_cast<int>(b) << " ";
+//     }
+//     std::cout << std::endl;
+
+//     // Now send 'packet' over your UART device
+// }
+
+// #include <iostream>
 // #include <fcntl.h>   // open()
 // #include <termios.h> // termios, tcgetattr, tcsetattr
 // #include <unistd.h>  // write(), close()
