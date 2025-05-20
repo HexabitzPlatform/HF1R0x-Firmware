@@ -8,28 +8,30 @@
 
 int main()
 {
-    // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
-    Porting::initUART(14, 15, 921600);
+    // // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
+    // Porting::initUART(14, 15, 921600);
 
-    std::cout << "? UART initialized. Listening for BOS messages from hardware...\n";
+    // std::cout << "? UART initialized. Listening for BOS messages from hardware...\n";
 
-    BOS_MessageParser bosParser;
-    UARTParser uartParser;
+    // BOS_MessageParser bosParser;
+    // UARTParser uartParser;
 
-    // Connect UARTParser to BOS message parser
-    uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
-                                 {
-                                     std::cout << "?? Valid BOS message received. Passing to BOS parser...\n";
-                                     bosParser.parseMessage(payload); });
+    // // Connect UARTParser to BOS message parser
+    // uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
+    //                              {
+    //                                  std::cout << "?? Valid BOS message received. Passing to BOS parser...\n";
+    //                                  bosParser.parseMessage(payload); });
 
-    // Setup UART receive callback to feed bytes into UARTParser
-    Porting::setUartReceiveCallback([&uartParser](char byte)
-                                    { uartParser.feed(static_cast<uint8_t>(byte)); });
+    // // Setup UART receive callback to feed bytes into UARTParser
+    // Porting::setUartReceiveCallback([&uartParser](char byte)
+    //                                 { uartParser.feed(static_cast<uint8_t>(byte)); });
 
     // Send test packet once (Loopback Test)
     // std::vector<uint8_t> test_packet = {0x48, 0x5A, 0x04, 0x02, 0x01, 0x00, 0x01, 0xE3};
     // Porting::uartSend(std::string(test_packet.begin(), test_packet.end()));
 
+    initBOS();
+    
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {

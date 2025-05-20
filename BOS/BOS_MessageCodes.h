@@ -3,7 +3,7 @@
 #include <cstdint>
 
 // Enum class to represent BOS message codes clearly and safely
-enum class BOSMessageCode : uint8_t
+enum class BOSMessageCode : uint16_t
 {
     // BOS Message Codes
     CODE_UNKNOWN_MESSAGE = 0,

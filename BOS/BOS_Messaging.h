@@ -3,6 +3,10 @@
 #include "string"
 #include "cstdint"
 #include "vector"
+#include "BOS.h"
+#include "BOS_MessageCodes.h"
+#include "UARTParser.h"
+#include "Porting.h"
 
 // class Messaging
 // {
@@ -12,5 +16,5 @@
 
 namespace Messaging
 {
-    void SendMessagetoModule(uint8_t src, uint8_t dst, uint16_t code, const std::vector<uint8_t> &params);
+    BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params);
 };

@@ -1,11 +1,9 @@
-#include "vector"
-#include "UARTParser.h"
+// #include "vector"
 #include "BOS_Messaging.h"
-#include "Porting.h"
 
 namespace Messaging
 {
-    void SendMessagetoModule(uint8_t src, uint8_t dst, uint16_t code, const std::vector<uint8_t> &params)
+    BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params)
     {
         std::vector<uint8_t> packet;
 
@@ -13,8 +11,11 @@ namespace Messaging
         packet.push_back('H'); // 0x48
         packet.push_back('Z'); // 0x5A
 
+        // Convert enum to raw uint16_t value
+        uint16_t rawCode = static_cast<uint16_t>(code);
+
         // Determine if we need 1 or 2 bytes for the code
-        bool isExtendedCode = code > 0xFF;
+        bool isExtendedCode = rawCode > 0xFF;
         uint8_t codeLen = isExtendedCode ? 2 : 1;
 
         // Options byte (only Extended Code flag for now)
@@ -27,14 +28,15 @@ namespace Messaging
         packet.push_back(length);
 
         // Add message fields
-        packet.push_back(dst);
+        packet.push_back(dstID);
+        uint8_t src = 1;
         packet.push_back(src);
         packet.push_back(options);
 
         // Add message code
-        packet.push_back(static_cast<uint8_t>(code & 0xFF)); // LSB
+        packet.push_back(static_cast<uint8_t>(rawCode & 0xFF)); // LSB
         if (isExtendedCode)
-            packet.push_back(static_cast<uint8_t>((code >> 8) & 0xFF)); // MSB
+            packet.push_back(static_cast<uint8_t>((rawCode >> 8) & 0xFF)); // MSB
 
         // Add parameters
         packet.insert(packet.end(), params.begin(), params.end());
@@ -45,7 +47,7 @@ namespace Messaging
 
         Porting::uartSend(packet);
 
-        // return packet;
+        return BOSStatus::BOS_OK;
     }
 
 };

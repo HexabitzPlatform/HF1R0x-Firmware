@@ -7,7 +7,7 @@
 // namespace BOS
 // {
 //     // Initializes the BOS system (sets up UART receive loop, etc.)
-//     void initBOS();
+// void initBOS();
 
 //     // Handles a full validated BOS message (called internally after UART parsing)
 //     void handleBOSMessage(const std::vector<uint8_t> &message);
@@ -15,3 +15,41 @@
 //     void processBOSMessage(const std::vector<unsigned char>& message);
 
 // }
+
+enum class BOSStatus : uint8_t
+{
+    // BOS Status:
+    BOS_OK = 0,                 /* Operation successful */
+    BOS_ERR_UnknownMessage = 1, /* Unknown message received */
+    BOS_ERR_NoResponse = 2,     /* No response from module */
+    BOS_ERR_MSG_Reflection = 3, /* Message reflection detected */
+    BOS_ERR_UnIDedModule = 5,   /* Unidentified module */
+
+    BOS_ERR_Keyword = 6,       /* Invalid keyword */
+    BOS_ERR_ExistingAlias = 7, /* Alias already exists */
+
+    BOS_ERR_REMOTE_READ_TIMEOUT = 15,  /* Timeout during remote read */
+    BOS_ERR_REMOTE_READ_NO_VAR = 16,   /* No variable found during remote read */
+    BOS_ERR_REMOTE_WRITE_TIMEOUT = 17, /* Timeout during remote write */
+    BOS_ERR_REMOTE_WRITE_INDEX = 19,   /* Invalid remote write index */
+    BOS_ERR_LOCAL_FORMAT_UPDATED = 20, /* Local format updated */
+    BOS_ERR_REMOTE_WRITE_ADDRESS = 21, /* Invalid remote write address */
+
+    BOS_ERR_PORT_BUSY = 23,         /* Communication port busy */
+    BOS_ERR_TIMEOUT = 24,           /* Operation timeout */
+    BOS_ERR_WrongName = 100,        /* Incorrect name */
+    BOS_ERR_WrongGroup = 101,       /* Incorrect group */
+    BOS_ERR_WrongID = 102,          /* Incorrect ID */
+    BOS_ERR_WrongParam = 103,       /* Incorrect parameter */
+    BOS_ERR_WrongValue = 104,       /* Incorrect value */
+    BOS_ERR_MSG_DOES_NOT_FIT = 105, /* Message does not fit */
+
+    BOS_MULTICAST = 254, /* Multicast message */
+    BOS_BROADCAST = 255, /* Broadcast message */
+
+    BOS_ERROR = 255 /* Generic error */
+
+    // Module Status:
+};
+
+void initBOS();

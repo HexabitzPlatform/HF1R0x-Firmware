@@ -2,12 +2,12 @@
 #include "BOS_MessageCodes.h"
 #include <iostream>
 
-void BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
+BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 {
     if (payload.size() < 4)
     {
         std::cerr << "Invalid payload: too short\n";
-        return;
+        return BOSStatus::BOS_ERROR;
     }
 
     // Extract fields
@@ -49,23 +49,31 @@ void BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
         std::cerr << "Unknown message code: 0x" << std::hex << static_cast<int>(payload[3]) << "\n";
         break;
     }
+
+    return BOSStatus::BOS_OK;
 }
 
-void BOS_MessageParser::handleCode01(uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus BOS_MessageParser::handleCode01(uint8_t source, const std::vector<uint8_t> &params)
 {
     std::cout << "[Code 0x01] Received from module " << static_cast<int>(source)
               << " with " << params.size() << " bytes of parameters\n";
     // Interpret params accordingly
+
+    return BOSStatus::BOS_OK;
 }
 
-void BOS_MessageParser::handleCode02(uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus BOS_MessageParser::handleCode02(uint8_t source, const std::vector<uint8_t> &params)
 {
     std::cout << "[Code 0x02] Execute special task from module " << static_cast<int>(source) << "\n";
     // Handle as needed
+
+    return BOSStatus::BOS_OK;
 }
 
-void BOS_MessageParser::handleCodeFF(uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus BOS_MessageParser::handleCodeFF(uint8_t source, const std::vector<uint8_t> &params)
 {
     std::cout << "[Code 0xFF] Debug / special use\n";
     // Example logic
+
+    return BOSStatus::BOS_OK;
 }
