@@ -147,17 +147,15 @@ namespace Porting
         }
     }
 
-    void uartSend(const std::string &message)
+    void uartSend(const std::vector<uint8_t> &data)
     {
-        /* Sends a message string over UART using POSIX write() */
-
         if (uartFd == -1)
         {
             std::cerr << "UART not initialized or failed to open.\n";
             return;
         }
 
-        ssize_t bytesWritten = write(uartFd, message.c_str(), message.size());
+        ssize_t bytesWritten = write(uartFd, data.data(), data.size());
 
         if (bytesWritten < 0)
         {

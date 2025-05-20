@@ -26,8 +26,8 @@ namespace Porting
     /// @brief Initializes UART with given TX/RX GPIO pins and baudrate
     void initUART(int txPin, int rxPin, int baudrate);
 
-    /// @brief Sends a string over UART
-    void uartSend(const std::string &message);
+    /// @brief Sends a vector over UART
+    void uartSend(const std::vector<uint8_t> &data);
 
     /// @brief Starts receiving UART data with a callback per character
     void uartReceive(const std::function<void(char)> &onReceiveChar);
