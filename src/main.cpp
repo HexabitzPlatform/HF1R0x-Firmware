@@ -1,7 +1,8 @@
 #include "Porting.h"           // GPIO + UART hardware abstraction
 #include "UARTParser.h"        // BOS byte stream parser
 #include "BOS_MessageParser.h" // BOS message payload handler
-
+#include "BOS.h"
+#include "BOS_Messaging.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -31,11 +32,12 @@ int main()
     // Porting::uartSend(std::string(test_packet.begin(), test_packet.end()));
 
     initBOS();
-    
+    std::vector<uint8_t> parameters = {0};
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        Messaging::SendMessagetoModule(2, BOSMessageCode::CODE_PING, {});
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 
     return 0;

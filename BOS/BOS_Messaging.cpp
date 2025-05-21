@@ -39,7 +39,8 @@ namespace Messaging
             packet.push_back(static_cast<uint8_t>((rawCode >> 8) & 0xFF)); // MSB
 
         // Add parameters
-        packet.insert(packet.end(), params.begin(), params.end());
+        if (!params.empty())
+            packet.insert(packet.end(), params.begin(), params.end());
 
         // Compute and add CRC8
         uint8_t crc = calculateCRC32(packet);
