@@ -104,7 +104,7 @@ BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 
     default:
         // Delegate to subclass
-        handleUnknownCode(destination, source, code, params);
+        handleModuleMessageCode(destination, source, code, params);
         break;
     }
 
@@ -256,7 +256,7 @@ BOSStatus BOS_MessageParser::handleEnableStopModeCode(uint8_t dts, uint8_t sourc
 /**************************************************************************************************/
 /***********************************  Modules Message Codes Functions *****************************/
 /**************************************************************************************************/
-BOSStatus Module_MessageParser::handleUnknownCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params)
+BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params)
 {
     switch (code)
     {

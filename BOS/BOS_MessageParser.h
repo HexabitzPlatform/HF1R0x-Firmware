@@ -36,13 +36,13 @@ private:
     BOSStatus handleEnableStopModeCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
 
     // Overridable method to handle unknown/module-specific codes
-    virtual BOSStatus handleUnknownCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params);
+    virtual BOSStatus handleModuleMessageCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params);
 };
 
 class Module_MessageParser : public BOS_MessageParser
 {
 protected:
-    BOSStatus handleUnknownCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params) override;
+    BOSStatus handleModuleMessageCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params) override;
 
 private:
     // H01R0x - RGB
