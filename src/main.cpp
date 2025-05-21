@@ -9,6 +9,9 @@
 
 int main()
 {
+    // Initialize the GPIO pin
+    Porting::initGPIO(23);
+
     // // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
     // Porting::initUART(14, 15, 921600);
 
@@ -32,12 +35,23 @@ int main()
     // Porting::uartSend(std::string(test_packet.begin(), test_packet.end()));
 
     initBOS();
-    std::vector<uint8_t> parameters = {0};
+
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
-        Messaging::SendMessagetoModule(2, BOSMessageCode::CODE_PING, {});
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        // Messaging::SendMessagetoModule(2, BOSMessageCode::CODE_PING, {});
+
+        // Turn LED ON
+        std::cout << "Turning LED ON\n";
+        Porting::writeGPIO(ledPin, true);
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        // Turn LED OFF
+        std::cout << "Turning LED OFF\n";
+        Porting::writeGPIO(ledPin, false);
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     return 0;
