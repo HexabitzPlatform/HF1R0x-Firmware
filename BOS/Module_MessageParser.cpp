@@ -43,6 +43,7 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t src
         std::cerr << "Module: Unhandled code.\n";
         return BOSStatus::BOS_ERROR;
     }
+    return BOSStatus::BOS_OK;
 }
 
 /**************************************************************************************************/

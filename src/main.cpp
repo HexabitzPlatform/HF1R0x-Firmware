@@ -10,7 +10,8 @@
 int main()
 {
     // Initialize the GPIO pin
-    Porting::initGPIO(23);
+    int ledPin = 23; // GPIO23
+    Porting::initGPIO(ledPin);
 
     // // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
     // Porting::initUART(14, 15, 921600);
@@ -45,13 +46,13 @@ int main()
         std::cout << "Turning LED ON\n";
         Porting::writeGPIO(ledPin, true);
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         // Turn LED OFF
         std::cout << "Turning LED OFF\n";
         Porting::writeGPIO(ledPin, false);
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     return 0;

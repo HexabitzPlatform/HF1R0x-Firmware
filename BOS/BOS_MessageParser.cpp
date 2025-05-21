@@ -244,6 +244,7 @@ BOSStatus BOS_MessageParser::handleWriteRemoteResponseCode(uint8_t dts, uint8_t 
 
     return BOSStatus::BOS_OK;
 }
+
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleEnableStopModeCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
@@ -251,4 +252,12 @@ BOSStatus BOS_MessageParser::handleEnableStopModeCode(uint8_t dts, uint8_t sourc
     // Example logic
 
     return BOSStatus::BOS_OK;
+}
+
+/**************************************************************************************************/
+// default implementation
+// the linker still needs the base class's definition � unless it's marked as = 0 (pure virtual).
+BOSStatus BOS_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params) {
+    std::cerr << "Base BOS_MessageParser: Unhandled module-specific code\n";
+    return BOSStatus::BOS_ERROR;
 }
