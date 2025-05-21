@@ -1,5 +1,4 @@
-#ifndef BOS_MESSAGE_PARSER_H
-#define BOS_MESSAGE_PARSER_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -58,5 +57,3 @@ private:
 
     // H08R7 - TOF
 };
-
-#endif // BOS_MESSAGE_PARSER_H

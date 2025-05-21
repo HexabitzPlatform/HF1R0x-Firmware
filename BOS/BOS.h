@@ -1,21 +1,21 @@
 #pragma once
 
+/* C++ Libraries */
 #include <vector>
 #include <cstdint>
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+/* BOS Files */
+#include "Porting.h"
+#include "UARTParser.h"
+#include "BOS_Messaging.h"
+#include "BOS_Constanats.h"
+#include "BOS_MessageParser.h"
 #include "BOS_MessageCodes.h"
 
-// namespace BOS
-// {
-//     // Initializes the BOS system (sets up UART receive loop, etc.)
-// void initBOS();
-
-//     // Handles a full validated BOS message (called internally after UART parsing)
-//     void handleBOSMessage(const std::vector<uint8_t> &message);
-
-//     void processBOSMessage(const std::vector<unsigned char>& message);
-
-// }
-
+/* */
 enum class BOSStatus : uint8_t
 {
     // BOS Status:
@@ -98,6 +98,48 @@ enum class ModulePN : char
     H16R6,
     P08R7,
     H19R0
+};
+
+class LED
+{
+private:
+    uint8_t gpioPin;
+    bool state = false;
+
+public:
+    explicit LED(uint8_t _pin) : gpioPin(_pin)
+    {
+        Porting::initGPIO(gpioPin);
+    }
+
+    void on()
+    {
+        Porting::writeGPIO(gpioPin, true);
+        state = true;
+    }
+
+    void off()
+    {
+        Porting::writeGPIO(gpioPin, false);
+        state = false;
+    }
+
+    void toggle()
+    {
+        state = !state;
+        Porting::writeGPIO(gpioPin, state);
+    }
+
+    void blink(int times, int delay_ms)
+    {
+        for (int i = 0; i < times; ++i)
+        {
+            on();
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+            off();
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+        }
+    }
 };
 
 void initBOS();

@@ -1,5 +1,4 @@
-#ifndef PORTING_H
-#define PORTING_H
+#pragma once
 
 #include <string>
 #include <functional>
@@ -36,5 +35,3 @@ namespace Porting
     void setUartReceiveCallback(std::function<void(char)> callback);
 
 }
-
-#endif // PORTING_H
