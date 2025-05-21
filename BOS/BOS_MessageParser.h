@@ -45,8 +45,18 @@ protected:
     BOSStatus handleUnknownCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params) override;
 
 private:
+    // H01R0x - RGB
     BOSStatus handleH01R0_ONCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
     BOSStatus handleH01R0_OFFCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH01R0_ToggleCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH01R0_ColorCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH01R0_PulseCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH01R0_SweepCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH01R0_DIMCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+
+    // H0BR4 - IMU
+
+    // H08R7 - TOF
 };
 
 #endif // BOS_MESSAGE_PARSER_H
