@@ -1,31 +1,53 @@
-#include "BOS_MessageParser.h"
-#include "BOS_MessageCodes.h"
 #include <iostream>
+#include "BOS.h"
+
+// Define a 2D array: 6 rows, 2 columns
+// std::array<std::array<uint16_t, 2>, 6> NeighborsInfo{};
+std::array<uint16_t, 2> NeighborsInfo{};
+// std::array<uint8_t, 46> MessageParames{};
+std::vector<uint8_t> MessageParames;
+
+std::array<uint16_t, 2> Array{};
 
 BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 {
+    // Extract fields
+    uint8_t destination = payload[0];
+    uint8_t source = payload[1];
+    uint8_t option = payload[2];
+    BOSMessageCode code;
+    std::vector<uint8_t> params;
+
     if (payload.size() < 4)
     {
         std::cerr << "Invalid payload: too short\n";
         return BOSStatus::BOS_ERROR;
     }
 
-    // Extract fields
-    uint8_t destination = payload[0];
-    uint8_t source = payload[1];
+    /* Assign the value of option byte to OptionByte structure */
+    *(uint8_t *)&OptionByte = option;
 
-    // Convert raw byte to BOSMessageCode enum using static_cast.
-    // This is needed because enum class does not implicitly convert from uint8_t,
-    // ensuring strong type safety and preventing invalid enum usage.
-    // this byte (uint8_t) actually represents a valid BOSMessageCode, so let me treat it that way.
-    BOSMessageCode code = static_cast<BOSMessageCode>(payload[3]);
-
-    std::vector<uint8_t> params;
-
-    if (payload.size() > 4)
+    /* Check option byte */
+    if (OptionByte.ExtendedMessageCode)
     {
+        code = static_cast<BOSMessageCode>(
+            (static_cast<uint16_t>(payload.at(4) << 8)) | (static_cast<uint16_t>(payload.at(3))));
+
+        params.insert(params.end(), payload.begin() + 5, payload.end());
+    }
+    else
+    {
+        code = static_cast<BOSMessageCode>(payload[3]);
+
         params.insert(params.end(), payload.begin() + 4, payload.end());
     }
+
+    // BOSMessageCode code = static_cast<BOSMessageCode>(payload[3]);
+
+    // if (payload.size() > 4)
+    // {
+    //     params.insert(params.end(), payload.begin() + 4, payload.end());
+    // }
 
     // Route based on message code
     switch (code)
@@ -118,7 +140,11 @@ BOSStatus BOS_MessageParser::handlePingCode(uint8_t dts, uint8_t source, const s
 {
     std::cout << "[Code 0x01] Received from module " << static_cast<int>(source)
               << " with " << params.size() << " bytes of parameters\n";
+
     // Interpret params accordingly
+    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
+
+    std::cout << "[Ping Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -126,8 +152,8 @@ BOSStatus BOS_MessageParser::handlePingCode(uint8_t dts, uint8_t source, const s
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleIndicatorOnCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0x02] Execute special task from module " << static_cast<int>(source) << "\n";
-    // Handle as needed
+    led.on();
+    std::cout << "[LED on Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -135,8 +161,8 @@ BOSStatus BOS_MessageParser::handleIndicatorOnCode(uint8_t dts, uint8_t source, 
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleIndicatorOffCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    led.off();
+    std::cout << "[LED off Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -144,8 +170,8 @@ BOSStatus BOS_MessageParser::handleIndicatorOffCode(uint8_t dts, uint8_t source,
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleIndicatorToggleCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    led.toggle();
+    std::cout << "[LED toggle Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -153,8 +179,23 @@ BOSStatus BOS_MessageParser::handleIndicatorToggleCode(uint8_t dts, uint8_t sour
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    /* Record neighbor info */
+    NeighborsInfo[0] = (static_cast<uint16_t>(source) << 8) | static_cast<uint16_t>(params[2]);    /* Neighbor ID + Neighbor own port */
+    NeighborsInfo[1] = (static_cast<uint16_t>(params[0]) << 8) | static_cast<uint16_t>(params[1]); /* Neighbor PN */
+
+    std::cout << "[Hi Code] Reveived from Module: " << static_cast<int>(source)
+              << "which PN: " << NeighborsInfo[1] << "and its ID: " << params[0];
+
+    /* Send Raspberry PI info */
+    // MessageParames[0] = (static_cast<uint8_t>(PIConfig::piPartNumber) << 8);
+    // MessageParames[1] = (static_cast<uint8_t>(PIConfig::piPartNumber));
+    // MessageParames[2] = PIConfig::piPort;
+
+    MessageParames.push_back((PIConfig::piPartNumber)); /* LSB of PN */
+    MessageParames.push_back(0);                        /* MSB of PN: to match Neighbor array in BOS which expects 16-bit */
+    MessageParames.push_back(PIConfig::piPort);
+
+    Messaging::SendMessagetoModule(0, BOSMessageCode::CODE_HI_RESPONSE, MessageParames);
 
     return BOSStatus::BOS_OK;
 }
@@ -171,16 +212,14 @@ BOSStatus BOS_MessageParser::handleHiResponseCode(uint8_t dts, uint8_t source, c
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleExploreADJCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Explore ADJ Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleExploreADJResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Explore ADJ Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -188,16 +227,18 @@ BOSStatus BOS_MessageParser::handleExploreADJResponseCode(uint8_t dts, uint8_t s
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handlePortDirectionCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Port Direction Code] Reveived from Module: " << static_cast<int>(source)
+              << "Raspberry can not Implement this\n";
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleModuleIDCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    PIConfig::piID = (params.at(0));
+
+    std::cout << "[ Module ID Code] Reveived from Module: " << static_cast<int>(source)
+              << "Update Raspberry Pi ID to be: " << PIConfig::piID << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -205,8 +246,32 @@ BOSStatus BOS_MessageParser::handleModuleIDCode(uint8_t dts, uint8_t source, con
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    static uint8_t longMessageScratchpad[2];
+    uint16_t longMessageLastPtr = 0;
+
+    if (OptionByte.LongMessage)
+    {
+        /* Array is 2-byte oriented thus memcpy can copy only even number of bytes
+         * TODO test maybe broken */
+        /* Use a 1-byte oriented scratchpad */
+        memcpy(&longMessageScratchpad[0] + longMessageLastPtr, params.data(), params.size());
+        longMessageLastPtr += params.size();
+    }
+    else
+    {
+        memcpy(&longMessageScratchpad[0] + longMessageLastPtr, params.data(), params.size());
+        longMessageLastPtr += params.size();
+        // N = (longMessageLastPtr / (1 + 1)) / 2;
+
+        /* Copy the scratchpad to Array */
+        memcpy(&Array, &longMessageScratchpad, longMessageLastPtr);
+        longMessageLastPtr = 0;
+
+        led.blink(2, 100);
+    }
+
+    std::cout << "[Topology Code] Reveived from Module: " << static_cast<int>(source)
+              << "Update Topology to be:" << params.at(0) << "\n";
 
     return BOSStatus::BOS_OK;
 }

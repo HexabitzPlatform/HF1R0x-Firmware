@@ -4,8 +4,8 @@
 int main()
 {
     // Initialize the GPIO pin
-    int ledPin = 23; // GPIO23
-    Porting::initGPIO(ledPin);
+    // int ledPin = 23; // GPIO23
+    // Porting::initGPIO(ledPin);
 
     // // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
     // Porting::initUART(14, 15, 921600);
@@ -37,36 +37,17 @@ int main()
         // Messaging::SendMessagetoModule(2, BOSMessageCode::CODE_PING, {});
 
         // Turn LED ON
-        std::cout << "Turning LED ON\n";
-        Porting::writeGPIO(ledPin, true);
+        // std::cout << "Turning LED ON\n";
+        // Porting::writeGPIO(ledPin, true);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Turn LED OFF
-        std::cout << "Turning LED OFF\n";
-        Porting::writeGPIO(ledPin, false);
+        // // Turn LED OFF
+        // std::cout << "Turning LED OFF\n";
+        // Porting::writeGPIO(ledPin, false);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     return 0;
 }
-
-// #include <iostream>
-// #include "buildBOSPacket.cpp"
-
-// int main() {
-//     std::vector<uint8_t> params = {0x01, 0x02}; // Example parameters
-//     uint16_t code = 0x1234;
-//     uint8_t destination = 0x01;
-
-//     auto packet = buildBOSPacket(destination, code, params);
-
-//     std::cout << "BOS Packet to send:\n";
-//     for (uint8_t b : packet) {
-//         std::cout << "0x" << std::hex << static_cast<int>(b) << " ";
-//     }
-//     std::cout << std::endl;
-
-//     // Now send 'packet' over your UART device
-// }

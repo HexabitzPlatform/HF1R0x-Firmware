@@ -15,6 +15,18 @@
 #include "BOS_MessageParser.h"
 #include "BOS_MessageCodes.h"
 
+/* BOS message option byte structure */
+typedef struct
+{
+    uint8_t ExtendedOptions : 1;     /* If set, additional option byte follows */
+    uint8_t ExtendedMessageCode : 1; /* If set, message codes are 16-bit */
+    uint8_t Trace : 1;               /* If set, message trace (ping) is enabled */
+    uint8_t Acknowledgment : 1;      /* Message acknowledgment flag */
+    uint8_t Reserved : 1;            /* Reserved for future use */
+    uint8_t Response : 2;            /* Response type */
+    uint8_t LongMessage : 1;         /* If set, message continues in next packet */
+} BOSOptionByte_t;
+
 /* */
 enum class BOSStatus : uint8_t
 {
@@ -141,5 +153,9 @@ public:
         }
     }
 };
+
+/* External Class Instances */
+extern LED led;
+extern BOSOptionByte_t OptionByte;
 
 void initBOS();
