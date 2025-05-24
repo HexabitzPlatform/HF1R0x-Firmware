@@ -1,9 +1,0 @@
-BasedOnStyle: Google  # or LLVM, Chromium, etc.
-BraceWrapping:
-  AfterClass: false
-  AfterFunction: false
-  AfterControlStatement: false
-  AfterEnum: false
-  AfterStruct: false
-  BeforeElse: false
-  SplitEmptyFunction: false

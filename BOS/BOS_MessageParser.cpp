@@ -203,8 +203,10 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleHiResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Hi Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    /* Record your neighbor info */
+    /* this message code is important for only a master module that runs Explore function
+       so, raspberry will never be a master explore */
 
     return BOSStatus::BOS_OK;
 }
@@ -213,6 +215,10 @@ BOSStatus BOS_MessageParser::handleHiResponseCode(uint8_t dts, uint8_t source, c
 BOSStatus BOS_MessageParser::handleExploreADJCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     std::cout << "[Explore ADJ Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+
+    /* Send back a message indicates that no modules are connected to the raspberry other the the master */
+
+    Messaging::SendMessagetoModule(source, BOSMessageCode::CODE_EXPLORE_ADJ_RESPONSE, MessageParames);
 
     return BOSStatus::BOS_OK;
 }
@@ -229,6 +235,8 @@ BOSStatus BOS_MessageParser::handlePortDirectionCode(uint8_t dts, uint8_t source
 {
     std::cout << "[Port Direction Code] Reveived from Module: " << static_cast<int>(source)
               << "Raspberry can not Implement this\n";
+
+    /* Raspberry Pi can not swap UART Pins. so, instead we'll try fix this in master BOS Module */
 
     return BOSStatus::BOS_OK;
 }
@@ -278,8 +286,7 @@ BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, con
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleReadRemoteCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Read Remote Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -287,16 +294,14 @@ BOSStatus BOS_MessageParser::handleReadRemoteCode(uint8_t dts, uint8_t source, c
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleReadRemoteResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Read Remote Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleWriteRemoteCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Write Remote Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -304,17 +309,7 @@ BOSStatus BOS_MessageParser::handleWriteRemoteCode(uint8_t dts, uint8_t source, 
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleWriteRemoteResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
-
-    return BOSStatus::BOS_OK;
-}
-
-/**************************************************************************************************/
-BOSStatus BOS_MessageParser::handleEnableStopModeCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
-{
-    std::cout << "[Code 0xFF] Debug / special use\n";
-    // Example logic
+    std::cout << "[Write Remote Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
