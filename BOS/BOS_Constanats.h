@@ -9,7 +9,7 @@ namespace PIConfig
     constexpr uint8_t piPort = 1;
     constexpr uint8_t piPartNumber = 44; /*ModulePartNumbers_e in BOS.h in Modules */
 
-    uint8_t piID = 1;
+    inline  uint8_t piID =1;
 };
 
 namespace LEDConfig

@@ -1,5 +1,6 @@
 // #include "vector"
-#include "BOS_Messaging.h"
+// #include "BOS_Messaging.h"
+#include "BOS.h"
 
 namespace Messaging
 {

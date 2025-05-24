@@ -12,6 +12,7 @@ BOSOptionByte_t OptionByte;
 // Initialize GPIO PIN on Raspberry
 LED led(LEDConfig::GPIO_PIN);
 
+
 void initBOS()
 {
 

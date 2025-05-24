@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <iostream>
 #include "BOS.h"
-#include "BOS_MessageParser.h"
+// #include "BOS_MessageParser.h"
 
 /**************************************************************************************************/
 /***********************************  Modules Message Codes Functions *****************************/
@@ -83,30 +83,44 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t src
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellVoltageCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 
 /**************************************************************************************************/
@@ -114,6 +128,8 @@ BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t 
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH08R7_SampleCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 
 /**************************************************************************************************/
@@ -121,17 +137,25 @@ BOSStatus Module_MessageParser::handleH08R7_SampleCode(uint8_t dst, uint8_t src,
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params)
 {
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/

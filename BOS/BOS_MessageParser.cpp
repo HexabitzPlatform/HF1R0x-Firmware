@@ -9,6 +9,7 @@ std::vector<uint8_t> MessageParames;
 
 std::array<uint16_t, 2> Array{};
 
+
 BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 {
     // Extract fields
@@ -117,11 +118,6 @@ BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 
     case BOSMessageCode::CODE_WRITE_REMOTE_RESPONSE:
         handleWriteRemoteResponseCode(destination, source, params);
-        break;
-
-        // Power-Related Message Codes:
-    case BOSMessageCode::ENABLE_STOP_MODE_UARTX:
-        handleEnableStopModeCode(destination, source, params);
         break;
 
     default:
