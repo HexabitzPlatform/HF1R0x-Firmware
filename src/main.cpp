@@ -31,9 +31,12 @@ int main()
 
     initBOS();
 
+    // led.blink(4 , 100);
+
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
+        // led.blink(4 , 100);
         // Messaging::SendMessagetoModule(2, BOSMessageCode::CODE_PING, {});
 
         // Turn LED ON

@@ -1,0 +1,13 @@
+[Unit]
+Description=Run BOS firmware on startup
+After=network.target
+
+[Service]
+ExecStart=/home/adool/HF1R0x-Firmware/src/app
+WorkingDirectory=/home/adool/HF1R0x-Firmware
+Restart=always
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

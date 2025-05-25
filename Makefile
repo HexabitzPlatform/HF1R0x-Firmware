@@ -19,9 +19,8 @@ OUT = src/app
 # External libraries
 LIBS = -lgpiod -pthread
 
-
-# Default target
-all: $(OUT)
+# Default target: build and install service
+all: $(OUT) install-service
 
 # Link objects into executable
 $(OUT): $(OBJ)
@@ -35,4 +34,18 @@ $(OUT): $(OBJ)
 clean:
 	rm -f $(OBJ) $(OUT)
 
-.PHONY: all clean
+# Install systemd user service
+install-service:
+	@mkdir -p ~/.config/systemd/user
+	@cp bos.service ~/.config/systemd/user/
+	@systemctl --user daemon-reload
+	@systemctl --user enable bos.service
+	@systemctl --user restart bos.service
+
+uninstall-service:
+	@systemctl --user disable bos.service || true
+	@rm -f ~/.config/systemd/user/bos.service
+	@systemctl --user daemon-reload
+
+
+.PHONY: all clean install-service
