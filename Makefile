@@ -35,17 +35,41 @@ clean:
 	rm -f $(OBJ) $(OUT)
 
 # Install systemd user service
-install-service:
-	@mkdir -p ~/.config/systemd/user
-	@cp bos.service ~/.config/systemd/user/
-	@systemctl --user daemon-reload
-	@systemctl --user enable bos.service
-	@systemctl --user restart bos.service
+#install-service:
+#	@mkdir -p ~/.config/systemd/user
+#	@cp bos.service ~/.config/systemd/user/
+#	@systemctl --user daemon-reload
+#	@systemctl --user enable bos.service
+#	@systemctl --user restart bos.service
 
-uninstall-service:
-	@systemctl --user disable bos.service || true
-	@rm -f ~/.config/systemd/user/bos.service
-	@systemctl --user daemon-reload
+# Uninstall systemd user service
+#uninstall-service:
+#	@systemctl --user disable bos.service || true
+#	@rm -f ~/.config/systemd/user/bos.service
+#	@systemctl --user daemon-reload
 
+# Start the systemd user service
+#start-service:
+#	@systemctl --user start bos.service
 
-.PHONY: all clean install-service
+# Stop the systemd user service
+#stop-service:
+#	@systemctl --user stop bos.service || true
+
+# Restart the systemd user service
+#restart-service:
+#	@systemctl --user restart bos.service
+
+# Check status of systemd user service
+#status-service:
+#	@systemctl --user status bos.service
+
+# Debug: stop the service and run gdb
+#debug: stop-service $(OUT)
+#	@gdb $(OUT)
+
+#stop:
+#	systemctl --user stop bos.service || true
+#	-pkill -f HF1R0x-Firmware/src/app
+
+.PHONY: all clean install-service uninstall-service start-service stop-service restart-service status-service debug

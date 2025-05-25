@@ -30,7 +30,7 @@ namespace Messaging
 
         // Add message fields
         packet.push_back(dstID);
-        uint8_t src = 1;
+        uint8_t src = 2;
         packet.push_back(src);
         packet.push_back(options);
 
