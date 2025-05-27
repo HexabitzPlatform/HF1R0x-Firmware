@@ -28,6 +28,8 @@ enum class BOSMessageCode : uint16_t
     CODE_WRITE_REMOTE = 32,
     CODE_WRITE_REMOTE_RESPONSE = 33,
 
+    CODE_READ_RESPONSE = 46,
+    
     ENABLE_STOP_MODE_UARTX = 47,
 
     /***************************************************************************/

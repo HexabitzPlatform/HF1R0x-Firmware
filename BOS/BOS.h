@@ -225,3 +225,5 @@ extern LED led;
 extern BOSOptionByte_t OptionByte;
 
 void initBOS();
+
+std::string to_string(ModulePN pn);  // Just the declaration

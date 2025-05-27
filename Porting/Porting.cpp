@@ -182,7 +182,7 @@ namespace Porting
                 ssize_t bytesRead = read(uartFd, &c, 1); /* Read 1 byte at a time */
                 if (bytesRead == 1)
                 {
-                    std::cout << "Received byte: 0x" << std::hex << (int)c << std::endl;
+                    // std::cout << "Received byte: 0x" << std::hex << (int)c << std::endl;
                     onReceiveChar(c); /* Call user-defined callback with received char */
                 }
 

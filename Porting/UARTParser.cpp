@@ -12,7 +12,7 @@ void UARTParser::onMessageReceived(Callback cb)
 // Processes a single incoming byte, updating the parser's state
 void UARTParser::feed(uint8_t byte)
 {
-    std::cout << "Feeding byte: " << std::hex << static_cast<int>(byte) << std::endl;
+    // std::cout << "Feeding byte: " << std::hex << static_cast<int>(byte) << std::endl;
 
     // State machine to handle byte-by-byte parsing
     switch (state)
