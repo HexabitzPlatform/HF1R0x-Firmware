@@ -479,7 +479,7 @@ BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source
     GyroZ = BOSMessageCodec::bytesToFloat(zBytes);
 
     // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
-    std::cout << "[Sample Gyro] Received from Module: " << to_string(ModulePN::H0BR4)
+    std::cout << "[Sample Gyroscope] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
     std::cout << " GyroX: " << GyroX << "\n GyroY: " << GyroY << "\n GyroZ: " << GyroZ << "\n\n";
 
@@ -488,18 +488,69 @@ BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    float AccX = 0.0f;
+    float AccY = 0.0f;
+    float AccZ = 0.0f;
+
+    if (params.size() < 15)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> xBytes = {params[3], params[4], params[5], params[6]};
+    std::array<uint8_t, 4> yBytes = {params[7], params[8], params[9], params[10]};
+    std::array<uint8_t, 4> zBytes = {params[11], params[12], params[13], params[14]};
+
+    AccX = BOSMessageCodec::bytesToFloat(xBytes);
+    AccY = BOSMessageCodec::bytesToFloat(yBytes);
+    AccZ = BOSMessageCodec::bytesToFloat(zBytes);
+
+    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
+    std::cout << "[Sample Accelerometer] Received from Module: " << to_string(ModulePN::H0BR4)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << " AccX: " << AccX << "\n AccY: " << AccY << "\n AccZ: " << AccZ << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    float MagX = 0.0f;
+    float MagY = 0.0f;
+    float MagZ = 0.0f;
+
+    if (params.size() < 15)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> xBytes = {params[3], params[4], params[5], params[6]};
+    std::array<uint8_t, 4> yBytes = {params[7], params[8], params[9], params[10]};
+    std::array<uint8_t, 4> zBytes = {params[11], params[12], params[13], params[14]};
+
+    MagX = BOSMessageCodec::bytesToFloat(xBytes);
+    MagY = BOSMessageCodec::bytesToFloat(yBytes);
+    MagZ = BOSMessageCodec::bytesToFloat(zBytes);
+
+    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
+    std::cout << "[Sample Magnetometer] Received from Module: " << to_string(ModulePN::H0BR4)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << " MagX: " << MagX << "\n MagY: " << MagY << "\n MagZ: " << MagZ << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    float Temp = 0.0f;
+
+    if (params.size() < 7)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> xBytes = {params[3], params[4], params[5], params[6]};
+
+    Temp = BOSMessageCodec::bytesToFloat(xBytes);
+
+    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
+    std::cout << "[Sample Magnetometer] Received from Module: " << to_string(ModulePN::H0BR4)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << " Temp: " << Temp << "Celsius\n\n";
 
     return BOSStatus::BOS_OK;
 }
