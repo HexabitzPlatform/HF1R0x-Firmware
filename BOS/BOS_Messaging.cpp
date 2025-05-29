@@ -52,6 +52,16 @@ namespace Messaging
         return BOSStatus::BOS_OK;
     }
 
+    BOSStatus SendDataRequestToModule(uint8_t dstID, BOSMessageCode code)
+    {
+        // std::vector<uint8_t> Parameters = {2};
+        std::vector<uint8_t> Parameters = {PIConfig::piID};
+
+        SendMessagetoModule(dstID, code, Parameters);
+
+        return BOSStatus::BOS_OK;
+    }
+
 };
 
 // Create a valid BOS message packet

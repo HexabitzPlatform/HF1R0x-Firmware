@@ -311,7 +311,7 @@ BOSStatus BOS_MessageParser::handleWriteRemoteResponseCode(uint8_t dts, uint8_t 
 /**************************************************************************************************/
 // default implementation
 // the linker still needs the base class's definition � unless it's marked as = 0 (pure virtual).
-BOSStatus BOS_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t src, BOSMessageCode code, const std::vector<uint8_t> &params)
+BOSStatus BOS_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t source, BOSMessageCode code, const std::vector<uint8_t> &params)
 {
     std::cerr << "Base BOS_MessageParser: Unhandled module-specific code\n";
     return BOSStatus::BOS_ERROR;
@@ -337,47 +337,66 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
     switch (originalCode)
     {
         /* H05R0 Message Codes  *******************************************************************/
-    case BOSMessageCode::CODE_H05R0_CELLVOLTAGE:
+    case BOSMessageCode::CODE_H05R0_CELL_VOLTAGE:
         handleH05R0_CellVoltageCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_CELLCURRENT:
+    case BOSMessageCode::CODE_H05R0_CELL_CURRENT:
         handleH05R0_CellCurrentCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_CELLPOWER:
+    case BOSMessageCode::CODE_H05R0_CELL_POWER:
         handleH05R0_CellPowerCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_CELLTEMPERATURE:
+    case BOSMessageCode::CODE_H05R0_CELL_TEMPERATURE:
         handleH05R0_CellTemperatureCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_CELLCAPACITY:
+    case BOSMessageCode::CODE_H05R0_CELL_CAPACITY:
         handleH05R0_CellCapacityCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_STATEOFCHARGE:
+    case BOSMessageCode::CODE_H05R0_STATE_OF_CHARGE:
         handleH05R0_StateofChargeCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_CELLAGE:
+    case BOSMessageCode::CODE_H05R0_CELL_AGE:
         handleH05R0_CellAgeCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_CELLCYCLES:
+    case BOSMessageCode::CODE_H05R0_CELL_CYCLES:
         handleH05R0_CellCyclesCode(dst, source, params);
         break;
 
         /* H08R7 Message Codes  *******************************************************************/
-    case BOSMessageCode::CODE_H08R7_SAMPLE_PORT:
-        handleH08R7_SampleCode(dst, source, params);
+    case BOSMessageCode::CODE_H08R7_SAMPLE_DISTANCE:
+        handleH08R7_DistanceCode(dst, source, params);
         break;
         /* H09R0 Message Codes  *******************************************************************/
 
         /* H09R9 Message Codes  *******************************************************************/
 
         /* H0AR9 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H0AR9_SAMPLE_COLOR:
+        handleH0AR9_ColorCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H0AR9_SAMPLE_DISTANCE:
+        handleH0AR9_DistanceCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H0AR9_SAMPLE_TEMP:
+        handleH0AR9_TemperatureCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H0AR9_SAMPLE_HUMIDITY:
+        handleH0AR9_HumidityCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H0AR9_SAMPLE_PIR:
+        handleH0AR9_PIRCode(dst, source, params);
+        break;
 
         /* H0BR4 Message Codes  *******************************************************************/
     case BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO:
@@ -414,6 +433,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellVoltageCode(uint8_t dst, uint8_t
 {
     float voltage = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     voltage = BOSMessageCodec::bytesToFloat(bytes);
@@ -435,6 +457,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t
 
     float current = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     current = BOSMessageCodec::bytesToFloat(bytes);
@@ -454,6 +479,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t s
 {
     float power = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     power = BOSMessageCodec::bytesToFloat(bytes);
@@ -468,6 +496,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t s
 BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
     float temp = 0.0f;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
 
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
@@ -484,6 +515,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_
 {
     float capacity = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     capacity = BOSMessageCodec::bytesToFloat(bytes);
@@ -498,6 +532,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_
 BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
     float SOC = 0.0f;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
 
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
@@ -514,6 +551,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t sou
 {
     float age = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     age = BOSMessageCodec::bytesToFloat(bytes);
@@ -529,6 +569,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t 
 {
     float cycles = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     cycles = BOSMessageCodec::bytesToFloat(bytes);
@@ -543,22 +586,118 @@ BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t 
 /**************************************************************************************************/
 /* H08R7 Message Codes Functions ******************************************************************/
 /**************************************************************************************************/
-BOSStatus Module_MessageParser::handleH08R7_SampleCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus Module_MessageParser::handleH08R7_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
     uint16_t distance = 0;
 
-    if (params.size() < 7)
+    if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
     distance = params.at(5) | (params.at(6) << 8);
 
     std::cout << "[Sample Distance] Received from Module: " << to_string(ModulePN::H08R7)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << " Distance: " << distance << "\n\n";
+    std::cout << "Distance: " << distance << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
 
+/**************************************************************************************************/
+/* H0AR9 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    uint16_t red = 0, green = 0, blue = 0;
+
+    if (params.size() < 11)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 2> redBytes = {params[5], params[6]};
+    std::array<uint8_t, 2> greenBytes = {params[7], params[8]};
+    std::array<uint8_t, 2> blueBytes = {params[9], params[10]};
+
+    red = BOSMessageCodec::bytesToUint16_t(redBytes);
+    green = BOSMessageCodec::bytesToUint16_t(greenBytes);
+    blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
+
+    std::cout << "[Sample Color] Received from Module: " << to_string(ModulePN::H0AR9)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "Red: " << red << " \n";
+    std::cout << "Green: " << green << " \n";
+    std::cout << "Blue: " << blue << " \n\n";
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    uint16_t distance = 0;
+
+    if (params.size() < 7)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 2> distanceBytes = {params[5], params[6]};
+
+    distance = BOSMessageCodec::bytesToUint16_t(distanceBytes);
+
+    std::cout << "[Sample Distance] Received from Module: " << to_string(ModulePN::H0AR9)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "Distance: " << distance << " \n\n";
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0AR9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    float temp = 0;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> tempBytes = {params[5], params[6], params[7], params[8]};
+
+    temp = BOSMessageCodec::bytesToFloat(tempBytes);
+
+    std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0AR9)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "Temperature: " << temp << " Celsius\n\n";
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0AR9_HumidityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    float humidity = 0;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> humidityBytes = {params[5], params[6], params[7], params[8]};
+
+    humidity = BOSMessageCodec::bytesToFloat(humidityBytes);
+
+    std::cout << "[Sample Humidity] Received from Module: " << to_string(ModulePN::H0AR9)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "Humidity: " << humidity << " \n\n";
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    uint8_t PIR = 0;
+
+    if (params.size() < 6)
+        return BOSStatus::BOS_ERROR;
+
+    PIR = params.at(5);
+
+    std::cout << "[Sample PIR] Received from Module: " << to_string(ModulePN::H08R7)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "PIR: " << PIR << "\n\n";
+
+    return BOSStatus::BOS_OK;
+}
 /**************************************************************************************************/
 /* H0BR4 Message Codes Functions ******************************************************************/
 /**************************************************************************************************/
@@ -579,10 +718,9 @@ BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source
     GyroY = BOSMessageCodec::bytesToFloat(yBytes);
     GyroZ = BOSMessageCodec::bytesToFloat(zBytes);
 
-    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
     std::cout << "[Sample Gyroscope] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << " GyroX: " << GyroX << "\n GyroY: " << GyroY << "\n GyroZ: " << GyroZ << "\n\n";
+    std::cout << "GyroX: " << GyroX << "\nGyroY: " << GyroY << "\nGyroZ: " << GyroZ << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -604,10 +742,9 @@ BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source,
     AccY = BOSMessageCodec::bytesToFloat(yBytes);
     AccZ = BOSMessageCodec::bytesToFloat(zBytes);
 
-    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
     std::cout << "[Sample Accelerometer] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << " AccX: " << AccX << "\n AccY: " << AccY << "\n AccZ: " << AccZ << "\n\n";
+    std::cout << "AccX: " << AccX << "\nAccY: " << AccY << "\nAccZ: " << AccZ << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -629,10 +766,9 @@ BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source,
     MagY = BOSMessageCodec::bytesToInt(yBytes);
     MagZ = BOSMessageCodec::bytesToInt(zBytes);
 
-    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
     std::cout << "[Sample Magnetometer] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << " MagX: " << MagX << "\n MagY: " << MagY << "\n MagZ: " << MagZ << "\n\n";
+    std::cout << "MagX: " << MagX << "\nMagY: " << MagY << "\nMagZ: " << MagZ << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -648,10 +784,9 @@ BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t
 
     Temp = BOSMessageCodec::bytesToFloat(xBytes);
 
-    // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
     std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << " Temp: " << Temp << " Celsius\n\n";
+    std::cout << "Temp: " << Temp << " Celsius\n\n";
 
     return BOSStatus::BOS_OK;
 }

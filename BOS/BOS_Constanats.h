@@ -53,6 +53,14 @@ public:
         return value;
     }
 
+    // Convert 2 bytes to uint16_t
+    static uint16_t bytesToUint16_t(const std::array<uint8_t, 2> &bytes)
+    {
+        int value;
+        std::memcpy(&value, bytes.data(), sizeof(uint16_t));
+        return value;
+    }
+
     /*
     // Encode
     std::array<uint8_t, 4> encoded = BOSMessageCodec::floatToBytes(original);

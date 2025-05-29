@@ -205,7 +205,14 @@ private:
     BOSStatus handleH05R0_CellCyclesCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
 
     // H08R7 - TOF
-    BOSStatus handleH08R7_SampleCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH08R7_DistanceCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+
+    // H0AR9 - Sensor Hub
+    BOSStatus handleH0AR9_ColorCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH0AR9_DistanceCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH0AR9_TemperatureCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH0AR9_HumidityCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH0AR9_PIRCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
 
     // H0BR4 - IMU
     BOSStatus handleH0BR4_GyroCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
@@ -217,6 +224,7 @@ private:
 namespace Messaging
 {
     BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params);
+    BOSStatus SendDataRequestToModule(uint8_t dstID, BOSMessageCode code);
 };
 
 /* External Class Instances */
