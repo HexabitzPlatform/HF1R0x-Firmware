@@ -418,6 +418,13 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
         /* H21R2 Message Codes  *******************************************************************/
 
         /* H2AR3 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H2AR3_SAMPLE_VOLT:
+        handleH0BR4_VoltCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H2AR3_SAMPLE_CURRENT:
+        handleH0BR4_CurrentCode(dst, source, params);
+        break;
 
     default:
         std::cerr << "Module: Unhandled code.\n";
@@ -791,3 +798,40 @@ BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
+/* H2AR3 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0BR4_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    float volt = 0;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> voltBytes = {params[5], params[6], params[7], params[8]};
+
+    volt = BOSMessageCodec::bytesToFloat(voltBytes);
+
+    std::cout << "[Sample RMS Volt] Received from Module: " << to_string(ModulePN::H2AR3)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "Volt: " << volt << " Volt\n\n";
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH0BR4_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    float current = 0;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> currentBytes = {params[5], params[6], params[7], params[8]};
+
+    current = BOSMessageCodec::bytesToFloat(currentBytes);
+
+    std::cout << "[Sample RMS current] Received from Module: " << to_string(ModulePN::H2AR3)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "current: " << current << " Amp\n\n";
+
+    return BOSStatus::BOS_OK;
+}
