@@ -614,9 +614,9 @@ BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source,
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float MagX = 0.0f;
-    float MagY = 0.0f;
-    float MagZ = 0.0f;
+    int MagX = 0.0f;
+    int MagY = 0.0f;
+    int MagZ = 0.0f;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -625,9 +625,9 @@ BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source,
     std::array<uint8_t, 4> yBytes = {params[9], params[10], params[11], params[12]};
     std::array<uint8_t, 4> zBytes = {params[13], params[14], params[15], params[16]};
 
-    MagX = BOSMessageCodec::bytesToFloat(xBytes);
-    MagY = BOSMessageCodec::bytesToFloat(yBytes);
-    MagZ = BOSMessageCodec::bytesToFloat(zBytes);
+    MagX = BOSMessageCodec::bytesToInt(xBytes);
+    MagY = BOSMessageCodec::bytesToInt(yBytes);
+    MagZ = BOSMessageCodec::bytesToInt(zBytes);
 
     // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
     std::cout << "[Sample Magnetometer] Received from Module: " << to_string(ModulePN::H0BR4)
@@ -649,9 +649,9 @@ BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t
     Temp = BOSMessageCodec::bytesToFloat(xBytes);
 
     // std::cout << "Module PN: " << static_cast<int>(ModulePN::H0BR4) << "\n";
-    std::cout << "[Sample Magnetometer] Received from Module: " << to_string(ModulePN::H0BR4)
+    std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << " Temp: " << Temp << "Celsius\n\n";
+    std::cout << " Temp: " << Temp << " Celsius\n\n";
 
     return BOSStatus::BOS_OK;
 }

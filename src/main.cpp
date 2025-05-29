@@ -19,7 +19,7 @@ int main()
     // Connect UARTParser to BOS message parser
     uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
                                  {
-                                             std::cout << "Valid BOS message received. Passing to BOS parser...\n";
+                                            //  std::cout << "Valid BOS message received. Passing to BOS parser...\n";
                                              bosParser.parseMessage(payload); });
 
     // Setup UART receive callback to feed bytes into UARTParser
@@ -41,7 +41,19 @@ int main()
         // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_PING, {});
         Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO, Parameters);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+        Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_ACC, Parameters);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+        Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG, Parameters);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+        Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_TEMP, Parameters);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
 
     return 0;

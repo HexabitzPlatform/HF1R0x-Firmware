@@ -9,7 +9,7 @@ namespace PIConfig
     constexpr uint8_t piPort = 1;
     constexpr uint8_t piPartNumber = 44; /*ModulePartNumbers_e in BOS.h in Modules */
 
-    inline  uint8_t piID =1;
+    inline uint8_t piID = 1;
 };
 
 namespace LEDConfig
@@ -42,6 +42,14 @@ public:
     {
         float value;
         std::memcpy(&value, bytes.data(), sizeof(float));
+        return value;
+    }
+
+    // Convert 4 bytes to int
+    static int bytesToInt(const std::array<uint8_t, 4> &bytes)
+    {
+        int value;
+        std::memcpy(&value, bytes.data(), sizeof(int));
         return value;
     }
 
