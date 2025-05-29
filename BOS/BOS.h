@@ -154,7 +154,6 @@ public:
     }
 };
 
-
 class BOS_MessageParser
 {
 public:
@@ -201,6 +200,7 @@ private:
     BOSStatus handleH05R0_CellPowerCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellCapacityCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
+    BOSStatus handleH05R0_StateofChargeCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellAgeCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellCyclesCode(uint8_t dst, uint8_t src, const std::vector<uint8_t> &params);
 
@@ -219,11 +219,10 @@ namespace Messaging
     BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params);
 };
 
-
 /* External Class Instances */
 extern LED led;
 extern BOSOptionByte_t OptionByte;
 
 void initBOS();
 
-std::string to_string(ModulePN pn);  // Just the declaration
+std::string to_string(ModulePN pn); // Just the declaration

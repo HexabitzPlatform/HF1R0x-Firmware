@@ -29,7 +29,7 @@ enum class BOSMessageCode : uint16_t
     CODE_WRITE_REMOTE_RESPONSE = 33,
 
     CODE_READ_RESPONSE = 46,
-    
+
     ENABLE_STOP_MODE_UARTX = 47,
 
     /***************************************************************************/
@@ -52,6 +52,7 @@ enum class BOSMessageCode : uint16_t
     CODE_H05R0_CELLPOWER = 252,
     CODE_H05R0_CELLTEMPERATURE = 253,
     CODE_H05R0_CELLCAPACITY = 254,
+    CODE_H05R0_STATEOFCHARGE = 255,
     CODE_H05R0_CELLAGE = 258,
     CODE_H05R0_CELLCYCLES = 259,
 
