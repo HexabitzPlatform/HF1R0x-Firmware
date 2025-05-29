@@ -107,6 +107,12 @@ enum class BOSMessageCode : uint16_t
     CODE_H18R1_Turn_OFF = 1201,
     CODE_H18R1_Turn_PWM = 1202,
 
+    // H1FR5 - GPS
+    CODE_H1FR5_GET_POSITION = 1550,
+    CODE_H1FR5_GET_UTC = 1551,
+    CODE_H1FR5_GET_SPEED = 1552,
+    CODE_H1FR5_GET_HEIGHT = 1553,
+
     // H21R2x - ESP32-C3 WiFi+BLE
     CODE_H21R2_ESP_RESET = 1650,
     CODE_H21R2_ESP_BOOT = 1651,
@@ -122,6 +128,21 @@ enum class BOSMessageCode : uint16_t
     // H2AR3 - AC Current and Voltage Sensor
     CODE_H2AR3_SAMPLE_VOLT = 2100,
     CODE_H2AR3_SAMPLE_CURRENT = 2101,
+
+    // H2BR0 - EXG
+    CODE_H2BR0_ECG_Sample = 2150,
+    CODE_H2BR0_EOG_Sample = 2151,
+    CODE_H2BR0_EEG_Sample = 2152,
+    CODE_H2BR0_EMG_Sample = 2153,
+    CODE_H2BR0_EMG_SetThreshold = 2154,
+    CODE_H2BR0_EMG_CheckPulse = 2155,
+    CODE_H2BR0_ECG_HeartRate = 2156,
+    CODE_H2BR0_EOG_CheckEyeBlink = 2157,
+    CODE_H2BR0_LeadsStatus = 2158,
+
+    // H2BR1 - SPO2 Monitor
+    CODE_H2BR1_HR_Sample = 2175,
+    CODE_H2BR1_SPO2_Sample = 2176,
 
     // H3BR6 and H3BR7 - 6 Digits Seven Segment
     CODE_H3BRx_SevenDisplayNumber = 2950,

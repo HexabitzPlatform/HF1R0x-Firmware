@@ -207,6 +207,9 @@ private:
     // H08R7 - TOF
     BOSStatus handleH08R7_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
 
+    // H09R9 - Thermobile
+    BOSStatus handleH09R9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+
     // H0AR9 - Sensor Hub
     BOSStatus handleH0AR9_ColorCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH0AR9_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
@@ -220,9 +223,15 @@ private:
     BOSStatus handleH0BR4_MagCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH0BR4_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
 
-    // H2AR3
-    BOSStatus handleH0BR4_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
-    BOSStatus handleH0BR4_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    // H1FR5 - GPS
+    BOSStatus handleH1FR5_PositionCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH1FR5_UTCCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH1FR5_SpeedCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH1FR5_HeightCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+
+    // H2AR3 AC Monitor
+    BOSStatus handleH2AR3_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH2AR3_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
 };
 
 namespace Messaging

@@ -376,6 +376,9 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
         /* H09R0 Message Codes  *******************************************************************/
 
         /* H09R9 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H09R9_SAMPLE_TEMP:
+        handleH09R9_TemperatureCode(dst, source, params);
+        break;
 
         /* H0AR9 Message Codes  *******************************************************************/
     case BOSMessageCode::CODE_H0AR9_SAMPLE_COLOR:
@@ -417,13 +420,30 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
 
         /* H21R2 Message Codes  *******************************************************************/
 
+        /* H1FR5 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H1FR5_GET_POSITION:
+        handleH1FR5_PositionCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H1FR5_GET_UTC:
+        handleH1FR5_UTCCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H1FR5_GET_SPEED:
+        handleH1FR5_SpeedCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H1FR5_GET_HEIGHT:
+        handleH1FR5_HeightCode(dst, source, params);
+        break;
+
         /* H2AR3 Message Codes  *******************************************************************/
     case BOSMessageCode::CODE_H2AR3_SAMPLE_VOLT:
-        handleH0BR4_VoltCode(dst, source, params);
+        handleH2AR3_VoltCode(dst, source, params);
         break;
 
     case BOSMessageCode::CODE_H2AR3_SAMPLE_CURRENT:
-        handleH0BR4_CurrentCode(dst, source, params);
+        handleH2AR3_CurrentCode(dst, source, params);
         break;
 
     default:
@@ -513,7 +533,7 @@ BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uin
 
     std::cout << "[Sample Battery Temperature] Received from Module: " << to_string(ModulePN::H05R0)
               << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Battery Temperature: " << temp << "\n\n";
+    std::cout << "Battery Temperature: " << temp << " Celsius\n\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -608,7 +628,26 @@ BOSStatus Module_MessageParser::handleH08R7_DistanceCode(uint8_t dst, uint8_t so
 
     return BOSStatus::BOS_OK;
 }
+/**************************************************************************************************/
+/* H09R9 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH09R9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    float temp = 0.0f;
 
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+
+    temp = BOSMessageCodec::bytesToFloat(bytes);
+
+    std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H09R9)
+              << " , ID: " << static_cast<int>(source) << "\n";
+    std::cout << "Temperature: " << temp << " Celsius\n\n";
+
+    return BOSStatus::BOS_OK;
+}
 /**************************************************************************************************/
 /* H0AR9 Message Codes Functions ******************************************************************/
 /**************************************************************************************************/
@@ -798,9 +837,31 @@ BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
+/* H1FR5 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH1FR5_PositionCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH1FR5_UTCCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH1FR5_SpeedCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH1FR5_HeightCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
 /* H2AR3 Message Codes Functions ******************************************************************/
 /**************************************************************************************************/
-BOSStatus Module_MessageParser::handleH0BR4_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus Module_MessageParser::handleH2AR3_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
     float volt = 0;
 
@@ -818,7 +879,7 @@ BOSStatus Module_MessageParser::handleH0BR4_VoltCode(uint8_t dst, uint8_t source
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
-BOSStatus Module_MessageParser::handleH0BR4_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus Module_MessageParser::handleH2AR3_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
     float current = 0;
 
