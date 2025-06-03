@@ -69,3 +69,45 @@ public:
     float decoded = BOSMessageCodec::bytesToFloat(encoded);
     */
 };
+
+class LED
+{
+private:
+    uint8_t gpioPin;
+    bool state = false;
+
+public:
+    explicit LED(uint8_t _pin) : gpioPin(_pin)
+    {
+        Porting::initGPIO(gpioPin);
+    }
+
+    void on()
+    {
+        Porting::writeGPIO(gpioPin, true);
+        state = true;
+    }
+
+    void off()
+    {
+        Porting::writeGPIO(gpioPin, false);
+        state = false;
+    }
+
+    void toggle()
+    {
+        state = !state;
+        Porting::writeGPIO(gpioPin, state);
+    }
+
+    void blink(int times, int delay_ms)
+    {
+        for (int i = 0; i < times; ++i)
+        {
+            on();
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+            off();
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+        }
+    }
+};

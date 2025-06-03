@@ -63,5 +63,3 @@ namespace Messaging
     }
 
 };
-
-// Create a valid BOS message packet

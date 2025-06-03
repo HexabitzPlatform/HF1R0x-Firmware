@@ -10,12 +10,10 @@
 /* BOS Files */
 #include "Porting.h"
 #include "UARTParser.h"
-#include "BOS_MessageParser.h"
-#include "BOS_Messaging.h"
 #include "BOS_Constanats.h"
 #include "BOS_MessageCodes.h"
 
-/* BOS message option byte structure */
+/* BOS message option byte structure ***************************************************************/
 typedef struct
 {
     uint8_t ExtendedOptions : 1;     /* If set, additional option byte follows */
@@ -27,7 +25,9 @@ typedef struct
     uint8_t LongMessage : 1;         /* If set, message continues in next packet */
 } BOSOptionByte_t;
 
-/* */
+/**************************************************************************************************/
+/**************************************** Enum Class Definitions **********************************/
+/**************************************************************************************************/
 enum class BOSStatus : uint8_t
 {
     // BOS Status:
@@ -64,7 +64,7 @@ enum class BOSStatus : uint8_t
     // Module Status:
 };
 
-/* Define module PN strings */
+/* Module PN Strings Definition ******************************************************************/
 enum class ModulePN : char
 {
     H01R0,
@@ -112,50 +112,17 @@ enum class ModulePN : char
     H19R0
 };
 
-class LED
-{
-private:
-    uint8_t gpioPin;
-    bool state = false;
-
-public:
-    explicit LED(uint8_t _pin) : gpioPin(_pin)
-    {
-        Porting::initGPIO(gpioPin);
-    }
-
-    void on()
-    {
-        Porting::writeGPIO(gpioPin, true);
-        state = true;
-    }
-
-    void off()
-    {
-        Porting::writeGPIO(gpioPin, false);
-        state = false;
-    }
-
-    void toggle()
-    {
-        state = !state;
-        Porting::writeGPIO(gpioPin, state);
-    }
-
-    void blink(int times, int delay_ms)
-    {
-        for (int i = 0; i < times; ++i)
-        {
-            on();
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
-            off();
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
-        }
-    }
-};
-
+/**************************************************************************************************/
+/******************************************  Class Definitions ************************************/
+/**************************************************************************************************/
 class BOS_MessageParser
 {
+
+private:
+    std::array<uint16_t, 2> Array{};
+    std::array<uint16_t, 2> NeighborsInfo{};
+    std::vector<uint8_t> MessageParames;
+
 public:
     virtual BOSStatus parseMessage(const std::vector<uint8_t> &payload);
 
@@ -181,13 +148,11 @@ private:
     BOSStatus handleWriteRemoteCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleWriteRemoteResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
 
-    // Power-Related Message Codes Functions:
-    BOSStatus handleEnableStopModeCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
-
     // Overridable method to handle unknown/module-specific codes
     virtual BOSStatus handleModuleMessageCode(uint8_t dst, uint8_t source, BOSMessageCode code, const std::vector<uint8_t> &params);
 };
 
+/* Module Message Parser Class Definitions ********************************************************/
 class Module_MessageParser : public BOS_MessageParser
 {
 protected:
@@ -234,16 +199,19 @@ private:
     BOSStatus handleH2AR3_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
 };
 
+/* Messaging APIs Class Definitions ***************************************************************/
 namespace Messaging
 {
     BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params);
     BOSStatus SendDataRequestToModule(uint8_t dstID, BOSMessageCode code);
 };
 
-/* External Class Instances */
+/* External Class Instances  Definitions **********************************************************/
 extern LED led;
 extern BOSOptionByte_t OptionByte;
 
+/**************************************************************************************************/
+/******************************************  General Functions ************************************/
+/**************************************************************************************************/
 void initBOS();
-
 std::string to_string(ModulePN pn); // Just the declaration
