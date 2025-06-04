@@ -1,6 +1,6 @@
 #include "UARTParser.h"
-#include <iostream> // For std::cerr, std::endl
-#include <iomanip>  // For std::hex, std::dec
+#include <iostream>
+#include <iomanip>
 #include <cmath>
 
 // Sets the callback function to be called when a valid message is received

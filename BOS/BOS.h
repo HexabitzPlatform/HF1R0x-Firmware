@@ -115,18 +115,19 @@ enum class ModulePN : char
 /**************************************************************************************************/
 /******************************************  Class Definitions ************************************/
 /**************************************************************************************************/
+
+/* BOS Message Parser Class Definitions ***********************************************************/
 class BOS_MessageParser
 {
+
+public:
+    virtual BOSStatus parseMessage(const std::vector<uint8_t> &payload);
 
 private:
     std::array<uint16_t, 2> Array{};
     std::array<uint16_t, 2> NeighborsInfo{};
     std::vector<uint8_t> MessageParames;
 
-public:
-    virtual BOSStatus parseMessage(const std::vector<uint8_t> &payload);
-
-private:
     // Indicator-Related Message Codes Functions:
     BOSStatus handlePingCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleIndicatorOnCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);

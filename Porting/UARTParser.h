@@ -1,9 +1,8 @@
 #pragma once
 
-// Standard library includes for functionality used in the class
-#include <functional> // For std::function to define callbacks
-#include <vector>     // For std::vector to store byte data
-#include <cstdint>    // For fixed-size integer types like uint8_t
+#include <functional>
+#include <vector>
+#include <cstdint>
 
 // UARTParser class: Parses incoming UART data to extract valid messages
 class UARTParser

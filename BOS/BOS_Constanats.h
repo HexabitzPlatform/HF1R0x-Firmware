@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
+/* Raspberry Pi identity and port settings ********************************************************/
 namespace PIConfig
 {
     constexpr uint8_t piPort = 1;
@@ -12,6 +13,7 @@ namespace PIConfig
     inline uint8_t piID = 1;
 };
 
+/* LED-related constants **************************************************************************/
 namespace LEDConfig
 {
     constexpr uint8_t GPIO_PIN = 23;       // GPIO pin connected to LED
@@ -19,6 +21,7 @@ namespace LEDConfig
     constexpr int INITIAL_BLINK_TIMES = 2; // Number of times to blink
 }
 
+/* UART peripheral setup **************************************************************************/
 namespace UARTConfig
 {
     constexpr uint8_t TX_PIN = 14;        // GPIO pin for UART TX
@@ -26,10 +29,11 @@ namespace UARTConfig
     constexpr uint32_t BAUDRATE = 921600; // UART baud rate
 }
 
+/* Encoding and Decoding BOS messages *************************************************************/
 class BOSMessageCodec
 {
 public:
-    // Convert float to 4 bytes
+    // Convert a float value to a 4-byte array
     static std::array<uint8_t, 4> floatToBytes(float value)
     {
         std::array<uint8_t, 4> bytes{};
@@ -37,7 +41,7 @@ public:
         return bytes;
     }
 
-    // Convert 4 bytes to float
+    // Convert a 4-byte array back to a float value
     static float bytesToFloat(const std::array<uint8_t, 4> &bytes)
     {
         float value;
@@ -45,7 +49,7 @@ public:
         return value;
     }
 
-    // Convert 4 bytes to int
+    // Convert a 4-byte array to an integer value
     static int bytesToInt(const std::array<uint8_t, 4> &bytes)
     {
         int value;
@@ -53,23 +57,16 @@ public:
         return value;
     }
 
-    // Convert 2 bytes to uint16_t
+    // Convert a 2-byte array to an unsigned 16-bit integer
     static uint16_t bytesToUint16_t(const std::array<uint8_t, 2> &bytes)
     {
         int value;
         std::memcpy(&value, bytes.data(), sizeof(uint16_t));
         return value;
     }
-
-    /*
-    // Encode
-    std::array<uint8_t, 4> encoded = BOSMessageCodec::floatToBytes(original);
-
-    // Decode
-    float decoded = BOSMessageCodec::bytesToFloat(encoded);
-    */
 };
 
+/* Manage LED operations using GPIO ***************************************************************/
 class LED
 {
 private:
