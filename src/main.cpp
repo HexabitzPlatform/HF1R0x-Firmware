@@ -19,7 +19,7 @@ int main()
     // Connect UARTParser to BOS message parser
     uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
                                  {
-                                             std::cout << "Valid BOS message received. Passing to BOS parser...\n";
+                                             std::cout << "\nValid BOS message received. Passing to BOS parser...\n";
                                              bosParser.parseMessage(payload); });
 
     // Setup UART receive callback to feed bytes into UARTParser

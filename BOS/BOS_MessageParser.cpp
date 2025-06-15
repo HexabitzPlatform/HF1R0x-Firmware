@@ -124,6 +124,8 @@ BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
         break;
     }
 
+    MessageParames.clear();
+
     return BOSStatus::BOS_OK;
 }
 
@@ -162,6 +164,7 @@ BOSStatus BOS_MessageParser::handleIndicatorOffCode(uint8_t dts, uint8_t source,
 BOSStatus BOS_MessageParser::handleIndicatorToggleCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     led.toggle();
+    
     std::cout << "[LED toggle Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
@@ -174,16 +177,14 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
     NeighborsInfo[0] = (static_cast<uint16_t>(source) << 8) | static_cast<uint16_t>(params[2]);    /* Neighbor ID + Neighbor own port */
     NeighborsInfo[1] = (static_cast<uint16_t>(params[0]) << 8) | static_cast<uint16_t>(params[1]); /* Neighbor PN */
 
-    std::cout << "[Hi Code] Reveived from Module: " << static_cast<int>(source)
-              << "which PN: " << NeighborsInfo[1] << "and its ID: " << params[0];
+    std::cout << "[Hi Code] Reveived from Module: " << to_string(static_cast<ModulePN>(NeighborsInfo[1] - 1))
+              << " , ID: " << static_cast<int>(source) << "\n";
+
+    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
     /* Send Raspberry PI info */
-    // MessageParames[0] = (static_cast<uint8_t>(PIConfig::piPartNumber) << 8);
-    // MessageParames[1] = (static_cast<uint8_t>(PIConfig::piPartNumber));
-    // MessageParames[2] = PIConfig::piPort;
-
-    MessageParames.push_back((PIConfig::piPartNumber)); /* LSB of PN */
     MessageParames.push_back(0);                        /* MSB of PN: to match Neighbor array in BOS which expects 16-bit */
+    MessageParames.push_back((PIConfig::piPartNumber)); /* LSB of PN */
     MessageParames.push_back(PIConfig::piPort);
 
     Messaging::SendMessagetoModule(0, BOSMessageCode::CODE_HI_RESPONSE, MessageParames);
@@ -205,18 +206,21 @@ BOSStatus BOS_MessageParser::handleHiResponseCode(uint8_t dts, uint8_t source, c
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleExploreADJCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Explore ADJ Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    std::cout << "[Explore ADJ Code] Reveived from Module: " << static_cast<int>(source) << "\n"
+              << "Raspberry can not Implement this\n";
+
+    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
     /* Send back a message indicates that no modules are connected to the raspberry other the the master */
-
-    Messaging::SendMessagetoModule(source, BOSMessageCode::CODE_EXPLORE_ADJ_RESPONSE, MessageParames);
+    // Messaging::SendMessagetoModule(source, BOSMessageCode::CODE_EXPLORE_ADJ_RESPONSE, MessageParames);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleExploreADJResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Explore ADJ Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    std::cout << "[Explore ADJ Response Code] Reveived from Module: " << static_cast<int>(source) << "\n"
+              << "Raspberry can not Implement this\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -224,7 +228,7 @@ BOSStatus BOS_MessageParser::handleExploreADJResponseCode(uint8_t dts, uint8_t s
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handlePortDirectionCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Port Direction Code] Reveived from Module: " << static_cast<int>(source)
+    std::cout << "[Port Direction Code] Reveived from Module: " << static_cast<int>(source) << "\n"
               << "Raspberry can not Implement this\n";
 
     /* Raspberry Pi can not swap UART Pins. so, instead we'll try fix this in master BOS Module */
@@ -234,10 +238,10 @@ BOSStatus BOS_MessageParser::handlePortDirectionCode(uint8_t dts, uint8_t source
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleModuleIDCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    PIConfig::piID = (params.at(0));
+    PIConfig::piID = (params.at(1));
 
     std::cout << "[ Module ID Code] Reveived from Module: " << static_cast<int>(source)
-              << "Update Raspberry Pi ID to be: " << PIConfig::piID << "\n";
+              << ", Update Raspberry Pi ID to be: " << static_cast<int>(PIConfig::piID) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -245,7 +249,7 @@ BOSStatus BOS_MessageParser::handleModuleIDCode(uint8_t dts, uint8_t source, con
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    static uint8_t longMessageScratchpad[2];
+    static uint8_t longMessageScratchpad[175];
     uint16_t longMessageLastPtr = 0;
 
     if (OptionByte.LongMessage)
@@ -266,11 +270,11 @@ BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, con
         memcpy(&Array, &longMessageScratchpad, longMessageLastPtr);
         longMessageLastPtr = 0;
 
-        led.blink(2, 100);
+        led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
     }
 
     std::cout << "[Topology Code] Reveived from Module: " << static_cast<int>(source)
-              << "Update Topology to be:" << params.at(0) << "\n";
+              << " , Update Topology to be:" << static_cast<int>(params.at(0)) << "\n";
 
     return BOSStatus::BOS_OK;
 }

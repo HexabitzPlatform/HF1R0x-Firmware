@@ -65,7 +65,7 @@ enum class BOSStatus : uint8_t
 };
 
 /* Module PN Strings Definition ******************************************************************/
-enum class ModulePN : char
+enum class ModulePN : uint8_t
 {
     H01R0,
     P01R0,
@@ -203,6 +203,10 @@ private:
 /* Messaging APIs Class Definitions ***************************************************************/
 namespace Messaging
 {
+    // private:
+    // uint8_t source_ID;
+
+    // public:
     BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params);
     BOSStatus SendDataRequestToModule(uint8_t dstID, BOSMessageCode code);
 };

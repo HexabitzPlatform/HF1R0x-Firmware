@@ -30,8 +30,8 @@ namespace Messaging
 
         // Add message fields
         packet.push_back(dstID);
-        uint8_t src = 2;
-        packet.push_back(src);
+        // uint8_t src = 2;
+        packet.push_back(PIConfig::piID);
         packet.push_back(options);
 
         // Add message code
@@ -48,6 +48,8 @@ namespace Messaging
         packet.push_back(crc);
 
         Porting::uartSend(packet);
+
+        
 
         return BOSStatus::BOS_OK;
     }
