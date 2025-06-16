@@ -164,7 +164,7 @@ BOSStatus BOS_MessageParser::handleIndicatorOffCode(uint8_t dts, uint8_t source,
 BOSStatus BOS_MessageParser::handleIndicatorToggleCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     led.toggle();
-    
+
     std::cout << "[LED toggle Code] Reveived from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
@@ -180,7 +180,7 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
     std::cout << "[Hi Code] Reveived from Module: " << to_string(static_cast<ModulePN>(NeighborsInfo[1] - 1))
               << " , ID: " << static_cast<int>(source) << "\n";
 
-    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
+    // led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
     /* Send Raspberry PI info */
     MessageParames.push_back(0);                        /* MSB of PN: to match Neighbor array in BOS which expects 16-bit */
@@ -189,6 +189,8 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
 
     Messaging::SendMessagetoModule(0, BOSMessageCode::CODE_HI_RESPONSE, MessageParames);
 
+    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
+    
     return BOSStatus::BOS_OK;
 }
 

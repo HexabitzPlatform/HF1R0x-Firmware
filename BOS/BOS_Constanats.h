@@ -17,8 +17,8 @@ namespace PIConfig
 namespace LEDConfig
 {
     constexpr uint8_t GPIO_PIN = 23;       // GPIO pin connected to LED
-    constexpr int BLINK_DELAY_MS = 100;    // Delay in milliseconds for blinking
-    constexpr int INITIAL_BLINK_TIMES = 2; // Number of times to blink
+    constexpr int BLINK_DELAY_MS = 80;    // Delay in milliseconds for blinking
+    constexpr int INITIAL_BLINK_TIMES = 1; // Number of times to blink
 }
 
 /* UART peripheral setup **************************************************************************/
