@@ -44,7 +44,7 @@ namespace Messaging
             packet.insert(packet.end(), params.begin(), params.end());
 
         // Compute and add CRC8
-        uint8_t crc = calculateCRC32(packet);
+        uint8_t crc = calculateCRC8(packet);
         packet.push_back(crc);
 
         Porting::uartSend(packet);

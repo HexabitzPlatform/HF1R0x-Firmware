@@ -133,8 +133,10 @@ namespace Porting
         tty.c_cflag |= CREAD | CLOCAL; /* Enable receiver, ignore modem control lines */
 
         tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); /* Raw input mode */
-        tty.c_iflag &= ~(IXON | IXOFF | IXANY);         /* Disable software flow control */
-        tty.c_oflag &= ~OPOST;                          /* Raw output mode */
+        // tty.c_iflag &= ~(IXON | IXOFF | IXANY);         /* Disable software flow control */
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY | ICRNL | INLCR | IGNCR);
+
+        tty.c_oflag &= ~OPOST; /* Raw output mode */
 
         tty.c_cc[VMIN] = 1;  /* Minimum number of characters to read */
         tty.c_cc[VTIME] = 0; /* Timeout */

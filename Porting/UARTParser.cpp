@@ -60,8 +60,8 @@ void UARTParser::feed(uint8_t byte)
             while (crcData.size() % 4 != 0)
                 crcData.push_back(0);
 
-            uint8_t receivedCRC = buffer.back();             // Last byte is the received CRC
-            uint8_t calculatedCRC = calculateCRC32(crcData); // Calculate CRC
+            uint8_t receivedCRC = buffer.back();            // Last byte is the received CRC
+            uint8_t calculatedCRC = calculateCRC8(crcData); // Calculate CRC
 
             // Compare
             if (calculatedCRC == receivedCRC)
@@ -73,8 +73,8 @@ void UARTParser::feed(uint8_t byte)
             }
             else
             {
-                // std::cerr << "CRC mismatch: expected 0x" << std::hex << (int)calculatedCRC
-                //           << ", got 0x" << (int)receivedCRC << std::dec << std::endl;
+                std::cerr << "CRC mismatch: expected 0x" << std::hex << (int)calculatedCRC
+                          << ", got 0x" << (int)receivedCRC << std::dec << std::endl;
             }
 
             state = State::WaitForH; // Reset to start for next message
@@ -83,8 +83,8 @@ void UARTParser::feed(uint8_t byte)
     }
 }
 
-// Calculates an 8-bit CRC for the input data using polynomial 0x07
-uint8_t calculateCRC32(const std::vector<uint8_t> &data)
+// Calculates an 8-bit CRC for the input data using polynomial 0x07 over uint32_t word
+uint8_t calculateCRC8(const std::vector<uint8_t> &data)
 {
     unsigned int crc = 0xFFFFFFFF;
     const size_t length = data.size();

@@ -38,4 +38,4 @@ private:
 };
 
 // Function to calculate an 8-bit CRC for message validation
-uint8_t calculateCRC32(const std::vector<uint8_t> &data);
+uint8_t calculateCRC8(const std::vector<uint8_t> &data);
