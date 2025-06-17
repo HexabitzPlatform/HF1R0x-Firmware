@@ -474,6 +474,13 @@ BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source,
     AccY = BOSMessageCodec::bytesToFloat(yBytes);
     AccZ = BOSMessageCodec::bytesToFloat(zBytes);
 
+    {
+        std::lock_guard<std::mutex> lock(H0BR4::AccMutex);
+        H0BR4::xAccPromise.set_value(AccX);
+        H0BR4::yAccPromise.set_value(AccY);
+        H0BR4::zAccPromise.set_value(AccZ);
+    }
+
     std::cout << "[Sample Accelerometer] Received from Module: " << to_string(ModulePN::H0BR4)
               << " , ID: " << static_cast<int>(source) << "\n";
     std::cout << "AccX: " << AccX << "\nAccY: " << AccY << "\nAccZ: " << AccZ << "\n\n";

@@ -142,7 +142,6 @@ private:
 
     // Explore-Related Message Codes Functions:
     BOSStatus handleHiCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
-    BOSStatus handleHiResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleExploreADJCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleExploreADJResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handlePortDirectionCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);

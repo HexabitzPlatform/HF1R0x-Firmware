@@ -41,13 +41,13 @@ void DisplayTopology(void)
 {
     BOS_MessageParser object;
 
+    /* Display Topology: Modules IDs and Part Numbers */
     std::cout << "There are " << static_cast<int>(object.NumberofModules) << " Modules including myself.\n";
-
-    std::cout << "Module's Part Number      ID" << "\n";
+    std::cout << "Module's PN      ID" << "\n";
 
     for (uint8_t row = 0; row < object.NumberofModules; row++)
     {
-        std::cout << to_string(static_cast<ModulePN>(object.Array[row][0])) << "          " << row << "\n";
+        std::cout << to_string(static_cast<ModulePN>(object.Array[row][0] - 1)) << "            " << static_cast<int>(row + 1) << "\n";
     }
 }
 

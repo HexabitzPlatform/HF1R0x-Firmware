@@ -77,10 +77,6 @@ BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
         handleHiCode(destination, source, params);
         break;
 
-    case BOSMessageCode::CODE_HI_RESPONSE:
-        handleHiResponseCode(destination, source, params);
-        break;
-
     case BOSMessageCode::CODE_EXPLORE_ADJ:
         handleExploreADJCode(destination, source, params);
         break;
@@ -137,7 +133,7 @@ BOSStatus BOS_MessageParser::handlePingCode(uint8_t dts, uint8_t source, const s
     // Interpret params accordingly
     led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
-    std::cout << "[Ping Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    std::cout << "[Ping Code] Received from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -146,7 +142,7 @@ BOSStatus BOS_MessageParser::handlePingCode(uint8_t dts, uint8_t source, const s
 BOSStatus BOS_MessageParser::handleIndicatorOnCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     led.on();
-    std::cout << "[LED on Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    std::cout << "[LED on Code] Received from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -155,7 +151,7 @@ BOSStatus BOS_MessageParser::handleIndicatorOnCode(uint8_t dts, uint8_t source, 
 BOSStatus BOS_MessageParser::handleIndicatorOffCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     led.off();
-    std::cout << "[LED off Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    std::cout << "[LED off Code] Received from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -165,7 +161,7 @@ BOSStatus BOS_MessageParser::handleIndicatorToggleCode(uint8_t dts, uint8_t sour
 {
     led.toggle();
 
-    std::cout << "[LED toggle Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+    std::cout << "[LED toggle Code] Received from Module: " << static_cast<int>(source) << "\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -177,10 +173,8 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
     NeighborsInfo[0] = (static_cast<uint16_t>(source) << 8) | static_cast<uint16_t>(params[2]);    /* Neighbor ID + Neighbor own port */
     NeighborsInfo[1] = (static_cast<uint16_t>(params[0]) << 8) | static_cast<uint16_t>(params[1]); /* Neighbor PN */
 
-    std::cout << "[Hi Code] Reveived from Module: " << to_string(static_cast<ModulePN>(NeighborsInfo[1] - 1))
+    std::cout << "[Hi Code] Received from Module: " << to_string(static_cast<ModulePN>(NeighborsInfo[1] - 1))
               << " , ID: " << static_cast<int>(source) << "\n";
-
-    // led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
     /* Send Raspberry PI info */
     MessageParames.push_back(0);                        /* MSB of PN: to match Neighbor array in BOS which expects 16-bit */
@@ -195,21 +189,10 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
 }
 
 /**************************************************************************************************/
-BOSStatus BOS_MessageParser::handleHiResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
-{
-    std::cout << "[Hi Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
-    /* Record your neighbor info */
-    /* this message code is important for only a master module that runs Explore function
-       so, raspberry will never be a master explore */
-
-    return BOSStatus::BOS_OK;
-}
-
-/**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleExploreADJCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Explore ADJ Code] Reveived from Module: " << static_cast<int>(source) << "\n"
-              << "Raspberry can not Implement this\n";
+    // std::cout << "[Explore ADJ Code] Received from Module: " << static_cast<int>(source) << "\n"
+    //           << "Raspberry can not Implement this\n";
 
     led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
@@ -221,8 +204,8 @@ BOSStatus BOS_MessageParser::handleExploreADJCode(uint8_t dts, uint8_t source, c
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleExploreADJResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Explore ADJ Response Code] Reveived from Module: " << static_cast<int>(source) << "\n"
-              << "Raspberry can not Implement this\n";
+    // std::cout << "[Explore ADJ Response Code] Received from Module: " << static_cast<int>(source) << "\n"
+    //           << "Raspberry can not Implement this\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -230,8 +213,8 @@ BOSStatus BOS_MessageParser::handleExploreADJResponseCode(uint8_t dts, uint8_t s
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handlePortDirectionCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    std::cout << "[Port Direction Code] Reveived from Module: " << static_cast<int>(source) << "\n"
-              << "Raspberry can not Implement this\n";
+    // std::cout << "[Port Direction Code] Received from Module: " << static_cast<int>(source) << "\n"
+    //           << "Raspberry can not Implement this\n";
 
     /* Raspberry Pi can not swap UART Pins. so, instead we'll try fix this in master BOS Module */
 
@@ -242,7 +225,7 @@ BOSStatus BOS_MessageParser::handleModuleIDCode(uint8_t dts, uint8_t source, con
 {
     PIConfig::piID = (params.at(1));
 
-    std::cout << "[ Module ID Code] Reveived from Module: " << static_cast<int>(source)
+    std::cout << "[ Module ID Code] Received from Module: " << static_cast<int>(source)
               << ", Update Raspberry Pi ID to be: " << static_cast<int>(PIConfig::piID) << "\n";
 
     return BOSStatus::BOS_OK;
@@ -259,9 +242,6 @@ BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, con
     {
         memcpy(&longMessageScratchpad[0] + longMessageLastPtr, params.data(), params.size());
         longMessageLastPtr += params.size();
-
-        // std::cout << "[Topology Code] Received from Module: " << static_cast<int>(source)
-        //           << " , long Message Received." << "\n";
     }
     else
     {
@@ -289,7 +269,6 @@ BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, con
             }
         }
 
-        /* Copy the scratchpad to Array */
         // memcpy(&Array, &longMessageScratchpad, longMessageLastPtr);
         longMessageLastPtr = 0;
 
