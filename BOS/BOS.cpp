@@ -11,7 +11,7 @@ LED led(LEDConfig::GPIO_PIN);
 /**************************************************************************************************/
 /************************************  General Functions Definitions ******************************/
 /**************************************************************************************************/
-void initBOS()
+void initBOS(void)
 {
 
     // Initialize GPIO PIN on Raspberry
@@ -35,6 +35,21 @@ void initBOS()
     Porting::setUartReceiveCallback([&uartParser](char byte)
                                     { uartParser.feed(static_cast<uint8_t>(byte)); });
 };
+
+/**************************************************************************************************/
+void DisplayTopology(void)
+{
+    BOS_MessageParser object;
+
+    std::cout << "There are " << static_cast<int>(object.NumberofModules) << " Modules including myself.\n";
+
+    std::cout << "Module's Part Number      ID" << "\n";
+
+    for (uint8_t row = 0; row < object.NumberofModules; row++)
+    {
+        std::cout << to_string(static_cast<ModulePN>(object.Array[row][0])) << "          " << row << "\n";
+    }
+}
 
 /**************************************************************************************************/
 std::string to_string(ModulePN pn)
@@ -127,6 +142,10 @@ std::string to_string(ModulePN pn)
         return "P08R7";
     case ModulePN::H19R0:
         return "H19R0";
+    case ModulePN::Raspberry_PI:
+        return "RPI  ";
+    case ModulePN::H14RA:
+        return "H14RA";
     default:
         return "Unknown";
     }

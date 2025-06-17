@@ -109,7 +109,9 @@ enum class ModulePN : uint8_t
     H08R7,
     H16R6,
     P08R7,
-    H19R0
+    H19R0,
+    Raspberry_PI,
+    H14RA
 };
 
 /**************************************************************************************************/
@@ -121,10 +123,14 @@ class BOS_MessageParser
 {
 
 public:
+    uint8_t NumberofModules = 0;
+    std::array<std::array<uint16_t, 11>, 26> Array; // raw: 11 , colom: 26
+
     virtual BOSStatus parseMessage(const std::vector<uint8_t> &payload);
 
 private:
-    std::array<uint16_t, 2> Array{};
+    // std::vector<uint8_t> Array{};
+
     std::array<uint16_t, 2> NeighborsInfo{};
     std::vector<uint8_t> MessageParames;
 
@@ -218,5 +224,6 @@ extern BOSOptionByte_t OptionByte;
 /**************************************************************************************************/
 /******************************************  General Functions ************************************/
 /**************************************************************************************************/
-void initBOS();
+void initBOS(void);
+void DisplayTopology(void);
 std::string to_string(ModulePN pn); // Just the declaration

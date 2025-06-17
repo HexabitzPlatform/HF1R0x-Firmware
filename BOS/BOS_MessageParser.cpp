@@ -190,7 +190,7 @@ BOSStatus BOS_MessageParser::handleHiCode(uint8_t dts, uint8_t source, const std
     Messaging::SendMessagetoModule(0, BOSMessageCode::CODE_HI_RESPONSE, MessageParames);
 
     led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
-    
+
     return BOSStatus::BOS_OK;
 }
 
@@ -251,32 +251,64 @@ BOSStatus BOS_MessageParser::handleModuleIDCode(uint8_t dts, uint8_t source, con
 /**************************************************************************************************/
 BOSStatus BOS_MessageParser::handleTopologyCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
-    static uint8_t longMessageScratchpad[175];
-    uint16_t longMessageLastPtr = 0;
+    static uint8_t longMessageScratchpad[(10 + 1) * 26]; // 10: MAX ports , 26: MAX modules
+    static uint16_t longMessageLastPtr = 0;
+    int indexArray = 0;
 
     if (OptionByte.LongMessage)
     {
-        /* Array is 2-byte oriented thus memcpy can copy only even number of bytes
-         * TODO test maybe broken */
-        /* Use a 1-byte oriented scratchpad */
         memcpy(&longMessageScratchpad[0] + longMessageLastPtr, params.data(), params.size());
         longMessageLastPtr += params.size();
+
+        // std::cout << "[Topology Code] Received from Module: " << static_cast<int>(source)
+        //           << " , long Message Received." << "\n";
     }
     else
     {
         memcpy(&longMessageScratchpad[0] + longMessageLastPtr, params.data(), params.size());
         longMessageLastPtr += params.size();
-        // N = (longMessageLastPtr / (1 + 1)) / 2;
+
+        /* Calculate number of modules within the Array */
+        NumberofModules = (longMessageLastPtr / (10 + 1)) / 2;
 
         /* Copy the scratchpad to Array */
-        memcpy(&Array, &longMessageScratchpad, longMessageLastPtr);
+        for (int row = 0; row < NumberofModules; row++)
+        {
+            for (int col = 0; col < 10 + 1; col++)
+            {
+                if ((indexArray + 1) < longMessageLastPtr)
+                {
+                    // Little-endian assumption: LSB first
+                    Array[row][col] = longMessageScratchpad[indexArray] | (longMessageScratchpad[indexArray + 1] << 8);
+                    indexArray += 2;
+                }
+                else
+                {
+                    Array[row][col] = 0; // Pad remaining entries if not enough data
+                }
+            }
+        }
+
+        /* Copy the scratchpad to Array */
+        // memcpy(&Array, &longMessageScratchpad, longMessageLastPtr);
         longMessageLastPtr = 0;
+
+        std::cout << "[Topology Code] Received from Module: " << static_cast<int>(source)
+                  << " , Updating Topology ... " << "\n";
+
+        /* Display Topology: Modules IDs and Part Numbers */
+        std::cout << "There are " << static_cast<int>(NumberofModules) << " Modules including myself.\n";
+        std::cout << "Module's PN      ID" << "\n";
+
+        for (uint8_t row = 0; row < NumberofModules; row++)
+        {
+            std::cout << to_string(static_cast<ModulePN>(Array[row][0] - 1)) << "            " << static_cast<int>(row + 1) << "\n";
+        }
+
+        // DisplayTopology();
 
         led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
     }
-
-    std::cout << "[Topology Code] Reveived from Module: " << static_cast<int>(source)
-              << " , Update Topology to be:" << static_cast<int>(params.at(0)) << "\n";
 
     return BOSStatus::BOS_OK;
 }
