@@ -3,6 +3,35 @@
 #include <future>
 #include <mutex>
 
+/**************************************************************************************************/
+/* H0BR4 User Interface ***************************************************************************/
+/**************************************************************************************************/
+struct AccData
+{
+    float x;
+    float y;
+    float z;
+};
+
+struct GyroData
+{
+    float x;
+    float y;
+    float z;
+};
+
+struct MagData
+{
+    float x;
+    float y;
+    float z;
+};
+
+struct Temp
+{
+    float value;
+};
+
 class H0BR4
 {
 private:
@@ -25,8 +54,12 @@ private:
     static std::mutex TempMutex;
 
 public:
-    std::tuple<float, float, float> RequestAcc(uint8_t moduleID);
-    void RequestGyro(uint8_t moduleID, float xGyro, float yGyro, float zGyro);
-    void RequestMag(uint8_t moduleID, float xMag, float yMag, float zMag);
-    void RequestTemp(uint8_t moduleID);
+    // std::tuple<float, float, float> RequestAcc(uint8_t moduleID);
+    // GyroData RequestGyro(uint8_t moduleID, float xGyro, float yGyro, float zGyro);
+    // MagData RequestMag(uint8_t moduleID, float xMag, float yMag, float zMag);
+
+    AccData RequestAcc(uint8_t moduleID);
+    // GyroData RequestGyro(uint8_t moduleID);
+    // MagData RequestMag(uint8_t moduleID);
+    // Temp RequestTemp(uint8_t moduleID);
 }
