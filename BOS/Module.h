@@ -1,3 +1,5 @@
+#pragma once
+
 #include "BOS.h"
 
 #include <future>
@@ -34,7 +36,7 @@ struct Temp
 
 class H0BR4
 {
-private:
+public:
     static std::promise<float> xAccPromise;
     static std::promise<float> yAccPromise;
     static std::promise<float> zAccPromise;
@@ -59,7 +61,7 @@ public:
     // MagData RequestMag(uint8_t moduleID, float xMag, float yMag, float zMag);
 
     AccData RequestAcc(uint8_t moduleID);
-    // GyroData RequestGyro(uint8_t moduleID);
-    // MagData RequestMag(uint8_t moduleID);
-    // Temp RequestTemp(uint8_t moduleID);
-}
+    GyroData RequestGyro(uint8_t moduleID);
+    MagData RequestMag(uint8_t moduleID);
+    Temp RequestTemp(uint8_t moduleID);
+};

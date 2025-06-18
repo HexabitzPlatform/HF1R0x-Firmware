@@ -12,6 +12,7 @@
 #include "UARTParser.h"
 #include "BOS_Constanats.h"
 #include "BOS_MessageCodes.h"
+#include "Module.h"
 
 /* BOS message option byte structure ***************************************************************/
 typedef struct
