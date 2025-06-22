@@ -2,12 +2,12 @@ CXX = g++
 CXXFLAGS = -Wall -std=c++17 -g
 
 # Add include paths for header files
-INCLUDES = -I./BOS -I./Pi_library -I./Porting -I./src
+INCLUDES = -I./BOS -I./Modules -I./Porting -I./src
 
 # Source files from all folders
 SRC = $(wildcard src/*.cpp) \
       $(wildcard BOS/*.cpp) \
-      $(wildcard Pi_library/*.cpp) \
+      $(wildcard Modules/*.cpp) \
       $(wildcard Porting/*.cpp)
 
 # Object files

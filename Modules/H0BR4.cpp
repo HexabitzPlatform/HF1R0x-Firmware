@@ -1,22 +1,22 @@
-#include "Module.h"
+#include "H0BR4.h"
 
 std::promise<float> H0BR4::xAccPromise;
 std::promise<float> H0BR4::yAccPromise;
 std::promise<float> H0BR4::zAccPromise;
 std::mutex H0BR4::AccMutex;
 
-std::promise<float> xGyroPromise;
-std::promise<float> yGyroPromise;
-std::promise<float> zGyroPromise;
-std::mutex GyroMutex;
+std::promise<float> H0BR4::xGyroPromise;
+std::promise<float> H0BR4::yGyroPromise;
+std::promise<float> H0BR4::zGyroPromise;
+std::mutex H0BR4::GyroMutex;
 
-std::promise<float> xMagPromise;
-std::promise<float> yMagPromise;
-std::promise<float> zMagPromise;
-std::mutex MagMutex;
+std::promise<float> H0BR4::xMagPromise;
+std::promise<float> H0BR4::yMagPromise;
+std::promise<float> H0BR4::zMagPromise;
+std::mutex H0BR4::MagMutex;
 
-std::promise<float> TempPromise;
-std::mutex TempMutex;
+std::promise<float> H0BR4::TempPromise;
+std::mutex H0BR4::TempMutex;
 
 /**************************************************************************************************/
 /* H0BR4 Message Codes Functions ******************************************************************/

@@ -6,13 +6,14 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <future>
+#include <mutex>
 
 /* BOS Files */
 #include "Porting.h"
 #include "UARTParser.h"
 #include "BOS_Constanats.h"
 #include "BOS_MessageCodes.h"
-#include "Module.h"
 
 /* BOS message option byte structure ***************************************************************/
 typedef struct
@@ -29,7 +30,7 @@ typedef struct
 /**************************************************************************************************/
 /**************************************** Enum Class Definitions **********************************/
 /**************************************************************************************************/
-enum class BOSStatus : uint8_t
+enum class BOSStatus : int16_t
 {
     // BOS Status:
     BOS_OK = 0,                 /* Operation successful */
@@ -60,7 +61,7 @@ enum class BOSStatus : uint8_t
     BOS_MULTICAST = 254, /* Multicast message */
     BOS_BROADCAST = 255, /* Broadcast message */
 
-    BOS_ERROR = 255 /* Generic error */
+    BOS_ERROR = -1 /* Generic error */
 
     // Module Status:
 };
@@ -114,6 +115,10 @@ enum class ModulePN : uint8_t
     Raspberry_PI,
     H14RA
 };
+
+/* Modules */
+#include "H0BR4.h"
+#include "H0AR9.h"
 
 /**************************************************************************************************/
 /******************************************  Class Definitions ************************************/

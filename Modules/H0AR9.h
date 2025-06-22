@@ -5,11 +5,37 @@
 /**************************************************************************************************/
 /* H0AR9 User Interface ***************************************************************************/
 /**************************************************************************************************/
-struct Color
+struct PIRResult
 {
-    uint16_t red;
-    uint16_t green;
-    uint16_t blue;
+    BOSStatus status;
+    bool value = false;
+};
+
+struct ColorResult
+{
+    BOSStatus status;
+
+    uint16_t red = 0;
+    uint16_t green = 0;
+    uint16_t blue = 0;
+};
+
+struct DistanceResult
+{
+    BOSStatus status;
+    uint16_t value = 0;
+};
+
+struct TempResult
+{
+    BOSStatus status;
+    float value = 0.0f;
+};
+
+struct HumidityResult
+{
+    BOSStatus status;
+    float value = 0.0f;
 };
 
 class H0AR9
@@ -33,9 +59,9 @@ public:
     static std::mutex HumidityMutex;
 
     /* User Functions */
-    static bool RequestPIR(uint8_t moduleID);
-    static Color RequestColor(uint8_t moduleID);
-    static uint16_t RequestDistance(uint8_t moduleID);
-    static float RequestTemp(uint8_t moduleID);
-    static float RequestHumidity(uint8_t moduleID);
+    static PIRResult RequestPIR(uint8_t moduleID);
+    static ColorResult RequestColor(uint8_t moduleID);
+    static DistanceResult RequestDistance(uint8_t moduleID);
+    static TempResult RequestTemp(uint8_t moduleID);
+    static HumidityResult RequestHumidity(uint8_t moduleID);
 };

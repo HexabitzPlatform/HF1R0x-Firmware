@@ -352,6 +352,12 @@ BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t sourc
     green = BOSMessageCodec::bytesToUint16_t(greenBytes);
     blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
 
+    {
+        std::lock_guard<std::mutex> lock(H0AR9::ColorMutex);
+        H0AR9::redColorPromise.set_value(red);
+        H0AR9::greenColorPromise.set_value(green);
+        H0AR9::blueColorPromise.set_value(blue);
+    }
     std::cout << "[Sample Color] Received from Module: " << to_string(ModulePN::H0AR9)
               << " , ID: " << static_cast<int>(source) << "\n";
     std::cout << "Red: " << red << " \n";
@@ -423,6 +429,11 @@ BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source,
         return BOSStatus::BOS_ERROR;
 
     PIR = params.at(5);
+
+    {
+        std::lock_guard<std::mutex> lock(H0AR9::PIRMutex);
+        H0AR9::PIRPromise.set_value(PIR);
+    }
 
     std::cout << "[Sample PIR] Received from Module: " << to_string(ModulePN::H08R7)
               << " , ID: " << static_cast<int>(source) << "\n";
