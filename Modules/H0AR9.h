@@ -41,15 +41,15 @@ struct HumidityResult
 class H0AR9
 {
 public:
-    static std::promise<bool> PIRPromise;
+    static std::promise<PIRResult> PIRPromise;
 
     static std::promise<ColorResult> colorPromise;
 
-    static std::promise<uint16_t> DistancePromise;
+    static std::promise<DistanceResult> DistancePromise;
 
-    static std::promise<float> TempPromise;
+    static std::promise<TempResult> TempPromise;
 
-    static std::promise<float> HumidityPromise;
+    static std::promise<HumidityResult> HumidityPromise;
 
     /* User Functions */
     static PIRResult RequestPIR(uint8_t moduleID);

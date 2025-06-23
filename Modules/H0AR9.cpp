@@ -1,14 +1,14 @@
 #include "H0AR9.h"
 
-std::promise<bool> H0AR9::PIRPromise;
+std::promise<PIRResult> H0AR9::PIRPromise;
 
 std::promise<ColorResult> H0AR9::colorPromise;
 
-std::promise<uint16_t> H0AR9::DistancePromise;
+std::promise<DistanceResult> H0AR9::DistancePromise;
 
-std::promise<float> H0AR9::TempPromise;
+std::promise<TempResult> H0AR9::TempPromise;
 
-std::promise<float> H0AR9::HumidityPromise;
+std::promise<HumidityResult> H0AR9::HumidityPromise;
 
 /**************************************************************************************************/
 /* H0AR9 Message Codes Functions ******************************************************************/
@@ -16,14 +16,14 @@ std::promise<float> H0AR9::HumidityPromise;
 PIRResult H0AR9::RequestPIR(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 20;
+    uint16_t timeout = 500;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    PIRPromise = std::promise<bool>();
+    PIRPromise = std::promise<PIRResult>();
 
     // Get futures to wait for response
-    std::future<bool> futurePIR = PIRPromise.get_future();
+    std::future<PIRResult> futurePIR = PIRPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0AR9_SAMPLE_PIR);
@@ -36,9 +36,9 @@ PIRResult H0AR9::RequestPIR(uint8_t moduleID)
     // Wait for response
     while (wait < timeout)
     {
-        if (futurePIR.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        if (futurePIR.wait_for(std::chrono::milliseconds(20)) == std::future_status::ready)
         {
-            return {BOSStatus::BOS_OK, futurePIR.get()};
+            return futurePIR.get();
         }
         wait += step;
     }
@@ -50,7 +50,7 @@ PIRResult H0AR9::RequestPIR(uint8_t moduleID)
 ColorResult H0AR9::RequestColor(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 20;
+    uint16_t timeout = 100;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
@@ -84,14 +84,14 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
 DistanceResult H0AR9::RequestDistance(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 20;
-    uint16_t step = 2;
+    uint16_t timeout = 1000;
+    uint16_t step = 5;
 
     // Reset promises to ensure no old value remains
-    DistancePromise = std::promise<uint16_t>();
+    DistancePromise = std::promise<DistanceResult>();
 
     // Get futures to wait for response
-    std::future<uint16_t> futureDistance = DistancePromise.get_future();
+    std::future<DistanceResult> futureDistance = DistancePromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0AR9_SAMPLE_DISTANCE);
@@ -104,9 +104,9 @@ DistanceResult H0AR9::RequestDistance(uint8_t moduleID)
     // Wait for response
     while (wait < timeout)
     {
-        if (futureDistance.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        if (futureDistance.wait_for(std::chrono::milliseconds(100)) == std::future_status::ready)
         {
-            return {BOSStatus::BOS_OK, futureDistance.get()};
+            return futureDistance.get();
         }
         wait += step;
     }
@@ -118,14 +118,14 @@ DistanceResult H0AR9::RequestDistance(uint8_t moduleID)
 TempResult H0AR9::RequestTemp(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 20;
+    uint16_t timeout = 100;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    TempPromise = std::promise<float>();
+    TempPromise = std::promise<TempResult>();
 
     // Get futures to wait for response
-    std::future<float> futureTemp = TempPromise.get_future();
+    std::future<TempResult> futureTemp = TempPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0AR9_SAMPLE_TEMP);
@@ -140,7 +140,7 @@ TempResult H0AR9::RequestTemp(uint8_t moduleID)
     {
         if (futureTemp.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
         {
-            return {BOSStatus::BOS_OK, futureTemp.get()};
+            return futureTemp.get();
         }
         wait += step;
     }
@@ -152,14 +152,14 @@ TempResult H0AR9::RequestTemp(uint8_t moduleID)
 HumidityResult H0AR9::RequestHumidity(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 20;
-    uint16_t step = 2;
+    uint16_t timeout = 200;
+    uint16_t step = 5;
 
     // Reset promises to ensure no old value remains
-    HumidityPromise = std::promise<float>();
+    HumidityPromise = std::promise<HumidityResult>();
 
     // Get futures to wait for response
-    std::future<float> futureHumidity = HumidityPromise.get_future();
+    std::future<HumidityResult> futureHumidity = HumidityPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0AR9_SAMPLE_HUMIDITY);
@@ -174,7 +174,7 @@ HumidityResult H0AR9::RequestHumidity(uint8_t moduleID)
     {
         if (futureHumidity.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
         {
-            return {BOSStatus::BOS_OK, futureHumidity.get()};
+            return futureHumidity.get();
         }
         wait += step;
     }
