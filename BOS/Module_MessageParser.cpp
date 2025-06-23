@@ -339,32 +339,41 @@ BOSStatus Module_MessageParser::handleH09R9_TemperatureCode(uint8_t dst, uint8_t
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    uint16_t red = 0, green = 0, blue = 0;
+    // uint16_t red = 0, green = 0, blue = 0;
+    ColorResult result;
+    // result.status = BOSStatus::BOS_OK;
 
     if (params.size() < 11)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
     std::array<uint8_t, 2> redBytes = {params[5], params[6]};
     std::array<uint8_t, 2> greenBytes = {params[7], params[8]};
     std::array<uint8_t, 2> blueBytes = {params[9], params[10]};
 
-    red = BOSMessageCodec::bytesToUint16_t(redBytes);
-    green = BOSMessageCodec::bytesToUint16_t(greenBytes);
-    blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
+    // red = BOSMessageCodec::bytesToUint16_t(redBytes);
+    // green = BOSMessageCodec::bytesToUint16_t(greenBytes);
+    // blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
+
+    result.red = BOSMessageCodec::bytesToUint16_t(redBytes);
+    result.green = BOSMessageCodec::bytesToUint16_t(greenBytes);
+    result.blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
+    result.status = BOSStatus::BOS_OK;
 
     {
-        std::lock_guard<std::mutex> lock(H0AR9::ColorMutex);
-        H0AR9::redColorPromise.set_value(red);
-        H0AR9::greenColorPromise.set_value(green);
-        H0AR9::blueColorPromise.set_value(blue);
+        // std::lock_guard<std::mutex> lock(H0AR9::ColorMutex);
+        // H0AR9::redColorPromise.set_value(red);
+        // H0AR9::greenColorPromise.set_value(green);
+        // H0AR9::blueColorPromise.set_value(blue);
+        H0AR9::colorPromise.set_value(result);
     }
-    std::cout << "[Sample Color] Received from Module: " << to_string(ModulePN::H0AR9)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Red: " << red << " \n";
-    std::cout << "Green: " << green << " \n";
-    std::cout << "Blue: " << blue << " \n\n";
 
-    return BOSStatus::BOS_OK;
+    // std::cout << "[Sample Color] Received from Module: " << to_string(ModulePN::H0AR9)
+    //           << " , ID: " << static_cast<int>(source) << "\n";
+    // std::cout << "Red: " << red << " \n";
+    // std::cout << "Green: " << green << " \n";
+    // std::cout << "Blue: " << blue << " \n\n";
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)

@@ -33,15 +33,25 @@ int main()
     std::vector<uint8_t> Parameters = {2};
 
     // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H01R0_ON, Parameters);
-
+    PIConfig::piID = 4;
+    ColorResult Color;
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
+
+        Color = H0AR9::RequestColor(1);
+        if (Color.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Color] R: " << Color.red
+                      << " G: " << Color.green
+                      << " B: " << Color.blue << "\n";
+        }
+
         // led.blink(4 , 100);
         // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_PING, {});
         // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO, Parameters);
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
         // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_ACC, Parameters);
 

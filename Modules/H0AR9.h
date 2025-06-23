@@ -44,9 +44,10 @@ public:
     static std::promise<bool> PIRPromise;
     static std::mutex PIRMutex;
 
-    static std::promise<uint16_t> redColorPromise;
-    static std::promise<uint16_t> greenColorPromise;
-    static std::promise<uint16_t> blueColorPromise;
+    // static std::promise<uint16_t> redColorPromise;
+    // static std::promise<uint16_t> greenColorPromise;
+    // static std::promise<uint16_t> blueColorPromise;
+    static std::promise<ColorResult> colorPromise;
     static std::mutex ColorMutex;
 
     static std::promise<uint16_t> DistancePromise;

@@ -3,9 +3,10 @@
 std::promise<bool> H0AR9::PIRPromise;
 std::mutex H0AR9::PIRMutex;
 
-std::promise<uint16_t> H0AR9::redColorPromise;
-std::promise<uint16_t> H0AR9::greenColorPromise;
-std::promise<uint16_t> H0AR9::blueColorPromise;
+// std::promise<uint16_t> H0AR9::redColorPromise;
+// std::promise<uint16_t> H0AR9::greenColorPromise;
+// std::promise<uint16_t> H0AR9::blueColorPromise;
+std::promise<ColorResult> H0AR9::colorPromise;
 std::mutex H0AR9::ColorMutex;
 
 std::promise<uint16_t> H0AR9::DistancePromise;
@@ -62,17 +63,19 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
     uint16_t timeout = 20;
     uint16_t step = 2;
 
-    std::lock_guard<std::mutex> lock(ColorMutex);
+    // std::lock_guard<std::mutex> lock(ColorMutex);
 
     // Reset promises to ensure no old value remains
-    redColorPromise = std::promise<uint16_t>();
-    greenColorPromise = std::promise<uint16_t>();
-    blueColorPromise = std::promise<uint16_t>();
+    // redColorPromise = std::promise<uint16_t>();
+    // greenColorPromise = std::promise<uint16_t>();
+    // blueColorPromise = std::promise<uint16_t>();
+    colorPromise = std::promise<ColorResult>();
 
     // Get futures to wait for response
-    std::future<uint16_t> futureRed = redColorPromise.get_future();
-    std::future<uint16_t> futureGreen = greenColorPromise.get_future();
-    std::future<uint16_t> futureBlue = blueColorPromise.get_future();
+    // std::future<uint16_t> futureRed = redColorPromise.get_future();
+    // std::future<uint16_t> futureGreen = greenColorPromise.get_future();
+    // std::future<uint16_t> futureBlue = blueColorPromise.get_future();
+    std::future<ColorResult> future = colorPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0AR9_SAMPLE_COLOR);
@@ -85,15 +88,9 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
     // Wait for all 3 futures to be ready
     while (wait < timeout)
     {
-        if (futureRed.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready &&
-            futureGreen.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready &&
-            futureBlue.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        if (future.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready)
         {
-            return {
-                BOSStatus::BOS_OK,
-                futureRed.get(),
-                futureGreen.get(),
-                futureBlue.get()};
+            return future.get();
         }
         wait += step;
     }
