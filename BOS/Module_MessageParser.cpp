@@ -341,7 +341,6 @@ BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t sourc
 {
     // uint16_t red = 0, green = 0, blue = 0;
     ColorResult result;
-    // result.status = BOSStatus::BOS_OK;
 
     if (params.size() < 11)
         return (result.status = BOSStatus::BOS_ERROR);
@@ -350,22 +349,13 @@ BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t sourc
     std::array<uint8_t, 2> greenBytes = {params[7], params[8]};
     std::array<uint8_t, 2> blueBytes = {params[9], params[10]};
 
-    // red = BOSMessageCodec::bytesToUint16_t(redBytes);
-    // green = BOSMessageCodec::bytesToUint16_t(greenBytes);
-    // blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
-
     result.red = BOSMessageCodec::bytesToUint16_t(redBytes);
     result.green = BOSMessageCodec::bytesToUint16_t(greenBytes);
     result.blue = BOSMessageCodec::bytesToUint16_t(blueBytes);
     result.status = BOSStatus::BOS_OK;
 
-    {
-        // std::lock_guard<std::mutex> lock(H0AR9::ColorMutex);
-        // H0AR9::redColorPromise.set_value(red);
-        // H0AR9::greenColorPromise.set_value(green);
-        // H0AR9::blueColorPromise.set_value(blue);
-        H0AR9::colorPromise.set_value(result);
-    }
+    // Set the promise result to unblock the waiting thread
+    H0AR9::colorPromise.set_value(result);
 
     // std::cout << "[Sample Color] Received from Module: " << to_string(ModulePN::H0AR9)
     //           << " , ID: " << static_cast<int>(source) << "\n";
@@ -378,77 +368,92 @@ BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t sourc
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    uint16_t distance = 0;
+    // uint16_t distance = 0;
+    DistanceResult result;
 
     if (params.size() < 7)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
     std::array<uint8_t, 2> distanceBytes = {params[5], params[6]};
 
-    distance = BOSMessageCodec::bytesToUint16_t(distanceBytes);
+    result.distance = BOSMessageCodec::bytesToUint16_t(distanceBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Distance] Received from Module: " << to_string(ModulePN::H0AR9)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Distance: " << distance << " \n\n";
+    // Set the promise result to unblock the waiting thread
+    H0AR9::DistancePromise.set_value(result);
 
-    return BOSStatus::BOS_OK;
+    // std::cout << "[Sample Distance] Received from Module: " << to_string(ModulePN::H0AR9)
+    //           << " , ID: " << static_cast<int>(source) << "\n";
+    // std::cout << "Distance: " << distance << " \n\n";
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float temp = 0;
+    // float temp = 0;
+    TempResult result;
 
     if (params.size() < 9)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
     std::array<uint8_t, 4> tempBytes = {params[5], params[6], params[7], params[8]};
 
-    temp = BOSMessageCodec::bytesToFloat(tempBytes);
+    result.temp = BOSMessageCodec::bytesToFloat(tempBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0AR9)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Temperature: " << temp << " Celsius\n\n";
+    // Set the promise result to unblock the waiting thread
+    H0AR9::TempPromise.set_value(result);
 
-    return BOSStatus::BOS_OK;
+    // std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0AR9)
+    //           << " , ID: " << static_cast<int>(source) << "\n";
+    // std::cout << "Temperature: " << temp << " Celsius\n\n";
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_HumidityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float humidity = 0;
+    // float humidity = 0;
+    HumidityResult result;
 
     if (params.size() < 9)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
     std::array<uint8_t, 4> humidityBytes = {params[5], params[6], params[7], params[8]};
 
-    humidity = BOSMessageCodec::bytesToFloat(humidityBytes);
+    result.humidity = BOSMessageCodec::bytesToFloat(humidityBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Humidity] Received from Module: " << to_string(ModulePN::H0AR9)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Humidity: " << humidity << " \n\n";
+    // Set the promise result to unblock the waiting thread
+    H0AR9::HumidityPromise.set_value(result);
 
-    return BOSStatus::BOS_OK;
+    // std::cout << "[Sample Humidity] Received from Module: " << to_string(ModulePN::H0AR9)
+    //           << " , ID: " << static_cast<int>(source) << "\n";
+    // std::cout << "Humidity: " << humidity << " \n\n";
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    uint8_t PIR = 0;
+    // uint8_t PIR = 0;
+    PIRResult result;
 
     if (params.size() < 6)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
-    PIR = params.at(5);
+    result.pir = params.at(5);
+    result.status = BOSStatus::BOS_OK;
 
-    {
-        std::lock_guard<std::mutex> lock(H0AR9::PIRMutex);
-        H0AR9::PIRPromise.set_value(PIR);
-    }
+    // Set the promise result to unblock the waiting thread
+    H0AR9::PIRPromise.set_value(result);
 
-    std::cout << "[Sample PIR] Received from Module: " << to_string(ModulePN::H08R7)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "PIR: " << PIR << "\n\n";
+    // std::cout << "[Sample PIR] Received from Module: " << to_string(ModulePN::H08R7)
+    //           << " , ID: " << static_cast<int>(source) << "\n";
+    // std::cout << "PIR: " << PIR << "\n\n";
 
-    return BOSStatus::BOS_OK;
+    return result.status;
 }
 /**************************************************************************************************/
 /* H0BR4 Message Codes Functions ******************************************************************/

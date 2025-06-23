@@ -8,7 +8,7 @@
 struct PIRResult
 {
     BOSStatus status;
-    bool value = false;
+    bool pir = false;
 };
 
 struct ColorResult
@@ -23,41 +23,33 @@ struct ColorResult
 struct DistanceResult
 {
     BOSStatus status;
-    uint16_t value = 0;
+    uint16_t distance = 0;
 };
 
 struct TempResult
 {
     BOSStatus status;
-    float value = 0.0f;
+    float temp = 0.0f;
 };
 
 struct HumidityResult
 {
     BOSStatus status;
-    float value = 0.0f;
+    float humidity = 0.0f;
 };
 
 class H0AR9
 {
 public:
     static std::promise<bool> PIRPromise;
-    static std::mutex PIRMutex;
 
-    // static std::promise<uint16_t> redColorPromise;
-    // static std::promise<uint16_t> greenColorPromise;
-    // static std::promise<uint16_t> blueColorPromise;
     static std::promise<ColorResult> colorPromise;
-    static std::mutex ColorMutex;
 
     static std::promise<uint16_t> DistancePromise;
-    static std::mutex DistanceMutex;
 
     static std::promise<float> TempPromise;
-    static std::mutex TempMutex;
 
     static std::promise<float> HumidityPromise;
-    static std::mutex HumidityMutex;
 
     /* User Functions */
     static PIRResult RequestPIR(uint8_t moduleID);

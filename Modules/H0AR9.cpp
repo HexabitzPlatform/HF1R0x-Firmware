@@ -1,22 +1,14 @@
 #include "H0AR9.h"
 
 std::promise<bool> H0AR9::PIRPromise;
-std::mutex H0AR9::PIRMutex;
 
-// std::promise<uint16_t> H0AR9::redColorPromise;
-// std::promise<uint16_t> H0AR9::greenColorPromise;
-// std::promise<uint16_t> H0AR9::blueColorPromise;
 std::promise<ColorResult> H0AR9::colorPromise;
-std::mutex H0AR9::ColorMutex;
 
 std::promise<uint16_t> H0AR9::DistancePromise;
-std::mutex H0AR9::DistanceMutex;
 
 std::promise<float> H0AR9::TempPromise;
-std::mutex H0AR9::TempMutex;
 
 std::promise<float> H0AR9::HumidityPromise;
-std::mutex H0AR9::HumidityMutex;
 
 /**************************************************************************************************/
 /* H0AR9 Message Codes Functions ******************************************************************/
@@ -26,8 +18,6 @@ PIRResult H0AR9::RequestPIR(uint8_t moduleID)
     uint16_t wait = 0;
     uint16_t timeout = 20;
     uint16_t step = 2;
-
-    std::lock_guard<std::mutex> lock(PIRMutex);
 
     // Reset promises to ensure no old value remains
     PIRPromise = std::promise<bool>();
@@ -63,18 +53,10 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
     uint16_t timeout = 20;
     uint16_t step = 2;
 
-    // std::lock_guard<std::mutex> lock(ColorMutex);
-
     // Reset promises to ensure no old value remains
-    // redColorPromise = std::promise<uint16_t>();
-    // greenColorPromise = std::promise<uint16_t>();
-    // blueColorPromise = std::promise<uint16_t>();
     colorPromise = std::promise<ColorResult>();
 
     // Get futures to wait for response
-    // std::future<uint16_t> futureRed = redColorPromise.get_future();
-    // std::future<uint16_t> futureGreen = greenColorPromise.get_future();
-    // std::future<uint16_t> futureBlue = blueColorPromise.get_future();
     std::future<ColorResult> future = colorPromise.get_future();
 
     // Send request
@@ -85,10 +67,10 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
         return {status, 0, 0, 0};
     }
 
-    // Wait for all 3 futures to be ready
+    // Wait for response
     while (wait < timeout)
     {
-        if (future.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready)
+        if (future.wait_for(std::chrono::milliseconds(step)) != std::future_status::ready)
         {
             return future.get();
         }
@@ -104,8 +86,6 @@ DistanceResult H0AR9::RequestDistance(uint8_t moduleID)
     uint16_t wait = 0;
     uint16_t timeout = 20;
     uint16_t step = 2;
-
-    std::lock_guard<std::mutex> lock(DistanceMutex);
 
     // Reset promises to ensure no old value remains
     DistancePromise = std::promise<uint16_t>();
@@ -141,8 +121,6 @@ TempResult H0AR9::RequestTemp(uint8_t moduleID)
     uint16_t timeout = 20;
     uint16_t step = 2;
 
-    std::lock_guard<std::mutex> lock(TempMutex);
-
     // Reset promises to ensure no old value remains
     TempPromise = std::promise<float>();
 
@@ -176,8 +154,6 @@ HumidityResult H0AR9::RequestHumidity(uint8_t moduleID)
     uint16_t wait = 0;
     uint16_t timeout = 20;
     uint16_t step = 2;
-
-    std::lock_guard<std::mutex> lock(HumidityMutex);
 
     // Reset promises to ensure no old value remains
     HumidityPromise = std::promise<float>();
