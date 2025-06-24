@@ -5,60 +5,46 @@
 /**************************************************************************************************/
 /* H0BR4 User Interface ***************************************************************************/
 /**************************************************************************************************/
-struct AccData
+struct AccResult
 {
-    float x;
-    float y;
-    float z;
+    BOSStatus status;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
 };
 
-struct GyroData
+struct GyroResult
 {
-    float x;
-    float y;
-    float z;
+    BOSStatus status;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
 };
 
-struct MagData
+struct MagResult
 {
-    float x;
-    float y;
-    float z;
+    BOSStatus status;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
 };
 
-struct Temp
+struct IMU_TempResult
 {
-    float value;
+    BOSStatus status;
+    float temp = 0.0f;
 };
 
 class H0BR4
 {
 public:
-    static std::promise<float> xAccPromise;
-    static std::promise<float> yAccPromise;
-    static std::promise<float> zAccPromise;
-    static std::mutex AccMutex;
+    static std::promise<AccResult> AccPromise;
+    static std::promise<GyroResult> GyroPromise;
+    static std::promise<MagResult> MagPromise;
+    static std::promise<IMU_TempResult> TempPromise;
 
-    static std::promise<float> xGyroPromise;
-    static std::promise<float> yGyroPromise;
-    static std::promise<float> zGyroPromise;
-    static std::mutex GyroMutex;
-
-    static std::promise<float> xMagPromise;
-    static std::promise<float> yMagPromise;
-    static std::promise<float> zMagPromise;
-    static std::mutex MagMutex;
-
-    static std::promise<float> TempPromise;
-    static std::mutex TempMutex;
-
-public:
-    // std::tuple<float, float, float> RequestAcc(uint8_t moduleID);
-    // GyroData RequestGyro(uint8_t moduleID, float xGyro, float yGyro, float zGyro);
-    // MagData RequestMag(uint8_t moduleID, float xMag, float yMag, float zMag);
-
-    AccData RequestAcc(uint8_t moduleID);
-    GyroData RequestGyro(uint8_t moduleID);
-    MagData RequestMag(uint8_t moduleID);
-    Temp RequestTemp(uint8_t moduleID);
+    AccResult RequestAcc(uint8_t moduleID);
+    GyroResult RequestGyro(uint8_t moduleID);
+    MagResult RequestMag(uint8_t moduleID);
+    IMU_TempResult RequestTemp(uint8_t moduleID);
 };

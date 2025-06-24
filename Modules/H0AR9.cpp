@@ -63,7 +63,7 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0AR9_SAMPLE_COLOR);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send PIR Sample request\n";
+        std::cerr << "Failed to send Color Sample request\n";
         return {status, 0, 0, 0};
     }
 
@@ -77,7 +77,7 @@ ColorResult H0AR9::RequestColor(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for PIR Sample\n";
+    std::cerr << "Timeout while waiting for Color Sample\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0, 0, 0};
 }
 /**************************************************************************************************/

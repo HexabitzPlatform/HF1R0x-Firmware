@@ -14,7 +14,6 @@ struct PIRResult
 struct ColorResult
 {
     BOSStatus status;
-
     uint16_t red = 0;
     uint16_t green = 0;
     uint16_t blue = 0;
@@ -42,13 +41,9 @@ class H0AR9
 {
 public:
     static std::promise<PIRResult> PIRPromise;
-
     static std::promise<ColorResult> colorPromise;
-
     static std::promise<DistanceResult> DistancePromise;
-
     static std::promise<TempResult> TempPromise;
-
     static std::promise<HumidityResult> HumidityPromise;
 
     /* User Functions */

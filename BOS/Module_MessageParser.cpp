@@ -460,9 +460,7 @@ BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source,
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float GyroX = 0.0f;
-    float GyroY = 0.0f;
-    float GyroZ = 0.0f;
+    GyroResult result;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -471,22 +469,20 @@ BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source
     std::array<uint8_t, 4> yBytes = {params[9], params[10], params[11], params[12]};
     std::array<uint8_t, 4> zBytes = {params[13], params[14], params[15], params[16]};
 
-    GyroX = BOSMessageCodec::bytesToFloat(xBytes);
-    GyroY = BOSMessageCodec::bytesToFloat(yBytes);
-    GyroZ = BOSMessageCodec::bytesToFloat(zBytes);
+    result.x = BOSMessageCodec::bytesToFloat(xBytes);
+    result.y = BOSMessageCodec::bytesToFloat(yBytes);
+    result.z = BOSMessageCodec::bytesToFloat(zBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Gyroscope] Received from Module: " << to_string(ModulePN::H0BR4)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "GyroX: " << GyroX << "\nGyroY: " << GyroY << "\nGyroZ: " << GyroZ << "\n\n";
+    // Set the promise result to unblock the waiting thread
+    H0BR4::GyroPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float AccX = 0.0f;
-    float AccY = 0.0f;
-    float AccZ = 0.0f;
+    AccResult result;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -495,29 +491,20 @@ BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source,
     std::array<uint8_t, 4> yBytes = {params[9], params[10], params[11], params[12]};
     std::array<uint8_t, 4> zBytes = {params[13], params[14], params[15], params[16]};
 
-    AccX = BOSMessageCodec::bytesToFloat(xBytes);
-    AccY = BOSMessageCodec::bytesToFloat(yBytes);
-    AccZ = BOSMessageCodec::bytesToFloat(zBytes);
+    result.x = BOSMessageCodec::bytesToFloat(xBytes);
+    result.y = BOSMessageCodec::bytesToFloat(yBytes);
+    result.z = BOSMessageCodec::bytesToFloat(zBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    {
-        std::lock_guard<std::mutex> lock(H0BR4::AccMutex);
-        H0BR4::xAccPromise.set_value(AccX);
-        H0BR4::yAccPromise.set_value(AccY);
-        H0BR4::zAccPromise.set_value(AccZ);
-    }
-
-    std::cout << "[Sample Accelerometer] Received from Module: " << to_string(ModulePN::H0BR4)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "AccX: " << AccX << "\nAccY: " << AccY << "\nAccZ: " << AccZ << "\n\n";
+    // Set the promise result to unblock the waiting thread
+    H0BR4::AccPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    int MagX = 0.0f;
-    int MagY = 0.0f;
-    int MagZ = 0.0f;
+    MagResult result;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -526,31 +513,31 @@ BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source,
     std::array<uint8_t, 4> yBytes = {params[9], params[10], params[11], params[12]};
     std::array<uint8_t, 4> zBytes = {params[13], params[14], params[15], params[16]};
 
-    MagX = BOSMessageCodec::bytesToInt(xBytes);
-    MagY = BOSMessageCodec::bytesToInt(yBytes);
-    MagZ = BOSMessageCodec::bytesToInt(zBytes);
+    result.x = BOSMessageCodec::bytesToInt(xBytes);
+    result.y = BOSMessageCodec::bytesToInt(yBytes);
+    result.z = BOSMessageCodec::bytesToInt(zBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Magnetometer] Received from Module: " << to_string(ModulePN::H0BR4)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "MagX: " << MagX << "\nMagY: " << MagY << "\nMagZ: " << MagZ << "\n\n";
+    // Set the promise result to unblock the waiting thread
+    H0BR4::MagPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float Temp = 0.0f;
+    IMU_TempResult result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
     std::array<uint8_t, 4> xBytes = {params[5], params[6], params[7], params[8]};
 
-    Temp = BOSMessageCodec::bytesToFloat(xBytes);
+    result.temp = BOSMessageCodec::bytesToFloat(xBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0BR4)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Temp: " << Temp << " Celsius\n\n";
+    // Set the promise result to unblock the waiting thread
+    H0BR4::TempPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }

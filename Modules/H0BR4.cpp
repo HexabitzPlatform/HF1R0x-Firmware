@@ -1,157 +1,148 @@
 #include "H0BR4.h"
 
-std::promise<float> H0BR4::xAccPromise;
-std::promise<float> H0BR4::yAccPromise;
-std::promise<float> H0BR4::zAccPromise;
-std::mutex H0BR4::AccMutex;
-
-std::promise<float> H0BR4::xGyroPromise;
-std::promise<float> H0BR4::yGyroPromise;
-std::promise<float> H0BR4::zGyroPromise;
-std::mutex H0BR4::GyroMutex;
-
-std::promise<float> H0BR4::xMagPromise;
-std::promise<float> H0BR4::yMagPromise;
-std::promise<float> H0BR4::zMagPromise;
-std::mutex H0BR4::MagMutex;
-
-std::promise<float> H0BR4::TempPromise;
-std::mutex H0BR4::TempMutex;
+std::promise<AccResult> H0BR4::AccPromise;
+std::promise<GyroResult> H0BR4::GyroPromise;
+std::promise<MagResult> H0BR4::MagPromise;
+std::promise<IMU_TempResult> H0BR4::TempPromise;
 
 /**************************************************************************************************/
 /* H0BR4 Message Codes Functions ******************************************************************/
 /**************************************************************************************************/
-// std::tuple<float, float, float> H0BR4::RequestAcc(uint8_t moduleID)
-AccData H0BR4::RequestAcc(uint8_t moduleID)
+AccResult H0BR4::RequestAcc(uint8_t moduleID)
 {
-    std::lock_guard<std::mutex> lock(AccMutex);
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    xAccPromise = std::promise<float>();
-    yAccPromise = std::promise<float>();
-    zAccPromise = std::promise<float>();
+    AccPromise = std::promise<AccResult>();
 
     // Get futures to wait for response
-    std::future<float> fx = xAccPromise.get_future();
-    std::future<float> fy = yAccPromise.get_future();
-    std::future<float> fz = zAccPromise.get_future();
+    std::future<AccResult> future = AccPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_ACC);
     if (status != BOSStatus::BOS_OK)
     {
         std::cerr << "Failed to send Accelerometer request\n";
-        return {-1.0f, -1.0f, -1.0f};
+        return {status, 0.0f, 0.0f, 0.0f};
     }
 
-    // Wait for response (timeout after 20 milliseconds)
-    if (fx.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready ||
-        fy.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready ||
-        fz.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready)
+    // Wait for response
+    while (wait < timeout)
     {
-        std::cerr << "Timeout while waiting for Accelerometer\n";
-        return {-1.0f, -1.0f, -1.0f};
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
     }
 
-    return {fx.get(), fy.get(), fz.get()};
+    std::cerr << "Timeout while waiting for Accelerometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f, 0.0f, 0.0f};
 }
 
 /**************************************************************************************************/
-// void H0BR4::RequestGyro(uint8_t moduleID, float xGyro, float yGyro, float zGyro)
-GyroData H0BR4::RequestGyro(uint8_t moduleID)
+GyroResult H0BR4::RequestGyro(uint8_t moduleID)
 {
-    std::lock_guard<std::mutex> lock(GyroMutex); // Lock in case of concurrent calls
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    xGyroPromise = std::promise<float>();
-    yGyroPromise = std::promise<float>();
-    zGyroPromise = std::promise<float>();
+    GyroPromise = std::promise<GyroResult>();
 
     // Get futures to wait for response
-    std::future<float> fx = xGyroPromise.get_future();
-    std::future<float> fy = yGyroPromise.get_future();
-    std::future<float> fz = zGyroPromise.get_future();
+    std::future<GyroResult> future = GyroPromise.get_future();
 
-    // Send the actual BOS request
+    // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO);
     if (status != BOSStatus::BOS_OK)
     {
         std::cerr << "Failed to send Gyroscope request\n";
-        return {-1.0f, -1.0f, -1.0f};
+        return {status, 0.0f, 0.0f, 0.0f};
     }
 
-    // Wait for response (timeout after 20 milliseconds)
-    if (fx.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready ||
-        fy.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready ||
-        fz.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready)
+    // Wait for response
+    while (wait < timeout)
     {
-        std::cerr << "Timeout while waiting for Gyroscope\n";
-        return {-1.0f, -1.0f, -1.0f};
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
     }
 
-    return {fx.get(), fy.get(), fz.get()};
-}
-
-// /**************************************************************************************************/
-// void H0BR4::RequestMag(uint8_t moduleID, float xMag, float yMag, float zMag)
-MagData H0BR4::RequestMag(uint8_t moduleID)
-{
-    std::lock_guard<std::mutex> lock(MagMutex); // Lock in case of concurrent calls
-
-    // Reset promises to ensure no old value remains
-    xMagPromise = std::promise<float>();
-    yMagPromise = std::promise<float>();
-    zMagPromise = std::promise<float>();
-
-    // Get futures to wait for response
-    std::future<float> fx = xMagPromise.get_future();
-    std::future<float> fy = yMagPromise.get_future();
-    std::future<float> fz = zMagPromise.get_future();
-
-    // Send the actual BOS request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO);
-    if (status != BOSStatus::BOS_OK)
-    {
-        std::cerr << "Failed to send Magnetometer request\n";
-        return {-1.0f, -1.0f, -1.0f};
-    }
-
-    // Wait for response (timeout after 20 milliseconds)
-    if (fx.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready ||
-        fy.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready ||
-        fz.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready)
-    {
-        std::cerr << "Timeout while waiting for Magnetometer\n";
-        return {-1.0f, -1.0f, -1.0f};
-    }
-
-    return {fx.get(), fy.get(), fz.get()};
+    std::cerr << "Timeout while waiting for Gyroscope\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f, 0.0f, 0.0f};
 }
 
 /**************************************************************************************************/
-Temp H0BR4::RequestTemp(uint8_t moduleID)
+MagResult H0BR4::RequestMag(uint8_t moduleID)
 {
-    std::lock_guard<std::mutex> lock(TempMutex); // Lock in case of concurrent calls
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    MagPromise = std::promise<MagResult>();
+
+    // Get futures to wait for response
+    std::future<MagResult> future = MagPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0.0f, 0.0f, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f, 0.0f, 0.0f};
+}
+
+/**************************************************************************************************/
+IMU_TempResult H0BR4::RequestTemp(uint8_t moduleID)
+{
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
 
     // Reset the promise
-    TempPromise = std::promise<float>();
-    std::future<float> future = TempPromise.get_future();
+    TempPromise = std::promise<IMU_TempResult>();
 
-    // Send the actual BOS request
+    // Get futures to wait for response
+    std::future<IMU_TempResult> future = TempPromise.get_future();
+
+    // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_TEMP);
     if (status != BOSStatus::BOS_OK)
     {
         std::cerr << "Failed to send Temperature request\n";
-        return {-1.0f}; // Error value
+        return {status, 0.0f}; // Error value
     }
 
-    // Wait for the response from parser
-    // std::future_status waitStatus = future.wait_for(std::chrono::seconds(2));
-    if (future.wait_for(std::chrono::milliseconds(20)) != std::future_status::ready)
+    // Wait for response
+    while (wait < timeout)
     {
-        std::cerr << "Timeout while waiting for Temperature\n";
-        return {-1.0f};
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
     }
 
-    return {future.get()};
+    std::cerr << "Timeout while waiting for Temperature\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
