@@ -38,19 +38,19 @@ struct CellCapacityResult
 struct SOCResult
 {
     BOSStatus status;
-    float SOC = 0.0f;
+    uint8_t SOC = 0;
 };
 
 struct CellAgeResult
 {
     BOSStatus status;
-    float age = 0.0f;
+    uint8_t age = 0;
 };
 
 struct CellCyclesResult
 {
     BOSStatus status;
-    float cycles = 0.0f;
+    uint16_t cycles = 0;
 };
 
 class H05R0

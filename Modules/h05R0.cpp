@@ -12,35 +12,275 @@ std::promise<CellCyclesResult> H05R0::CyclesPromise;
 /**************************************************************************************************/
 /* H05R0 User Interface ***************************************************************************/
 /**************************************************************************************************/
-CellVoltageResult RequestVoltage(uint8_t moduleID)
+CellVoltageResult H05R0::RequestVoltage(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    VoltagePromise = std::promise<CellVoltageResult>();
+
+    // Get futures to wait for response
+    std::future<CellVoltageResult> future = VoltagePromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_VOLTAGE);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellCurrentResult RequestCurrent(uint8_t moduleID)
+CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    CurrentPromise = std::promise<CellCurrentResult>();
+
+    // Get futures to wait for response
+    std::future<CellCurrentResult> future = CurrentPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellPowerResult RequestPower(uint8_t moduleID)
+CellPowerResult H05R0::RequestPower(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    powerPromise = std::promise<CellPowerResult>();
+
+    // Get futures to wait for response
+    std::future<CellPowerResult> future = powerPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellTempResult RequestTemp(uint8_t moduleID)
+CellTempResult H05R0::RequestTemp(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    TempPromise = std::promise<CellTempResult>();
+
+    // Get futures to wait for response
+    std::future<CellTempResult> future = TempPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellCapacityResult RequestCapacity(uint8_t moduleID)
+CellCapacityResult H05R0::RequestCapacity(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    CapacityPromise = std::promise<CellCapacityResult>();
+
+    // Get futures to wait for response
+    std::future<CellCapacityResult> future = CapacityPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-SOCResult RequestSOC(uint8_t moduleID)
+SOCResult H05R0::RequestSOC(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    SOCPromise = std::promise<SOCResult>();
+
+    // Get futures to wait for response
+    std::future<SOCResult> future = SOCPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
-CellAgeResult RequestAge(uint8_t moduleID)
+CellAgeResult H05R0::RequestAge(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    AgePromise = std::promise<CellAgeResult>();
+
+    // Get futures to wait for response
+    std::future<CellAgeResult> future = AgePromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
-CellCyclesResult RequestCycles(uint8_t moduleID)
+CellCyclesResult H05R0::RequestCycles(uint8_t moduleID)
 {
+    uint16_t wait = 0;
+    uint16_t timeout = 100;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    CyclesPromise = std::promise<CellCyclesResult>();
+
+    // Get futures to wait for response
+    std::future<CellCyclesResult> future = CyclesPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Magnometer request\n";
+        return {status, 0};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Magnometer\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/

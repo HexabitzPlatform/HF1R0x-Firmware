@@ -244,7 +244,7 @@ BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float SOC = 0.0f;
+    uint8_t SOC = 0;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
@@ -262,7 +262,7 @@ BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float age = 0.0f;
+    uint8_t age = 0;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
@@ -280,7 +280,7 @@ BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t sou
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float cycles = 0.0f;
+    uint16_t cycles = 0.0f;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
