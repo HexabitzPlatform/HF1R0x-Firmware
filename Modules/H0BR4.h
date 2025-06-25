@@ -43,8 +43,8 @@ public:
     static std::promise<MagResult> MagPromise;
     static std::promise<IMU_TempResult> TempPromise;
 
-    AccResult RequestAcc(uint8_t moduleID);
-    GyroResult RequestGyro(uint8_t moduleID);
-    MagResult RequestMag(uint8_t moduleID);
-    IMU_TempResult RequestTemp(uint8_t moduleID);
+    static AccResult RequestAcc(uint8_t moduleID);
+    static GyroResult RequestGyro(uint8_t moduleID);
+    static MagResult RequestMag(uint8_t moduleID);
+    static IMU_TempResult RequestTemp(uint8_t moduleID);
 };

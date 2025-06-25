@@ -34,6 +34,12 @@ int main()
 
     // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H01R0_ON, Parameters);
     PIConfig::piID = 4;
+
+    AccResult acc;
+    GyroResult gyro;
+    MagResult mag;
+    IMU_TempResult temp;
+
     ColorResult Color;
     PIRResult PIR;
     TempResult Temp;
@@ -43,70 +49,98 @@ int main()
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
+        /**************************************************************************************************/
+        // acc = H0BR4::RequestAcc(2);
+        // if (acc.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[ACC] X = " << acc.x
+        //               << "\n Y = " << acc.y
+        //               << "\n Z = " << acc.z
+        //               << std::endl;
+        // }
 
-        Color = H0AR9::RequestColor(1);
-        if (Color.status == BOSStatus::BOS_OK)
-        {
-            std::cout << "[Color] R: " << Color.red
-                      << " G: " << Color.green
-                      << " B: " << Color.blue << "\n";
-        }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // gyro = H0BR4::RequestGyro(2);
+        // if (gyro.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Gyro] X = " << gyro.x
+        //               << "\n Y = " << gyro.y
+        //               << "\n Z = " << gyro.z
+        //               << std::endl;
+        // }
 
-        PIR = H0AR9::RequestPIR(1);
-        if (PIR.status == BOSStatus::BOS_OK)
-        {
-            std::cout << "[PIR]: " << PIR.pir
-                      << "\n";
-        }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // mag = H0BR4::RequestMag(2);
+        // if (mag.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Mag] X = " << mag.x
+        //               << "\n Y = " << mag.y
+        //               << "\n Z = " << mag.z
+        //               << std::endl;
+        // }
 
-        Temp = H0AR9::RequestTemp(1);
-        if (Temp.status == BOSStatus::BOS_OK)
-        {
-            std::cout << "[Temperature]: " << Temp.temp
-                      << "\n";
-        }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // temp = H0BR4::RequestTemp(2);
+        // if (temp.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Temp] = " << temp.temp
+        //               << std::endl;
+        // }
 
-        Distance = H0AR9::RequestDistance(1);
-        if (Distance.status == BOSStatus::BOS_OK)
-        {
-            std::cout << "[Distance]: " << Distance.distance
-                      << "\n";
-        }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        /**************************************************************************************************/
 
-        Humidity = H0AR9::RequestHumidity(1);
-        if (Humidity.status == BOSStatus::BOS_OK)
-        {
-            std::cout << "[Humidity]: " << Humidity.humidity
-                      << "\n";
-        }
+        // Color = H0AR9::RequestColor(1);
+        // if (Color.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Color] R: " << Color.red
+        //               << " G: " << Color.green
+        //               << " B: " << Color.blue << "\n";
+        // }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        // PIR = H0AR9::RequestPIR(1);
+        // if (PIR.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[PIR]: " << PIR.pir
+        //               << "\n";
+        // }
+
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        // Temp = H0AR9::RequestTemp(1);
+        // if (Temp.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Temperature]: " << Temp.temp
+        //               << "\n";
+        // }
+
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        // Distance = H0AR9::RequestDistance(1);
+        // if (Distance.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Distance]: " << Distance.distance
+        //               << "\n";
+        // }
+
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        // Humidity = H0AR9::RequestHumidity(1);
+        // if (Humidity.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Humidity]: " << Humidity.humidity
+        //               << "\n";
+        // }
+
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // led.blink(4 , 100);
-        // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_PING, {});
-        // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO, Parameters);
-
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-        // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_ACC, Parameters);
-
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-        // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG, Parameters);
-
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-        // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H0BR4_SAMPLE_TEMP, Parameters);
-
-        // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
 
     return 0;

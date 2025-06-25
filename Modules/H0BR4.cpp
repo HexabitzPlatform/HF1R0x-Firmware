@@ -12,7 +12,7 @@ AccResult H0BR4::RequestAcc(uint8_t moduleID)
 {
     uint16_t wait = 0;
     uint16_t timeout = 100;
-    uint16_t step = 2;
+    uint16_t step = 5;
 
     // Reset promises to ensure no old value remains
     AccPromise = std::promise<AccResult>();
@@ -91,7 +91,7 @@ MagResult H0BR4::RequestMag(uint8_t moduleID)
     std::future<MagResult> future = MagPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_GYRO);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
     if (status != BOSStatus::BOS_OK)
     {
         std::cerr << "Failed to send Magnometer request\n";
