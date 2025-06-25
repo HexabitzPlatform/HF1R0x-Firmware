@@ -28,7 +28,7 @@ CellVoltageResult H05R0::RequestVoltage(uint8_t moduleID)
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_VOLTAGE);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell Voltage request\n";
         return {status, 0.0f};
     }
 
@@ -42,7 +42,7 @@ CellVoltageResult H05R0::RequestVoltage(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell Voltage\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
@@ -59,10 +59,10 @@ CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
     std::future<CellCurrentResult> future = CurrentPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_CURRENT);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell Current request\n";
         return {status, 0.0f};
     }
 
@@ -76,7 +76,7 @@ CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell Current\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
@@ -93,10 +93,10 @@ CellPowerResult H05R0::RequestPower(uint8_t moduleID)
     std::future<CellPowerResult> future = powerPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_POWER);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell power request\n";
         return {status, 0.0f};
     }
 
@@ -110,7 +110,7 @@ CellPowerResult H05R0::RequestPower(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell power\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
@@ -127,10 +127,10 @@ CellTempResult H05R0::RequestTemp(uint8_t moduleID)
     std::future<CellTempResult> future = TempPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_TEMPERATURE);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell Temerature request\n";
         return {status, 0.0f};
     }
 
@@ -144,7 +144,7 @@ CellTempResult H05R0::RequestTemp(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell Temperature\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
@@ -161,10 +161,10 @@ CellCapacityResult H05R0::RequestCapacity(uint8_t moduleID)
     std::future<CellCapacityResult> future = CapacityPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_CAPACITY);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell Capacity request\n";
         return {status, 0.0f};
     }
 
@@ -178,7 +178,7 @@ CellCapacityResult H05R0::RequestCapacity(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell Capacity\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
@@ -195,10 +195,10 @@ SOCResult H05R0::RequestSOC(uint8_t moduleID)
     std::future<SOCResult> future = SOCPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_STATE_OF_CHARGE);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send SOC request\n";
         return {status, 0};
     }
 
@@ -212,7 +212,7 @@ SOCResult H05R0::RequestSOC(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for SOC\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
@@ -229,10 +229,10 @@ CellAgeResult H05R0::RequestAge(uint8_t moduleID)
     std::future<CellAgeResult> future = AgePromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_AGE);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell Age request\n";
         return {status, 0};
     }
 
@@ -246,7 +246,7 @@ CellAgeResult H05R0::RequestAge(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell Age\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
@@ -263,10 +263,10 @@ CellCyclesResult H05R0::RequestCycles(uint8_t moduleID)
     std::future<CellCyclesResult> future = CyclesPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H0BR4_SAMPLE_MAG);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_CYCLES);
     if (status != BOSStatus::BOS_OK)
     {
-        std::cerr << "Failed to send Magnometer request\n";
+        std::cerr << "Failed to send Cell Cycles request\n";
         return {status, 0};
     }
 
@@ -280,7 +280,7 @@ CellCyclesResult H05R0::RequestCycles(uint8_t moduleID)
         wait += step;
     }
 
-    std::cerr << "Timeout while waiting for Magnometer\n";
+    std::cerr << "Timeout while waiting for Cell Cycles\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
