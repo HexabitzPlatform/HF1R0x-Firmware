@@ -5,6 +5,13 @@
 /**************************************************************************************************/
 /* H05R0 User Interface ***************************************************************************/
 /**************************************************************************************************/
+enum class Batterystate : uint8_t
+{
+    charging = 0,
+    discharging = 1,
+    error = 2
+};
+
 struct CellVoltageResult
 {
     BOSStatus status;
@@ -14,6 +21,7 @@ struct CellVoltageResult
 struct CellCurrentResult
 {
     BOSStatus status;
+    Batterystate batteryState;
     float current = 0.0f;
 };
 

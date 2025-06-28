@@ -163,11 +163,11 @@ BOSStatus Module_MessageParser::handleH05R0_CellVoltageCode(uint8_t dst, uint8_t
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    enum class state : uint8_t
-    {
-        charging = 0,
-        discharging = 1
-    };
+    // enum class state : uint8_t
+    // {
+    //     charging = 0,
+    //     discharging = 1
+    // };
 
     CellCurrentResult result;
 
@@ -180,7 +180,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t
 
     result.current = BOSMessageCodec::bytesToFloat(bytes);
 
-    state batteryState = (result.current >= 0) ? state::charging : state::discharging;
+    result.batteryState = (result.current >= 0) ? Batterystate::charging : Batterystate::discharging;
+
+    // state batteryState = (result.current >= 0) ? state::charging : state::discharging;
 
     // std::cout << "[Sample Battery current] Received from Module: " << to_string(ModulePN::H05R0)
     //           << " , ID: " << static_cast<int>(source) << "\n";

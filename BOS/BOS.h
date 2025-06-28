@@ -7,7 +7,6 @@
 #include <thread>
 #include <chrono>
 #include <future>
-#include <mutex>
 
 /* BOS Files */
 #include "Porting.h"
@@ -49,21 +48,21 @@ enum class BOSStatus : int16_t
     BOS_ERR_LOCAL_FORMAT_UPDATED = 20, /* Local format updated */
     BOS_ERR_REMOTE_WRITE_ADDRESS = 21, /* Invalid remote write address */
 
-    BOS_ERR_PORT_BUSY = 23,         /* Communication port busy */
-    BOS_ERR_TIMEOUT = 24,           /* Operation timeout */
-    BOS_ERR_WrongName = 100,        /* Incorrect name */
-    BOS_ERR_WrongGroup = 101,       /* Incorrect group */
-    BOS_ERR_WrongID = 102,          /* Incorrect ID */
-    BOS_ERR_WrongParam = 103,       /* Incorrect parameter */
-    BOS_ERR_WrongValue = 104,       /* Incorrect value */
-    BOS_ERR_MSG_DOES_NOT_FIT = 105, /* Message does not fit */
+    BOS_ERR_PORT_BUSY = 23,               /* Communication port busy */
+    BOS_ERR_TIMEOUT = 24,                 /* Operation timeout */
+    BOS_ERR_WrongName = 100,              /* Incorrect name */
+    BOS_ERR_WrongGroup = 101,             /* Incorrect group */
+    BOS_ERR_WrongID = 102,                /* Incorrect ID */
+    BOS_ERR_WrongParam = 103,             /* Incorrect parameter */
+    BOS_ERR_WrongValue = 104,             /* Incorrect value */
+    BOS_ERR_MSG_DOES_NOT_FIT = 105,       /* Message does not fit */
+    BOS_ERR_OVER_MSG_PARAMS_LENGTH = 106, /*message parames is over 46 bytes */
 
     BOS_MULTICAST = 254, /* Multicast message */
     BOS_BROADCAST = 255, /* Broadcast message */
 
     BOS_ERROR = -1 /* Generic error */
 
-    // Module Status:
 };
 
 /* Module PN Strings Definition ******************************************************************/
@@ -136,8 +135,6 @@ public:
     virtual BOSStatus parseMessage(const std::vector<uint8_t> &payload);
 
 private:
-    // std::vector<uint8_t> Array{};
-
     std::array<uint16_t, 2> NeighborsInfo{};
     std::vector<uint8_t> MessageParames;
 
@@ -215,11 +212,9 @@ private:
 /* Messaging APIs Class Definitions ***************************************************************/
 namespace Messaging
 {
-    // private:
-    // uint8_t source_ID;
-
     // public:
     BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params);
+    BOSStatus SendLargMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &data);
     BOSStatus SendDataRequestToModule(uint8_t dstID, BOSMessageCode code);
 };
 
@@ -232,4 +227,4 @@ extern BOSOptionByte_t OptionByte;
 /**************************************************************************************************/
 void initBOS(void);
 void DisplayTopology(void);
-std::string to_string(ModulePN pn); // Just the declaration
+std::string to_string(ModulePN pn);

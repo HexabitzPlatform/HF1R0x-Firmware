@@ -8,51 +8,88 @@ namespace Messaging
     {
         std::vector<uint8_t> packet;
 
-        // Start bytes
-        packet.push_back('H'); // 0x48
-        packet.push_back('Z'); // 0x5A
+        if (params.size() < 46)
+        {
+            // Start bytes
+            packet.push_back('H'); // 0x48
+            packet.push_back('Z'); // 0x5A
 
-        // Convert enum to raw uint16_t value
-        uint16_t rawCode = static_cast<uint16_t>(code);
+            // Convert enum to raw uint16_t value
+            uint16_t rawCode = static_cast<uint16_t>(code);
 
-        // Determine if we need 1 or 2 bytes for the code
-        bool isExtendedCode = rawCode > 0xFF;
-        uint8_t codeLen = isExtendedCode ? 2 : 1;
+            // Determine if we need 1 or 2 bytes for the code
+            bool isExtendedCode = rawCode > 0xFF;
+            uint8_t codeLen = isExtendedCode ? 2 : 1;
 
-        // Options byte (only Extended Code flag for now)
-        uint8_t options = 0x00;
-        if (isExtendedCode)
-            options |= 0x02;
+            // Options byte (only Extended Code flag for now)
+            uint8_t options = 0x00;
+            if (isExtendedCode)
+                options |= 0x02;
 
-        // Calculate BOS-compliant Length (excluding H, Z, Length, and CRC)
-        uint8_t length = 3 + codeLen + params.size(); // dest + src + options + code + params
-        packet.push_back(length);
+            // Calculate BOS-compliant Length (excluding H, Z, Length, and CRC)
+            uint8_t length = 3 + codeLen + params.size(); // dest + src + options + code + params
+            packet.push_back(length);
 
-        // Add message fields
-        packet.push_back(dstID);
-        // uint8_t src = 2;
-        packet.push_back(PIConfig::piID);
-        packet.push_back(options);
+            // Add message fields
+            packet.push_back(dstID);
+            // uint8_t src = 2;
+            packet.push_back(PIConfig::piID);
+            packet.push_back(options);
 
-        // Add message code
-        packet.push_back(static_cast<uint8_t>(rawCode & 0xFF)); // LSB
-        if (isExtendedCode)
-            packet.push_back(static_cast<uint8_t>((rawCode >> 8) & 0xFF)); // MSB
+            // Add message code
+            packet.push_back(static_cast<uint8_t>(rawCode & 0xFF)); // LSB
+            if (isExtendedCode)
+                packet.push_back(static_cast<uint8_t>((rawCode >> 8) & 0xFF)); // MSB
 
-        // Add parameters
-        if (!params.empty())
-            packet.insert(packet.end(), params.begin(), params.end());
+            // Add parameters
+            if (!params.empty())
+                packet.insert(packet.end(), params.begin(), params.end());
 
-        // Compute and add CRC8
-        uint8_t crc = calculateCRC8(packet);
-        packet.push_back(crc);
+            // Compute and add CRC8
+            uint8_t crc = calculateCRC8(packet);
+            packet.push_back(crc);
 
-        Porting::uartSend(packet);
+            Porting::uartSend(packet);
 
-        
+            return BOSStatus::BOS_OK;
+        }
+        else
+            return BOSStatus::BOS_ERR_OVER_MSG_PARAMS_LENGTH;
+    }
+
+    /**************************************************************************************************/
+
+    BOSStatus SendLargMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &data)
+    {
+        uint16_t totalNumberofParams = data.size();
+        uint16_t ptrShift = 0, chunkSize = 0;
+        std::vector<uint8_t> MessageParames(data.size()); // allocate same size
+        constexpr uint8_t maxMessageLength = 46;
+
+        while (totalNumberofParams > 0)
+        {
+            chunkSize = (totalNumberofParams > maxMessageLength) ? maxMessageLength : totalNumberofParams;
+
+            /* Copy the relevant chunk of data into MessageParames */
+            memcpy(MessageParames.data(), data.data() + ptrShift, chunkSize);
+
+            /* Update total number of remaining parameters */
+            totalNumberofParams -= chunkSize;
+            ptrShift += chunkSize;
+
+            if (totalNumberofParams > 0)
+                OptionByte.LongMessage = true;
+            else
+                OptionByte.LongMessage = false;
+
+            /* Send the Message*/
+            SendMessagetoModule(dstID, code, MessageParames);
+        }
 
         return BOSStatus::BOS_OK;
     }
+
+    /**************************************************************************************************/
 
     BOSStatus SendDataRequestToModule(uint8_t dstID, BOSMessageCode code)
     {

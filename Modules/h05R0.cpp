@@ -63,7 +63,7 @@ CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
     if (status != BOSStatus::BOS_OK)
     {
         std::cerr << "Failed to send Cell Current request\n";
-        return {status, 0.0f};
+        return {status, Batterystate::error, 0.0f};
     }
 
     // Wait for response
@@ -77,7 +77,7 @@ CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
     }
 
     std::cerr << "Timeout while waiting for Cell Current\n";
-    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
+    return {BOSStatus::BOS_ERR_TIMEOUT, Batterystate::error, 0.0f};
 }
 /**************************************************************************************************/
 CellPowerResult H05R0::RequestPower(uint8_t moduleID)
