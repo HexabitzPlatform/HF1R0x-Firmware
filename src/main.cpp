@@ -35,20 +35,30 @@ int main()
     // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H01R0_ON, Parameters);
     PIConfig::piID = 4;
 
-    AccResult acc;
-    GyroResult gyro;
-    MagResult mag;
-    IMU_TempResult temp;
+    // AccResult acc;
+    // GyroResult gyro;
+    // MagResult mag;
+    // IMU_TempResult temp;
 
-    ColorResult Color;
-    PIRResult PIR;
-    TempResult Temp;
-    DistanceResult Distance;
-    HumidityResult Humidity;
+    // ColorResult Color;
+    // PIRResult PIR;
+    // TempResult Temp;
+    // DistanceResult Distance;
+    // HumidityResult Humidity;
+
+    std::vector<uint8_t> hello;
+
+    for (uint8_t i = 0; i < 80; i++)
+    {
+        hello.push_back(i);
+    }
 
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
+
+        // Messaging::SendLargMessagetoModule(1, BOSMessageCode::CODE_RAW_DATA, hello);
+
         /**************************************************************************************************/
         // acc = H0BR4::RequestAcc(2);
         // if (acc.status == BOSStatus::BOS_OK)
@@ -97,7 +107,10 @@ int main()
         // Color = H0AR9::RequestColor(1);
         // if (Color.status == BOSStatus::BOS_OK)
         // {
-        //     std::cout << "[Color] R: " << Color.red
+        //     std::cout << "[Color] R: " << Colo        // for (uint8_t i = 0; i < 513; i++)
+        // {
+        //     hello.push_back(i);
+        // }r.red
         //               << " G: " << Color.green
         //               << " B: " << Color.blue << "\n";
         // }

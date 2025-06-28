@@ -1,5 +1,4 @@
-// #include "vector"
-// #include "BOS_Messaging.h"
+
 #include "BOS.h"
 
 namespace Messaging
@@ -7,8 +6,9 @@ namespace Messaging
     BOSStatus SendMessagetoModule(uint8_t dstID, BOSMessageCode code, const std::vector<uint8_t> &params)
     {
         std::vector<uint8_t> packet;
+        uint8_t options = 0x00;
 
-        if (params.size() < 46)
+        if (params.size() < 47)
         {
             // Start bytes
             packet.push_back('H'); // 0x48
@@ -21,10 +21,14 @@ namespace Messaging
             bool isExtendedCode = rawCode > 0xFF;
             uint8_t codeLen = isExtendedCode ? 2 : 1;
 
-            // Options byte (only Extended Code flag for now)
-            uint8_t options = 0x00;
+            // if (isExtendedCode)
+            //     options |= 0x02;
+
             if (isExtendedCode)
-                options |= 0x02;
+                OptionByte.ExtendedMessageCode = true;
+
+            // Options byte
+            options = *(uint8_t *)&OptionByte;
 
             // Calculate BOS-compliant Length (excluding H, Z, Length, and CRC)
             uint8_t length = 3 + codeLen + params.size(); // dest + src + options + code + params
@@ -32,7 +36,6 @@ namespace Messaging
 
             // Add message fields
             packet.push_back(dstID);
-            // uint8_t src = 2;
             packet.push_back(PIConfig::piID);
             packet.push_back(options);
 
@@ -63,8 +66,8 @@ namespace Messaging
     {
         uint16_t totalNumberofParams = data.size();
         uint16_t ptrShift = 0, chunkSize = 0;
-        std::vector<uint8_t> MessageParames(data.size()); // allocate same size
         constexpr uint8_t maxMessageLength = 46;
+        std::vector<uint8_t> MessageParames(maxMessageLength);
 
         while (totalNumberofParams > 0)
         {
