@@ -67,11 +67,13 @@ namespace Messaging
         uint16_t totalNumberofParams = data.size();
         uint16_t ptrShift = 0, chunkSize = 0;
         constexpr uint8_t maxMessageLength = 46;
-        std::vector<uint8_t> MessageParames(maxMessageLength);
+        std::vector<uint8_t> MessageParames = {};
 
         while (totalNumberofParams > 0)
         {
             chunkSize = (totalNumberofParams > maxMessageLength) ? maxMessageLength : totalNumberofParams;
+
+            MessageParames.resize(chunkSize);
 
             /* Copy the relevant chunk of data into MessageParames */
             memcpy(MessageParames.data(), data.data() + ptrShift, chunkSize);
@@ -88,6 +90,9 @@ namespace Messaging
             /* Send the Message*/
             SendMessagetoModule(dstID, code, MessageParames);
         }
+
+        // /* reset MessageParams Vector */
+        // MessageParames.clear();
 
         return BOSStatus::BOS_OK;
     }

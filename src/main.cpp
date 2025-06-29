@@ -57,7 +57,7 @@ int main()
     while (true)
     {
 
-        // Messaging::SendLargMessagetoModule(1, BOSMessageCode::CODE_RAW_DATA, hello);
+        Messaging::SendLargMessagetoModule(1, BOSMessageCode::CODE_RAW_DATA, hello);
 
         /**************************************************************************************************/
         // acc = H0BR4::RequestAcc(2);

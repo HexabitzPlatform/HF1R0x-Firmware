@@ -26,6 +26,13 @@ typedef struct
     uint8_t LongMessage : 1;         /* If set, message continues in next packet */
 } BOSOptionByte_t;
 
+typedef struct
+{
+    std::vector<uint8_t> buffer = {};
+    uint8_t length = buffer.size();
+    uint8_t receiveFlag = 0;
+} RawData_t;
+
 /**************************************************************************************************/
 /**************************************** Enum Class Definitions **********************************/
 /**************************************************************************************************/
@@ -158,6 +165,8 @@ private:
     BOSStatus handleWriteRemoteCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleWriteRemoteResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
 
+    BOSStatus handleRawDataCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params);
+
     // Overridable method to handle unknown/module-specific codes
     virtual BOSStatus handleModuleMessageCode(uint8_t dst, uint8_t source, BOSMessageCode code, const std::vector<uint8_t> &params);
 };
@@ -221,6 +230,7 @@ namespace Messaging
 /* External Class Instances  Definitions **********************************************************/
 extern LED led;
 extern BOSOptionByte_t OptionByte;
+extern RawData_t rawData;
 
 /**************************************************************************************************/
 /******************************************  General Functions ************************************/

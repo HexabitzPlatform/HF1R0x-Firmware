@@ -114,6 +114,10 @@ BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
         handleWriteRemoteResponseCode(destination, source, params);
         break;
 
+    case BOSMessageCode::CODE_RAW_DATA:
+        handleRawDataCode(destination, source, params);
+        break;
+
     default:
         // Delegate to subclass
         handleModuleMessageCode(destination, source, code, params);
@@ -318,6 +322,29 @@ BOSStatus BOS_MessageParser::handleWriteRemoteCode(uint8_t dts, uint8_t source, 
 BOSStatus BOS_MessageParser::handleWriteRemoteResponseCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     std::cout << "[Write Remote Response Code] Reveived from Module: " << static_cast<int>(source) << "\n";
+
+    return BOSStatus::BOS_OK;
+}
+
+/**************************************************************************************************/
+BOSStatus BOS_MessageParser::handleRawDataCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
+{
+    static std::vector<uint8_t> longMessageScratchpad;
+
+    // Append this fragment to the scratchpad
+    longMessageScratchpad.insert(longMessageScratchpad.end(), params.begin(), params.end());
+
+    if (!OptionByte.LongMessage)
+    {
+        // Final frafment received ---> message complete
+        // std::vector<uint8_t> rawDataBuffer = longMessageScratchpad;
+        rawData.buffer = longMessageScratchpad;
+
+        rawData.length = longMessageScratchpad.size();
+
+        // clear the vector
+        longMessageScratchpad.clear();
+    }
 
     return BOSStatus::BOS_OK;
 }
