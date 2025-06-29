@@ -4,7 +4,7 @@
 #include "BOS.h"
 
 BOSOptionByte_t OptionByte;
-RawData_t rawdata;
+RawData_t rawData;
 
 // Initialize GPIO PIN on Raspberry
 LED led(LEDConfig::GPIO_PIN);

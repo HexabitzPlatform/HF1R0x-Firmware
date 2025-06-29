@@ -46,18 +46,27 @@ int main()
     // DistanceResult Distance;
     // HumidityResult Humidity;
 
+    CellAgeResult age;
+    CellCapacityResult capacity;
+    CellCurrentResult current;
+    CellCyclesResult cycles;
+    CellPowerResult power;
+    CellTempResult temp;
+    CellVoltageResult voltage;
+    SOCResult soc;
+
     std::vector<uint8_t> hello;
 
-    for (uint8_t i = 0; i < 80; i++)
-    {
-        hello.push_back(i);
-    }
+    // for (uint8_t i = 0; i < 80; i++)
+    // {
+    //     hello.push_back(i);
+    // }
 
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
-
-        Messaging::SendLargMessagetoModule(1, BOSMessageCode::CODE_RAW_DATA, hello);
+        age = H05R0::RequestAge(1);
+        // Messaging::SendLargMessagetoModule(1, BOSMessageCode::CODE_RAW_DATA, hello);
 
         /**************************************************************************************************/
         // acc = H0BR4::RequestAcc(2);
