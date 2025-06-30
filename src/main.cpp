@@ -3,8 +3,29 @@
 
 int main()
 {
+    // Initialize GPIO PIN on Raspberry
+    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
+
+    // Initialize UART on Raspberry Pi UART port
+    Porting::initUART(UARTConfig::TX_PIN, UARTConfig::RX_PIN, UARTConfig::BAUDRATE);
+
+    std::cout << "UART initialized. Listening for BOS messages ...\n";
+
+    Module_MessageParser bosParser;
+    UARTParser uartParser;
+
+    // Connect UARTParser to BOS message parser
+    uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
+                                 {
+                                             std::cout << "\nValid BOS message received. Passing to BOS parser...\n";
+                                             bosParser.parseMessage(payload); });
+
+    // Setup UART receive callback to feed bytes into UARTParser
+    Porting::setUartReceiveCallback([&uartParser](char byte)
+                                    { uartParser.feed(static_cast<uint8_t>(byte)); });
+
     // Initialize BOS
-    initBOS();
+    // initBOS();
 
     // AccResult acc;
     // GyroResult gyro;
@@ -32,6 +53,9 @@ int main()
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
+
+        Messaging::SendDataRequestToModule(1, BOSMessageCode::CODE_H05R0_CELL_AGE);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         /**************************************************************************************************/
         // age = H05R0::RequestAge(1);
@@ -87,7 +111,7 @@ int main()
         // if (acc.status == BOSStatus::BOS_OK)
         // {
         //     std::cout << "[ACC] X = " << acc.x
-        //               << "\n Y = " << acc.y
+        //               << "\n Y std::this_thread::sleep_for(std::chrono::milliseconds(200));= " << acc.y
         //               << "\n Z = " << acc.z
         //               << std::endl;
         // }

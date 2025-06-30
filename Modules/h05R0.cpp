@@ -219,7 +219,7 @@ SOCResult H05R0::RequestSOC(uint8_t moduleID)
 CellAgeResult H05R0::RequestAge(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 200;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains

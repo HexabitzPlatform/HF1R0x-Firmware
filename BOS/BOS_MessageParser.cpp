@@ -316,6 +316,10 @@ BOSStatus BOS_MessageParser::handleWriteRemoteResponseCode(uint8_t dts, uint8_t 
 BOSStatus BOS_MessageParser::handleRawDataCode(uint8_t dts, uint8_t source, const std::vector<uint8_t> &params)
 {
     static std::vector<uint8_t> longMessageScratchpad;
+    constexpr uint16_t MAX_RAW_MSG_SIZE = 1024;
+
+    if (longMessageScratchpad.size() + params.size() > MAX_RAW_MSG_SIZE)
+        return BOSStatus::BOS_ERROR;
 
     // Append this fragment to the scratchpad
     longMessageScratchpad.insert(longMessageScratchpad.end(), params.begin(), params.end());
