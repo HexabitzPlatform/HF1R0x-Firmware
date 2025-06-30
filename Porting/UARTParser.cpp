@@ -3,12 +3,14 @@
 #include <iomanip>
 #include <cmath>
 
+/**************************************************************************************************/
 // Sets the callback function to be called when a valid message is received
 void UARTParser::onMessageReceived(Callback cb)
 {
     callback = cb; // Store the provided callback
 }
 
+/**************************************************************************************************/
 // Processes a single incoming byte, updating the parser's state
 void UARTParser::feed(uint8_t byte)
 {
@@ -83,6 +85,7 @@ void UARTParser::feed(uint8_t byte)
     }
 }
 
+/**************************************************************************************************/
 // Calculates an 8-bit CRC for the input data using polynomial 0x07 over uint32_t word
 uint8_t calculateCRC8(const std::vector<uint8_t> &data)
 {

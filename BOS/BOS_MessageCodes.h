@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-// Enum class to represent BOS message codes clearly and safely
+// Enum class to represent BOS & Modules message codes
 enum class BOSMessageCode : uint16_t
 {
 

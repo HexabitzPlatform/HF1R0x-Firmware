@@ -1,6 +1,4 @@
-// #include <thread>
-// #include <chrono>
-// #include <iostream>
+
 #include "BOS.h"
 
 BOSOptionByte_t OptionByte;
@@ -18,19 +16,19 @@ void initBOS(void)
     // Initialize GPIO PIN on Raspberry
     led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
 
-    // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
+    // Initialize UART on Raspberry Pi UART port
     Porting::initUART(UARTConfig::TX_PIN, UARTConfig::RX_PIN, UARTConfig::BAUDRATE);
 
-    std::cout << "UART initialized. Listening for BOS messages...\n";
+    std::cout << "UART initialized. Listening for BOS messages ...\n";
 
-    BOS_MessageParser bosParser;
+    Module_MessageParser bosParser;
     UARTParser uartParser;
 
     // Connect UARTParser to BOS message parser
     uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
                                  {
-                                         std::cout << "Valid BOS message received. Passing to BOS parser...\n";
-                                         bosParser.parseMessage(payload); });
+                                             std::cout << "\nValid BOS message received. Passing to BOS parser...\n";
+                                             bosParser.parseMessage(payload); });
 
     // Setup UART receive callback to feed bytes into UARTParser
     Porting::setUartReceiveCallback([&uartParser](char byte)

@@ -10,22 +10,25 @@
 
 #define CHIP_NAME "gpiochip0" /* Default GPIO chip on Raspberry Pi */
 
+/**************************************************************************************************/
 namespace
 {
     constexpr const char *UART_DEVICE_PATH = "/dev/ttyAMA0"; /* Device path for UART */
     int uartFd = -1;                                         /* POSIX file descriptor for UART. Initialized to invalid value (-1). */
 }
 
+/**************************************************************************************************/
 namespace Porting
 {
-    /* ========== GPIO Functions ========== */
-
+    /**********************************************************************************************/
+    /*********************************** GPIO Functions Definitions *******************************/
+    /**********************************************************************************************/
     void initGPIO(int pin)
     {
         /* Placeholder function for GPIO initialization */
         (void)pin; /* Suppress unused parameter warning */
     }
-
+    /**********************************************************************************************/
     void writeGPIO(int pin, bool value)
     {
         /* Opens the GPIO chip and configures the given pin as output, then sets its value */
@@ -59,6 +62,7 @@ namespace Porting
         gpiod_chip_close(chip);   /* Close GPIO chip */
     }
 
+    /**********************************************************************************************/
     bool readGPIO(int pin)
     {
         /* Opens the GPIO chip, sets the pin as input, and reads its value */
@@ -94,8 +98,9 @@ namespace Porting
         return value == 1; /* Return true if pin is high */
     }
 
-    /* ========== UART Functions (POSIX) ========== */
-
+    /**********************************************************************************************/
+    /******************************* UART Functions (POSIX) Definitions ***************************/
+    /**********************************************************************************************/
     void initUART(int txPin, int rxPin, int baudrate)
     {
         /* Initialize UART using POSIX APIs and configure baud rate, data bits, and parity */
@@ -149,6 +154,7 @@ namespace Porting
         }
     }
 
+    /**********************************************************************************************/
     void uartSend(const std::vector<uint8_t> &data)
     {
         if (uartFd == -1)
@@ -165,6 +171,7 @@ namespace Porting
         }
     }
 
+    /**********************************************************************************************/
     void uartReceive(const std::function<void(char)> &onReceiveChar)
     {
         /* Spawns a thread that continuously reads 1 byte from UART and calls the callback function */
@@ -193,6 +200,7 @@ namespace Porting
             .detach(); /* Detach thread so it runs independently */
     }
 
+    /**********************************************************************************************/
     /* Global static function pointer to store the callback */
     static std::function<void(char)> uartCallback;
 

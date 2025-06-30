@@ -1,13 +1,6 @@
 #include <iostream>
 #include "BOS.h"
 
-// Define a 2D array: 6 rows, 2 columns
-// std::array<std::array<uint16_t, 2>, 6> NeighborsInfo{};
-// std::array<uint16_t, 2> NeighborsInfo{};
-// // std::array<uint8_t, 46> MessageParames{};
-// std::vector<uint8_t> MessageParames;
-// std::array<uint16_t, 2> Array{};
-
 BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 {
     // Extract fields
@@ -40,13 +33,6 @@ BOSStatus BOS_MessageParser::parseMessage(const std::vector<uint8_t> &payload)
 
         params.insert(params.end(), payload.begin() + 4, payload.end());
     }
-
-    // BOSMessageCode code = static_cast<BOSMessageCode>(payload[3]);
-
-    // if (payload.size() > 4)
-    // {
-    //     params.insert(params.end(), payload.begin() + 4, payload.end());
-    // }
 
     // Route based on message code
     switch (code)

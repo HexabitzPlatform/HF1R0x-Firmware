@@ -144,7 +144,6 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellVoltageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // float voltage = 0.0f;
     CellVoltageResult result;
 
     if (params.size() < 9)
@@ -154,24 +153,12 @@ BOSStatus Module_MessageParser::handleH05R0_CellVoltageCode(uint8_t dst, uint8_t
 
     result.voltage = BOSMessageCodec::bytesToFloat(bytes);
 
-    // std::cout << "[Sample Battery Voltage] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Voltage: " << voltage << "Volt\n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // enum class state : uint8_t
-    // {
-    //     charging = 0,
-    //     discharging = 1
-    // };
-
     CellCurrentResult result;
-
-    // float current = 0.0f;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
@@ -182,20 +169,11 @@ BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t
 
     result.batteryState = (result.current >= 0) ? Batterystate::charging : Batterystate::discharging;
 
-    // state batteryState = (result.current >= 0) ? state::charging : state::discharging;
-
-    // std::cout << "[Sample Battery current] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Current: " << current << "Amp\n";
-    // std::cout << "Battery State: "
-    //           << (batteryState == state::charging ? "Battery is charging" : "Battery is discharging") << "\n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // float power = 0.0f;
     CellPowerResult result;
 
     if (params.size() < 9)
@@ -205,16 +183,11 @@ BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t s
 
     result.power = BOSMessageCodec::bytesToFloat(bytes);
 
-    // std::cout << "[Sample Battery Power] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Power: " << power << "\n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // float temp = 0.0f;
     CellTempResult result;
 
     if (params.size() < 9)
@@ -224,16 +197,11 @@ BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uin
 
     result.temp = BOSMessageCodec::bytesToFloat(bytes);
 
-    // std::cout << "[Sample Battery Temperature] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Temperature: " << temp << " Celsius\n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // float capacity = 0.0f;
     CellCapacityResult result;
 
     if (params.size() < 9)
@@ -243,16 +211,11 @@ BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_
 
     result.capacity = BOSMessageCodec::bytesToFloat(bytes);
 
-    // std::cout << "[Sample Battery Capacity] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Capacity: " << capacity << "\n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // uint8_t SOC = 0;
     SOCResult result;
 
     if (params.size() < 9)
@@ -262,16 +225,11 @@ BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8
 
     result.SOC = BOSMessageCodec::bytesToFloat(bytes);
 
-    // std::cout << "[Sample Battery State of Charge] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery State of Charge: " << SOC << "% \n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // uint8_t age = 0;
     CellAgeResult result;
 
     if (params.size() < 9)
@@ -281,16 +239,11 @@ BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t sou
 
     result.age = BOSMessageCodec::bytesToFloat(bytes);
 
-    // std::cout << "[Sample Battery Age] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Age: " << age << "\n\n";
-
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // uint16_t cycles = 0.0f;
     CellCyclesResult result;
 
     if (params.size() < 9)
@@ -299,10 +252,6 @@ BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t 
     std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
 
     result.cycles = BOSMessageCodec::bytesToFloat(bytes);
-
-    // std::cout << "[Sample Battery Cycles] Received from Module: " << to_string(ModulePN::H05R0)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Battery Cycles: " << cycles << "\n\n";
 
     return BOSStatus::BOS_OK;
 }
@@ -350,7 +299,6 @@ BOSStatus Module_MessageParser::handleH09R9_TemperatureCode(uint8_t dst, uint8_t
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // uint16_t red = 0, green = 0, blue = 0;
     ColorResult result;
 
     if (params.size() < 11)
@@ -368,18 +316,11 @@ BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t sourc
     // Set the promise result to unblock the waiting thread
     H0AR9::colorPromise.set_value(result);
 
-    // std::cout << "[Sample Color] Received from Module: " << to_string(ModulePN::H0AR9)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Red: " << red << " \n";
-    // std::cout << "Green: " << green << " \n";
-    // std::cout << "Blue: " << blue << " \n\n";
-
     return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // uint16_t distance = 0;
     DistanceResult result;
 
     if (params.size() < 7)
@@ -393,16 +334,11 @@ BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t so
     // Set the promise result to unblock the waiting thread
     H0AR9::DistancePromise.set_value(result);
 
-    // std::cout << "[Sample Distance] Received from Module: " << to_string(ModulePN::H0AR9)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Distance: " << distance << " \n\n";
-
     return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // float temp = 0;
     TempResult result;
 
     if (params.size() < 9)
@@ -416,16 +352,11 @@ BOSStatus Module_MessageParser::handleH0AR9_TemperatureCode(uint8_t dst, uint8_t
     // Set the promise result to unblock the waiting thread
     H0AR9::TempPromise.set_value(result);
 
-    // std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H0AR9)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Temperature: " << temp << " Celsius\n\n";
-
     return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_HumidityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // float humidity = 0;
     HumidityResult result;
 
     if (params.size() < 9)
@@ -439,16 +370,11 @@ BOSStatus Module_MessageParser::handleH0AR9_HumidityCode(uint8_t dst, uint8_t so
     // Set the promise result to unblock the waiting thread
     H0AR9::HumidityPromise.set_value(result);
 
-    // std::cout << "[Sample Humidity] Received from Module: " << to_string(ModulePN::H0AR9)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "Humidity: " << humidity << " \n\n";
-
     return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    // uint8_t PIR = 0;
     PIRResult result;
 
     if (params.size() < 6)
@@ -459,10 +385,6 @@ BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source,
 
     // Set the promise result to unblock the waiting thread
     H0AR9::PIRPromise.set_value(result);
-
-    // std::cout << "[Sample PIR] Received from Module: " << to_string(ModulePN::H08R7)
-    //           << " , ID: " << static_cast<int>(source) << "\n";
-    // std::cout << "PIR: " << PIR << "\n\n";
 
     return result.status;
 }

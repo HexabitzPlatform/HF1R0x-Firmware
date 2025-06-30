@@ -91,9 +91,6 @@ namespace Messaging
             SendMessagetoModule(dstID, code, MessageParames);
         }
 
-        // /* reset MessageParams Vector */
-        // MessageParames.clear();
-
         return BOSStatus::BOS_OK;
     }
 

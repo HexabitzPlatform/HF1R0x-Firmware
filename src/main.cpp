@@ -3,37 +3,8 @@
 
 int main()
 {
-
-    // Initialize GPIO PIN on Raspberry
-    led.blink(LEDConfig::INITIAL_BLINK_TIMES, LEDConfig::BLINK_DELAY_MS);
-
-    // Initialize UART on Raspberry Pi UART port (TX=GPIO14, RX=GPIO15, baudrate=115200)
-    Porting::initUART(UARTConfig::TX_PIN, UARTConfig::RX_PIN, UARTConfig::BAUDRATE);
-
-    std::cout << "UART initialized. Listening for BOS messages ...\n";
-
-    Module_MessageParser bosParser;
-    // BOS_MessageParser bosParser;
-    UARTParser uartParser;
-
-    // Connect UARTParser to BOS message parser
-    uartParser.onMessageReceived([&bosParser](const std::vector<uint8_t> &payload)
-                                 {
-                                             std::cout << "\nValid BOS message received. Passing to BOS parser...\n";
-                                             bosParser.parseMessage(payload); });
-
-    // Setup UART receive callback to feed bytes into UARTParser
-    Porting::setUartReceiveCallback([&uartParser](char byte)
-                                    { uartParser.feed(static_cast<uint8_t>(byte)); });
-
     // Initialize BOS
-    // initBOS();
-
-    // led.blink(4 , 100);
-    std::vector<uint8_t> Parameters = {2};
-
-    // Messaging::SendMessagetoModule(1, BOSMessageCode::CODE_H01R0_ON, Parameters);
-    PIConfig::piID = 4;
+    initBOS();
 
     // AccResult acc;
     // GyroResult gyro;
@@ -55,18 +26,61 @@ int main()
     CellVoltageResult voltage;
     SOCResult soc;
 
-    std::vector<uint8_t> hello;
-
-    // for (uint8_t i = 0; i < 80; i++)
-    // {
-    //     hello.push_back(i);
-    // }
+    /* RPI ID using explore feature*/
+    PIConfig::piID = 2;
 
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
-        age = H05R0::RequestAge(1);
-        // Messaging::SendLargMessagetoModule(1, BOSMessageCode::CODE_RAW_DATA, hello);
+
+        /**************************************************************************************************/
+        // age = H05R0::RequestAge(1);
+        // if (age.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Age: " << age.age << std::endl;
+        // }
+
+        // capacity = H05R0::RequestCapacity(1);
+        // if (capacity.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Capacity: " << capacity.capacity << std::endl;
+        // }
+
+        // current = H05R0::RequestCurrent(1);
+        // if (current.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Current: " << current.current << std::endl;
+        // }
+
+        // cycles = H05R0::RequestCycles(1);
+        // if (cycles.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Cycles: " << cycles.cycles << std::endl;
+        // }
+
+        // power = H05R0::RequestPower(1);
+        // if (power.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Power: " << power.power << std::endl;
+        // }
+
+        // temp = H05R0::RequestTemp(1);
+        // if (temp.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Temerature: " << temp.temp << std::endl;
+        // }
+
+        // voltage = H05R0::RequestVoltage(1);
+        // if (voltage.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery Voltage: " << voltage.voltage << std::endl;
+        // }
+
+        // soc = H05R0::RequestSOC(1);
+        // if (soc.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Battery SOC: " << soc.SOC << std::endl;
+        // }
 
         /**************************************************************************************************/
         // acc = H0BR4::RequestAcc(2);
