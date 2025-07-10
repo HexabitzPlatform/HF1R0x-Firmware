@@ -393,7 +393,7 @@ BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source,
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    GyroResult result;
+    H0BR4_Gyro result;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -415,7 +415,7 @@ BOSStatus Module_MessageParser::handleH0BR4_GyroCode(uint8_t dst, uint8_t source
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    AccResult result;
+    H0BR4_Acc result;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -437,7 +437,7 @@ BOSStatus Module_MessageParser::handleH0BR4_AccCode(uint8_t dst, uint8_t source,
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    MagResult result;
+    H0BR4_Mag result;
 
     if (params.size() < 17)
         return BOSStatus::BOS_ERROR;
@@ -459,7 +459,7 @@ BOSStatus Module_MessageParser::handleH0BR4_MagCode(uint8_t dst, uint8_t source,
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    IMU_TempResult result;
+    H0BR4_Temp result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;

@@ -27,10 +27,10 @@ int main()
     // Initialize BOS
     // initBOS();
 
-    // AccResult acc;
-    // GyroResult gyro;
-    // MagResult mag;
-    // IMU_TempResult temp;
+    H0BR4_Acc acc;
+    H0BR4_Gyro gyro;
+    H0BR4_Mag mag;
+    H0BR4_Temp temp;
 
     // ColorResult Color;
     // PIRResult PIR;
@@ -38,14 +38,14 @@ int main()
     // DistanceResult Distance;
     // HumidityResult Humidity;
 
-    CellAgeResult age;
-    CellCapacityResult capacity;
-    CellCurrentResult current;
-    CellCyclesResult cycles;
-    CellPowerResult power;
-    CellTempResult temp;
-    CellVoltageResult voltage;
-    SOCResult soc;
+    // CellAgeResult age;
+    // CellCapacityResult capacity;
+    // CellCurrentResult current;
+    // CellCyclesResult cycles;
+    // CellPowerResult power;
+    // CellTempResult temp;
+    // CellVoltageResult voltage;
+    // SOCResult soc;
 
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
@@ -53,9 +53,6 @@ int main()
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
-
-        Messaging::SendDataRequestToModule(1, BOSMessageCode::CODE_H05R0_CELL_AGE);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         /**************************************************************************************************/
         // age = H05R0::RequestAge(1);
@@ -107,47 +104,48 @@ int main()
         // }
 
         /**************************************************************************************************/
-        // acc = H0BR4::RequestAcc(2);
-        // if (acc.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[ACC] X = " << acc.x
-        //               << "\n Y std::this_thread::sleep_for(std::chrono::milliseconds(200));= " << acc.y
-        //               << "\n Z = " << acc.z
-        //               << std::endl;
-        // }
+        acc = H0BR4::RequestAcc(1);
+        if (acc.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[ACC] \n X = " << acc.x
+                      << "\n Y = " << acc.y
+                      << "\n Z = " << acc.z
+                      << std::endl;
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        // gyro = H0BR4::RequestGyro(2);
-        // if (gyro.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Gyro] X = " << gyro.x
-        //               << "\n Y = " << gyro.y
-        //               << "\n Z = " << gyro.z
-        //               << std::endl;
-        // }
+        gyro = H0BR4::RequestGyro(1);
+        if (gyro.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Gyro] \n X = " << gyro.x
+                      << "\n Y = " << gyro.y
+                      << "\n Z = " << gyro.z
+                      << std::endl;
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        // mag = H0BR4::RequestMag(2);
-        // if (mag.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Mag] X = " << mag.x
-        //               << "\n Y = " << mag.y
-        //               << "\n Z = " << mag.z
-        //               << std::endl;
-        // }
+        mag = H0BR4::RequestMag(1);
+        if (mag.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Mag] \n X = " << mag.x
+                      << "\n Y = " << mag.y
+                      << "\n Z = " << mag.z
+                      << std::endl;
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        // temp = H0BR4::RequestTemp(2);
-        // if (temp.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Temp] = " << temp.temp
-        //               << std::endl;
-        // }
+        temp = H0BR4::RequestTemp(1);
+        if (temp.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Temp] = \n temp = "
+                      << temp.temp
+                      << std::endl;
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         /**************************************************************************************************/
 

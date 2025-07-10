@@ -5,7 +5,7 @@
 /**************************************************************************************************/
 /* H0BR4 User Interface ***************************************************************************/
 /**************************************************************************************************/
-struct AccResult
+struct H0BR4_Acc
 {
     BOSStatus status;
     float x = 0.0f;
@@ -13,7 +13,7 @@ struct AccResult
     float z = 0.0f;
 };
 
-struct GyroResult
+struct H0BR4_Gyro
 {
     BOSStatus status;
     float x = 0.0f;
@@ -21,7 +21,7 @@ struct GyroResult
     float z = 0.0f;
 };
 
-struct MagResult
+struct H0BR4_Mag
 {
     BOSStatus status;
     float x = 0.0f;
@@ -29,7 +29,7 @@ struct MagResult
     float z = 0.0f;
 };
 
-struct IMU_TempResult
+struct H0BR4_Temp
 {
     BOSStatus status;
     float temp = 0.0f;
@@ -38,13 +38,13 @@ struct IMU_TempResult
 class H0BR4
 {
 public:
-    static std::promise<AccResult> AccPromise;
-    static std::promise<GyroResult> GyroPromise;
-    static std::promise<MagResult> MagPromise;
-    static std::promise<IMU_TempResult> TempPromise;
+    static std::promise<H0BR4_Acc> AccPromise;
+    static std::promise<H0BR4_Gyro> GyroPromise;
+    static std::promise<H0BR4_Mag> MagPromise;
+    static std::promise<H0BR4_Temp> TempPromise;
 
-    static AccResult RequestAcc(uint8_t moduleID);
-    static GyroResult RequestGyro(uint8_t moduleID);
-    static MagResult RequestMag(uint8_t moduleID);
-    static IMU_TempResult RequestTemp(uint8_t moduleID);
+    static H0BR4_Acc RequestAcc(uint8_t moduleID);
+    static H0BR4_Gyro RequestGyro(uint8_t moduleID);
+    static H0BR4_Mag RequestMag(uint8_t moduleID);
+    static H0BR4_Temp RequestTemp(uint8_t moduleID);
 };
