@@ -27,7 +27,7 @@ int main()
     // Initialize BOS
     // initBOS();
 
-    // H0BR4_Acc acc;
+    H0BR4_Acc acc;
     // H0BR4_Gyro gyro;
     // H0BR4_Mag mag;
     // H0BR4_Temp temp;
