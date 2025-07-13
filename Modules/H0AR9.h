@@ -5,13 +5,13 @@
 /**************************************************************************************************/
 /* H0AR9 User Interface ***************************************************************************/
 /**************************************************************************************************/
-struct PIRResult
+struct H0AR9_PIR
 {
     BOSStatus status;
     bool pir = false;
 };
 
-struct ColorResult
+struct H0AR9_Color
 {
     BOSStatus status;
     uint16_t red = 0;
@@ -19,19 +19,19 @@ struct ColorResult
     uint16_t blue = 0;
 };
 
-struct DistanceResult
+struct H0AR9_Distance
 {
     BOSStatus status;
     uint16_t distance = 0;
 };
 
-struct TempResult
+struct H0AR9_Temp
 {
     BOSStatus status;
     float temp = 0.0f;
 };
 
-struct HumidityResult
+struct H0AR9_Humidity
 {
     BOSStatus status;
     float humidity = 0.0f;
@@ -40,16 +40,16 @@ struct HumidityResult
 class H0AR9
 {
 public:
-    static std::promise<PIRResult> PIRPromise;
-    static std::promise<ColorResult> colorPromise;
-    static std::promise<DistanceResult> DistancePromise;
-    static std::promise<TempResult> TempPromise;
-    static std::promise<HumidityResult> HumidityPromise;
+    static std::promise<H0AR9_PIR> PIRPromise;
+    static std::promise<H0AR9_Color> colorPromise;
+    static std::promise<H0AR9_Distance> DistancePromise;
+    static std::promise<H0AR9_Temp> TempPromise;
+    static std::promise<H0AR9_Humidity> HumidityPromise;
 
     /* User Functions */
-    static PIRResult RequestPIR(uint8_t moduleID);
-    static ColorResult RequestColor(uint8_t moduleID);
-    static DistanceResult RequestDistance(uint8_t moduleID);
-    static TempResult RequestTemp(uint8_t moduleID);
-    static HumidityResult RequestHumidity(uint8_t moduleID);
+    static H0AR9_PIR RequestPIR(uint8_t moduleID);
+    static H0AR9_Color RequestColor(uint8_t moduleID);
+    static H0AR9_Distance RequestDistance(uint8_t moduleID);
+    static H0AR9_Temp RequestTemp(uint8_t moduleID);
+    static H0AR9_Humidity RequestHumidity(uint8_t moduleID);
 };

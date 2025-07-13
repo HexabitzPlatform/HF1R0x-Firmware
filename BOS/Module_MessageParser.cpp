@@ -188,7 +188,7 @@ BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t s
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellTempResult result;
+    H0AR9_Temp result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
@@ -299,7 +299,7 @@ BOSStatus Module_MessageParser::handleH09R9_TemperatureCode(uint8_t dst, uint8_t
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    ColorResult result;
+    H0AR9_Color result;
 
     if (params.size() < 11)
         return (result.status = BOSStatus::BOS_ERROR);
@@ -321,7 +321,7 @@ BOSStatus Module_MessageParser::handleH0AR9_ColorCode(uint8_t dst, uint8_t sourc
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    DistanceResult result;
+    H0AR9_Distance result;
 
     if (params.size() < 7)
         return (result.status = BOSStatus::BOS_ERROR);
@@ -339,7 +339,7 @@ BOSStatus Module_MessageParser::handleH0AR9_DistanceCode(uint8_t dst, uint8_t so
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    TempResult result;
+    H0AR9_Temp result;
 
     if (params.size() < 9)
         return (result.status = BOSStatus::BOS_ERROR);
@@ -357,7 +357,7 @@ BOSStatus Module_MessageParser::handleH0AR9_TemperatureCode(uint8_t dst, uint8_t
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_HumidityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    HumidityResult result;
+    H0AR9_Humidity result;
 
     if (params.size() < 9)
         return (result.status = BOSStatus::BOS_ERROR);
@@ -375,7 +375,7 @@ BOSStatus Module_MessageParser::handleH0AR9_HumidityCode(uint8_t dst, uint8_t so
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH0AR9_PIRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    PIRResult result;
+    H0AR9_PIR result;
 
     if (params.size() < 6)
         return (result.status = BOSStatus::BOS_ERROR);

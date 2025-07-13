@@ -27,23 +27,23 @@ int main()
     // Initialize BOS
     // initBOS();
 
-    H0BR4_Acc acc;
+    // H0BR4_Acc acc;
     // H0BR4_Gyro gyro;
     // H0BR4_Mag mag;
     // H0BR4_Temp temp;
 
-    // ColorResult Color;
-    // PIRResult PIR;
-    // TempResult Temp;
-    // DistanceResult Distance;
-    // HumidityResult Humidity;
+    H0AR9_Color Color;
+    H0AR9_PIR PIR;
+    H0AR9_Temp Temp;
+    H0AR9_Distance Distance;
+    H0AR9_Humidity Humidity;
 
     // CellAgeResult age;
     // CellCapacityResult capacity;
     // CellCurrentResult current;
     // CellCyclesResult cycles;
     // CellPowerResult power;
-    // CellTempResult temp;
+    // CellH0AR9_Temp temp;
     // CellVoltageResult voltage;
     // SOCResult soc;
 
@@ -149,56 +149,51 @@ int main()
 
         /**************************************************************************************************/
 
-        // Color = H0AR9::RequestColor(1);
-        // if (Color.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Color] R: " << Colo        // for (uint8_t i = 0; i < 513; i++)
-        // {
-        //     hello.push_back(i);
-        // }r.red
-        //               << " G: " << Color.green
-        //               << " B: " << Color.blue << "\n";
-        // }
+        Color = H0AR9::RequestColor(1);
+        if (Color.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Color] \n red = " << Color.red
+                      << " \n green = " << Color.green
+                      << " \n blue = " << Color.blue << "\n";
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        // PIR = H0AR9::RequestPIR(1);
-        // if (PIR.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[PIR]: " << PIR.pir
-        //               << "\n";
-        // }
+        PIR = H0AR9::RequestPIR(1);
+        if (PIR.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[PIR] \n pir = " << PIR.pir
+                      << "\n";
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        // Temp = H0AR9::RequestTemp(1);
-        // if (Temp.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Temperature]: " << Temp.temp
-        //               << "\n";
-        // }
+        Temp = H0AR9::RequestTemp(1);
+        if (Temp.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Temperature] \n temp = " << Temp.temp
+                      << "\n";
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        // Distance = H0AR9::RequestDistance(1);
-        // if (Distance.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Distance]: " << Distance.distance
-        //               << "\n";
-        // }
+        Distance = H0AR9::RequestDistance(1);
+        if (Distance.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Distance] \n distance = " << Distance.distance
+                      << "\n";
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        // Humidity = H0AR9::RequestHumidity(1);
-        // if (Humidity.status == BOSStatus::BOS_OK)
-        // {
-        //     std::cout << "[Humidity]: " << Humidity.humidity
-        //               << "\n";
-        // }
+        Humidity = H0AR9::RequestHumidity(1);
+        if (Humidity.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Humidity] \n humidity = " << Humidity.humidity
+                      << "\n";
+        }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-        // led.blink(4 , 100);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     return 0;
