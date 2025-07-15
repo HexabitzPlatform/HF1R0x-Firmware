@@ -316,20 +316,21 @@ BOSStatus Module_MessageParser::handleH08R7_DistanceCode(uint8_t dst, uint8_t so
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH09R9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float temp = 0.0f;
+
+    H09R9_Temp result;
 
     if (params.size() < 9)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> tempBytes = {params[5], params[6], params[7], params[8]};
 
-    temp = BOSMessageCodec::bytesToFloat(bytes);
+    result.temp = BOSMessageCodec::bytesToFloat(tempBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample Temperature] Received from Module: " << to_string(ModulePN::H09R9)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Temperature: " << temp << " Celsius\n\n";
+    // Set the promise result to unblock the waiting thread
+    H09R9::TempPromise.set_value(result);
 
-    return BOSStatus::BOS_OK;
+    return result.status;
 }
 /**************************************************************************************************/
 /* H0AR9 Message Codes Functions ******************************************************************/

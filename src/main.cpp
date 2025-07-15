@@ -1,6 +1,6 @@
 
 #include "BOS.h"
-
+std::vector<uint8_t> paramm={ };
 int main()
 {
     // Initialize GPIO PIN on Raspberry
@@ -47,6 +47,8 @@ int main()
     // H05R0_CellVoltage voltage;
     // H05R0_SOC soc;
     
+    H09R9_Temp Temp;
+
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
@@ -55,7 +57,7 @@ int main()
     {
 
         /**************************************************************************************************/
-
+    
         // voltage = cz::RequestVoltage(1);
         // if (voltage.status == BOSStatus::BOS_OK)
         // {
@@ -230,6 +232,22 @@ int main()
         // }
 
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        /**************************************************************************************************/
+
+        Temp = H09R9::RequestTemp(1);
+        if (Temp.status == BOSStatus::BOS_OK)
+        {
+            std::cout << "[Temperature] \n temp = " << Temp.temp
+                      << "\n";
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+         /**************************************************************************************************/
+
+   
+   
     }
 
     return 0;
