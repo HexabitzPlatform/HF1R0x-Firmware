@@ -12,50 +12,50 @@ enum class Batterystate : uint8_t
     error = 2
 };
 
-struct CellVoltageResult
+struct H05R0_CellVoltage
 {
     BOSStatus status;
     float voltage = 0.0f;
 };
 
-struct CellCurrentResult
+struct H05R0_CellCurrent
 {
     BOSStatus status;
     Batterystate batteryState;
     float current = 0.0f;
 };
 
-struct CellPowerResult
+struct H05R0_CellPower
 {
     BOSStatus status;
     float power = 0.0f;
 };
 
-struct CellTempResult
+struct H05R0_CellTemp
 {
     BOSStatus status;
     float temp = 0.0f;
 };
 
-struct CellCapacityResult
+struct H05R0_CellCapacity
 {
     BOSStatus status;
     float capacity = 0.0f;
 };
 
-struct SOCResult
+struct H05R0_SOC
 {
     BOSStatus status;
     uint8_t SOC = 0;
 };
 
-struct CellAgeResult
+struct H05R0_CellAge
 {
     BOSStatus status;
     uint8_t age = 0;
 };
 
-struct CellCyclesResult
+struct H05R0_CellCycles
 {
     BOSStatus status;
     uint16_t cycles = 0;
@@ -64,21 +64,21 @@ struct CellCyclesResult
 class H05R0
 {
 public:
-    static std::promise<CellVoltageResult> VoltagePromise;
-    static std::promise<CellCurrentResult> CurrentPromise;
-    static std::promise<CellPowerResult> powerPromise;
-    static std::promise<CellTempResult> TempPromise;
-    static std::promise<CellCapacityResult> CapacityPromise;
-    static std::promise<SOCResult> SOCPromise;
-    static std::promise<CellAgeResult> AgePromise;
-    static std::promise<CellCyclesResult> CyclesPromise;
+    static std::promise<H05R0_CellVoltage> VoltagePromise;
+    static std::promise<H05R0_CellCurrent> CurrentPromise;
+    static std::promise<H05R0_CellPower> powerPromise;
+    static std::promise<H05R0_CellTemp> TempPromise;
+    static std::promise<H05R0_CellCapacity> CapacityPromise;
+    static std::promise<H05R0_SOC> SOCPromise;
+    static std::promise<H05R0_CellAge> AgePromise;
+    static std::promise<H05R0_CellCycles> CyclesPromise;
 
-    static CellVoltageResult RequestVoltage(uint8_t moduleID);
-    static CellCurrentResult RequestCurrent(uint8_t moduleID);
-    static CellPowerResult RequestPower(uint8_t moduleID);
-    static CellTempResult RequestTemp(uint8_t moduleID);
-    static CellCapacityResult RequestCapacity(uint8_t moduleID);
-    static SOCResult RequestSOC(uint8_t moduleID);
-    static CellAgeResult RequestAge(uint8_t moduleID);
-    static CellCyclesResult RequestCycles(uint8_t moduleID);
+    static H05R0_CellVoltage RequestVoltage(uint8_t moduleID);
+    static H05R0_CellCurrent RequestCurrent(uint8_t moduleID);
+    static H05R0_CellPower RequestPower(uint8_t moduleID);
+    static H05R0_CellTemp RequestTemp(uint8_t moduleID);
+    static H05R0_CellCapacity RequestCapacity(uint8_t moduleID);
+    static H05R0_SOC RequestSOC(uint8_t moduleID);
+    static H05R0_CellAge RequestAge(uint8_t moduleID);
+    static H05R0_CellCycles RequestCycles(uint8_t moduleID);
 };

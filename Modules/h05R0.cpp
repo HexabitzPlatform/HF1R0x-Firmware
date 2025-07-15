@@ -1,28 +1,28 @@
 #include <h05R0.h>
 
-std::promise<CellVoltageResult> H05R0::VoltagePromise;
-std::promise<CellCurrentResult> H05R0::CurrentPromise;
-std::promise<CellPowerResult> H05R0::powerPromise;
-std::promise<CellTempResult> H05R0::TempPromise;
-std::promise<CellCapacityResult> H05R0::CapacityPromise;
-std::promise<SOCResult> H05R0::SOCPromise;
-std::promise<CellAgeResult> H05R0::AgePromise;
-std::promise<CellCyclesResult> H05R0::CyclesPromise;
+std::promise<H05R0_CellVoltage> H05R0::VoltagePromise;
+std::promise<H05R0_CellCurrent> H05R0::CurrentPromise;
+std::promise<H05R0_CellPower> H05R0::powerPromise;
+std::promise<H05R0_CellTemp> H05R0::TempPromise;
+std::promise<H05R0_CellCapacity> H05R0::CapacityPromise;
+std::promise<H05R0_SOC> H05R0::SOCPromise;
+std::promise<H05R0_CellAge> H05R0::AgePromise;
+std::promise<H05R0_CellCycles> H05R0::CyclesPromise;
 
 /**************************************************************************************************/
 /* H05R0 User Interface ***************************************************************************/
 /**************************************************************************************************/
-CellVoltageResult H05R0::RequestVoltage(uint8_t moduleID)
+H05R0_CellVoltage H05R0::RequestVoltage(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 500;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    VoltagePromise = std::promise<CellVoltageResult>();
+    VoltagePromise = std::promise<H05R0_CellVoltage>();
 
     // Get futures to wait for response
-    std::future<CellVoltageResult> future = VoltagePromise.get_future();
+    std::future<H05R0_CellVoltage> future = VoltagePromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_VOLTAGE);
@@ -46,17 +46,17 @@ CellVoltageResult H05R0::RequestVoltage(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
+H05R0_CellCurrent H05R0::RequestCurrent(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 200;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    CurrentPromise = std::promise<CellCurrentResult>();
+    CurrentPromise = std::promise<H05R0_CellCurrent>();
 
     // Get futures to wait for response
-    std::future<CellCurrentResult> future = CurrentPromise.get_future();
+    std::future<H05R0_CellCurrent> future = CurrentPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_CURRENT);
@@ -80,17 +80,17 @@ CellCurrentResult H05R0::RequestCurrent(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, Batterystate::error, 0.0f};
 }
 /**************************************************************************************************/
-CellPowerResult H05R0::RequestPower(uint8_t moduleID)
+H05R0_CellPower H05R0::RequestPower(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 200;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    powerPromise = std::promise<CellPowerResult>();
+    powerPromise = std::promise<H05R0_CellPower>();
 
     // Get futures to wait for response
-    std::future<CellPowerResult> future = powerPromise.get_future();
+    std::future<H05R0_CellPower> future = powerPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_POWER);
@@ -114,17 +114,17 @@ CellPowerResult H05R0::RequestPower(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellTempResult H05R0::RequestTemp(uint8_t moduleID)
+H05R0_CellTemp H05R0::RequestTemp(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 200;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    TempPromise = std::promise<CellTempResult>();
+    TempPromise = std::promise<H05R0_CellTemp>();
 
     // Get futures to wait for response
-    std::future<CellTempResult> future = TempPromise.get_future();
+    std::future<H05R0_CellTemp> future = TempPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_TEMPERATURE);
@@ -148,17 +148,17 @@ CellTempResult H05R0::RequestTemp(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/
-CellCapacityResult H05R0::RequestCapacity(uint8_t moduleID)
+H05R0_CellCapacity H05R0::RequestCapacity(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 200;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    CapacityPromise = std::promise<CellCapacityResult>();
+    CapacityPromise = std::promise<H05R0_CellCapacity>();
 
     // Get futures to wait for response
-    std::future<CellCapacityResult> future = CapacityPromise.get_future();
+    std::future<H05R0_CellCapacity> future = CapacityPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_CAPACITY);
@@ -181,18 +181,18 @@ CellCapacityResult H05R0::RequestCapacity(uint8_t moduleID)
     std::cerr << "Timeout while waiting for Cell Capacity\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
-/**************************************************************************************************/
-SOCResult H05R0::RequestSOC(uint8_t moduleID)
+/***************************************************************************************************/
+ H05R0_SOC H05R0::RequestSOC(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 300;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    SOCPromise = std::promise<SOCResult>();
+    SOCPromise = std::promise<H05R0_SOC>();
 
     // Get futures to wait for response
-    std::future<SOCResult> future = SOCPromise.get_future();
+    std::future<H05R0_SOC> future = SOCPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_STATE_OF_CHARGE);
@@ -216,17 +216,17 @@ SOCResult H05R0::RequestSOC(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
-CellAgeResult H05R0::RequestAge(uint8_t moduleID)
+H05R0_CellAge H05R0::RequestAge(uint8_t moduleID)
 {
     uint16_t wait = 0;
     uint16_t timeout = 200;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    AgePromise = std::promise<CellAgeResult>();
+    AgePromise = std::promise<H05R0_CellAge>();
 
     // Get futures to wait for response
-    std::future<CellAgeResult> future = AgePromise.get_future();
+    std::future<H05R0_CellAge> future = AgePromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_AGE);
@@ -250,17 +250,17 @@ CellAgeResult H05R0::RequestAge(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, 0};
 }
 /**************************************************************************************************/
-CellCyclesResult H05R0::RequestCycles(uint8_t moduleID)
+H05R0_CellCycles H05R0::RequestCycles(uint8_t moduleID)
 {
     uint16_t wait = 0;
-    uint16_t timeout = 100;
+    uint16_t timeout = 500;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    CyclesPromise = std::promise<CellCyclesResult>();
+    CyclesPromise = std::promise<H05R0_CellCycles>();
 
     // Get futures to wait for response
-    std::future<CellCyclesResult> future = CyclesPromise.get_future();
+    std::future<H05R0_CellCycles> future = CyclesPromise.get_future();
 
     // Send request
     BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_CYCLES);

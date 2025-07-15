@@ -144,114 +144,151 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellVoltageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellVoltageResult result;
+    H05R0_CellVoltage result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> voltagBytes = {params[5], params[6], params[7], params[8]};
 
-    result.voltage = BOSMessageCodec::bytesToFloat(bytes);
+    result.voltage = BOSMessageCodec::bytesToFloat(voltagBytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::VoltagePromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellCurrentResult result;
+    H05R0_CellCurrent result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> currentBytes = {params[5], params[6], params[7], params[8]};
 
-    result.current = BOSMessageCodec::bytesToFloat(bytes);
+    result.current = BOSMessageCodec::bytesToFloat(currentBytes);
 
     result.batteryState = (result.current >= 0) ? Batterystate::charging : Batterystate::discharging;
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::CurrentPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellPowerCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellPowerResult result;
+    H05R0_CellPower result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> powerBytes = {params[5], params[6], params[7], params[8]};
 
-    result.power = BOSMessageCodec::bytesToFloat(bytes);
+    result.power = BOSMessageCodec::bytesToFloat(powerBytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::powerPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    H0AR9_Temp result;
+    H05R0_CellTemp result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> tempBytes = {params[5], params[6], params[7], params[8]};
 
-    result.temp = BOSMessageCodec::bytesToFloat(bytes);
+    result.temp = BOSMessageCodec::bytesToFloat(tempBytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::TempPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellCapacityResult result;
+    H05R0_CellCapacity result;
 
     if (params.size() < 9)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> capacityBytes = {params[5], params[6], params[7], params[8]};
 
-    result.capacity = BOSMessageCodec::bytesToFloat(bytes);
+    result.capacity = BOSMessageCodec::bytesToFloat(capacityBytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::CapacityPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    SOCResult result;
+    H05R0_SOC result;
 
-    if (params.size() < 9)
+    if (params.size() < 6)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    result.SOC = params[5];
 
-    result.SOC = BOSMessageCodec::bytesToFloat(bytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::SOCPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellAgeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellAgeResult result;
+    H05R0_CellAge result;
 
-    if (params.size() < 9)
+    if (params.size() < 6)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    result.age = params[5];
 
-    result.age = BOSMessageCodec::bytesToFloat(bytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::AgePromise.set_value(result);
 
     return BOSStatus::BOS_OK;
+
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    CellCyclesResult result;
+    H05R0_CellCycles result;
 
-    if (params.size() < 9)
+    if (params.size() < 7)
         return BOSStatus::BOS_ERROR;
 
-    std::array<uint8_t, 4> bytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 2> cyclesbytes = {params[5], params[6]};
 
-    result.cycles = BOSMessageCodec::bytesToFloat(bytes);
+    result.cycles = BOSMessageCodec::bytesToUint16_t(cyclesbytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::CyclesPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
