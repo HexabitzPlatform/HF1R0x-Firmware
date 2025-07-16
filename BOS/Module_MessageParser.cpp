@@ -517,22 +517,82 @@ BOSStatus Module_MessageParser::handleH0BR4_TemperatureCode(uint8_t dst, uint8_t
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH1FR5_PositionCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    return BOSStatus::BOS_OK;
+    H1FR5_GetPosition result;
+
+    if (params.size() < 15)
+        return (result.status = BOSStatus::BOS_ERROR);
+
+    std::array<uint8_t, 4> longdegreeBytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> latdegreeBytes = {params[9], params[10], params[11], params[12]};
+
+    result.longdegree = BOSMessageCodec::bytesToFloat(longdegreeBytes);
+    result.latdegree = BOSMessageCodec::bytesToFloat(latdegreeBytes);
+    result.longindicator=params[13];
+    result.latindicator=params[14];
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H1FR5::PositionPromise.set_value(result);
+
+    return result.status;
+
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH1FR5_UTCCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    return BOSStatus::BOS_OK;
+    H1FR5_GetUTC result;
+
+    if (params.size() < 8)
+        return (result.status = BOSStatus::BOS_ERROR);
+
+    result.hours = params[5];
+    result.min = params[6];
+    result.sec = params[7];
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H1FR5::UTCPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH1FR5_SpeedCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    return BOSStatus::BOS_OK;
+    H1FR5_GetSpeed result;
+
+    if (params.size() < 13)
+        return (result.status = BOSStatus::BOS_ERROR);
+
+    std::array<uint8_t, 4> speedinchBytes = {params[5], params[6], params[7], params[8]};
+    std::array<uint8_t, 4> speedkmBytes = {params[9], params[10], params[11], params[12]};
+
+    result.speedinch = BOSMessageCodec::bytesToFloat(speedinchBytes);
+    result.speedkm = BOSMessageCodec::bytesToFloat(speedkmBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H1FR5::SpeedPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH1FR5_HeightCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    return BOSStatus::BOS_OK;
+
+    H1FR5_GetHeight result;
+
+    if (params.size() < 9)
+        return (result.status = BOSStatus::BOS_ERROR);
+
+    std::array<uint8_t, 4> heightBytes = {params[5], params[6], params[7], params[8]};
+
+    result.height = BOSMessageCodec::bytesToFloat(heightBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H1FR5::HeightPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 /* H2AR3 Message Codes Functions ******************************************************************/

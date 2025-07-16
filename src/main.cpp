@@ -47,8 +47,13 @@ int main()
     // H05R0_CellVoltage voltage;
     // H05R0_SOC soc;
     
-    H09R9_Temp Temp;
+    // H09R9_Temp Temp;
 
+    // H1FR5_GetHeight height;
+    // H1FR5_GetSpeed speed;
+    // H1FR5_GetUTC utc;
+    // H1FR5_GetPosition position;
+ 
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
@@ -65,7 +70,6 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // current = H05R0::RequestCurrent(1);
@@ -75,7 +79,6 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // power = H05R0::RequestPower(1);
@@ -85,7 +88,6 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // temp = H05R0::RequestTemp(1);
@@ -95,9 +97,7 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
 
         // capacity = H05R0::RequestCapacity(1);
         // if (capacity.status == BOSStatus::BOS_OK)
@@ -106,9 +106,7 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
 
         // soc = H05R0::RequestSOC(1);
         // if (soc.status == BOSStatus::BOS_OK)
@@ -117,7 +115,6 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         //   age = H05R0::RequestAge(1);
@@ -127,7 +124,6 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // cycles = H05R0::RequestCycles(1);
@@ -137,7 +133,6 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
         
 
@@ -150,7 +145,6 @@ int main()
         //               << "\n Z = " << acc.z
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // gyro = H0BR4::RequestGyro(1);
@@ -161,7 +155,6 @@ int main()
         //               << "\n Z = " << gyro.z
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // mag = H0BR4::RequestMag(1);
@@ -172,7 +165,6 @@ int main()
         //               << "\n Z = " << mag.z
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         // temp = H0BR4::RequestTemp(1);
@@ -182,7 +174,6 @@ int main()
         //               << temp.temp
         //               << std::endl;
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
         /**************************************************************************************************/
@@ -194,7 +185,6 @@ int main()
         //               << " \n green = " << Color.green
         //               << " \n blue = " << Color.blue << "\n";
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // PIR = H0AR9::RequestPIR(1);
@@ -203,7 +193,6 @@ int main()
         //     std::cout << "[PIR] \n pir = " << PIR.pir
         //               << "\n";
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // Temp = H0AR9::RequestTemp(1);
@@ -212,7 +201,6 @@ int main()
         //     std::cout << "[Temperature] \n temp = " << Temp.temp
         //               << "\n";
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // Distance = H0AR9::RequestDistance(1);
@@ -221,7 +209,6 @@ int main()
         //     std::cout << "[Distance] \n distance = " << Distance.distance
         //               << "\n";
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // Humidity = H0AR9::RequestHumidity(1);
@@ -230,22 +217,59 @@ int main()
         //     std::cout << "[Humidity] \n humidity = " << Humidity.humidity
         //               << "\n";
         // }
-
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         /**************************************************************************************************/
 
-        Temp = H09R9::RequestTemp(1);
-        if (Temp.status == BOSStatus::BOS_OK)
-        {
-            std::cout << "[Temperature] \n temp = " << Temp.temp
-                      << "\n";
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // Temp = H09R9::RequestTemp(1);
+        // if (Temp.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Temperature] \n temp = " << Temp.temp
+        //               << "\n";
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
          /**************************************************************************************************/
+        // height = H1FR5::RequestHeight(1);
+        // if (height.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Height : " << height.height
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+     
+        // speed = H1FR5::RequestSpeed(1);
+        // if (speed.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Speed]  \n speedinch = " << speed.speedinch
+        //               << "\n speedkm = " << speed.speedkm
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
+        // utc = H1FR5::RequestUTC(1);
+        // if (utc.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[UTC]  \n hours = " << static_cast<int>(utc.hours)
+        //               << "\n min = "  << static_cast<int>(utc.min)
+        //               << "\n sec = "  << static_cast<int>(utc.sec)
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        
+        // position = H1FR5::RequestPosition(1);
+        // if (position.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Position]  \n longdegree = " << position.longdegree
+        //               << "\n latdegree = " << position.latdegree
+        //               << "\n longindicator = "  << static_cast<int>(position.longindicator)
+        //               << "\n latindicator = "  << static_cast<int>(position.latindicator)
+        //               << "\n longindicator = "  << position.longindicator
+        //               << "\n latindicator = "  << position.latindicator
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
    
    
     }
