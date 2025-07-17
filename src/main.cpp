@@ -54,6 +54,8 @@ int main()
     // H1FR5_GetUTC utc;
     // H1FR5_GetPosition position;
  
+    // H08R7_TOF distance;
+
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
@@ -270,7 +272,18 @@ int main()
         //               << std::endl;
         // }
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
-   
+         /**************************************************************************************************/
+
+        // distance = H08R7::RequestTOF(1);
+        // if (distance.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[TOF Distance] \n distance = " << distance.distance
+        //               << "\n";
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));     
+    
+        /**************************************************************************************************/
+
    
     }
 

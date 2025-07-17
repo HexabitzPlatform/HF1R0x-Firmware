@@ -298,18 +298,20 @@ BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t 
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH08R7_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    uint16_t distance = 0;
+    H08R7_TOF result;
 
-    if (params.size() < 9)
-        return BOSStatus::BOS_ERROR;
+    if (params.size() < 7)
+        return (result.status = BOSStatus::BOS_ERROR);
 
-    distance = params.at(5) | (params.at(6) << 8);
+    std::array<uint8_t, 2> distanceBytes = {params[5], params[6]};
 
-    std::cout << "[Sample Distance] Received from Module: " << to_string(ModulePN::H08R7)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Distance: " << distance << "\n\n";
+    result.distance = BOSMessageCodec::bytesToUint16_t(distanceBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    return BOSStatus::BOS_OK;
+    // Set the promise result to unblock the waiting thread
+    H08R7::distancePromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 /* H09R9 Message Codes Functions ******************************************************************/
