@@ -221,12 +221,15 @@ private:
     BOSStatus handleH2AR3_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH2AR3_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
 
+    // H2BR0 EXG-MONITOR
+    BOSStatus handleH2BR0_ECGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH2BR0_EOGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH2BR0_EEGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH2BR0_EMGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    
     // H2BR1 SPO2
     BOSStatus handleH2BR1_HRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH2BR1_SPO2Code(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
-
-
-
 };
 
 /* Messaging APIs Class Definitions ***************************************************************/

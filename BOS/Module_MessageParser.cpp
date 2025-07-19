@@ -132,6 +132,23 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
         handleH2AR3_CurrentCode(dst, source, params);
         break;
 
+        /* H2BR0 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H2BR0_ECG_Sample:
+        handleH2BR0_ECGCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H2BR0_EOG_Sample:
+        handleH2BR0_EOGCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H2BR0_EEG_Sample:
+        handleH2BR0_EEGCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H2BR0_EMG_Sample:
+        handleH2BR0_EMGCode(dst, source, params);
+        break;
+
         /* H2BR1 Message Codes  *******************************************************************/
     case BOSMessageCode::CODE_H2BR1_HR_Sample:
         handleH2BR1_HRCode(dst, source, params);
@@ -644,6 +661,32 @@ BOSStatus Module_MessageParser::handleH2AR3_CurrentCode(uint8_t dst, uint8_t sou
     return result.status;
 }
 /**************************************************************************************************/
+/* H2BR0 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH2BR0_ECGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+
+
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH2BR0_EOGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+
+
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH2BR0_EEGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+
+
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH2BR0_EMGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+
+
+}
+/**************************************************************************************************/
 /* H2BR1 Message Codes Functions ******************************************************************/
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR1_HRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
@@ -681,3 +724,4 @@ BOSStatus Module_MessageParser::handleH2BR1_SPO2Code(uint8_t dst, uint8_t source
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
+
