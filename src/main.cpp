@@ -61,7 +61,12 @@ int main()
     
     // H2BR1_HR heartRate;
     // H2BR1_SPO2 SPO2;
-    
+
+    // H2BR0_ECG ECG;
+    // H2BR0_EOG EOG;
+    // H2BR0_EEG EEG;
+    // H2BR0_EMG EMG;
+
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
@@ -322,6 +327,48 @@ int main()
         //     std::cout << "SPO2: " << static_cast<int>(SPO2.SPO2)
         //               << "\n"
         //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        /**************************************************************************************************/
+        // ECG = H2BR0::RequestECG(1);
+        // if (ECG.status == BOSStatus::BOS_OK)
+        // {
+        //    std::cout << "[ECG]  \n sample = " << ECG.sample
+        //               << "\n filteredSample = " << ECG.filteredSample            
+        //               << std::endl;            
+
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // EOG = H2BR0::RequestEOG(1);
+        // if (EOG.status == BOSStatus::BOS_OK)
+        // {
+        //    std::cout << "[EOG]  \n sample = " << EOG.sample
+        //               << "\n filteredSample = " << EOG.filteredSample            
+        //               << std::endl;            
+
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // EEG = H2BR0::RequestEEG(1);
+        // if (EEG.status == BOSStatus::BOS_OK)
+        // {
+        //    std::cout << "[EEG]  \n sample = " << EEG.sample
+        //               << "\n filteredSample = " << EEG.filteredSample            
+        //               << std::endl;            
+
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // EMG = H2BR0::RequestEMG(1);
+        // if (EMG.status == BOSStatus::BOS_OK)
+        // {
+        //    std::cout << "[EMG]  \n sample = " << EMG.sample
+        //               << "\n filteredSample = " << EMG.filteredSample   
+        //               << "\n rectifiedSample = " << EMG.rectifiedSample
+        //               << "\n envelopeSample = " << EMG.envelopeSample         
+        //               << std::endl;            
+
         // }
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
