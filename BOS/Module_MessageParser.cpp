@@ -665,26 +665,86 @@ BOSStatus Module_MessageParser::handleH2AR3_CurrentCode(uint8_t dst, uint8_t sou
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR0_ECGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    H2BR0_ECG result;
 
+    if (params.size() < 11)
+        return (result.status = BOSStatus::BOS_ERROR);
 
+    std::array<uint8_t, 4> sampleBytes = {params[3], params[4], params[5], params[6]};
+    std::array<uint8_t, 4> filteredSampleBytes = {params[7], params[8], params[9], params[10]};
+
+    result.sample = BOSMessageCodec::bytesToFloat(sampleBytes);
+    result.filteredSample = BOSMessageCodec::bytesToFloat(filteredSampleBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H2BR0::ECGPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR0_EOGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    H2BR0_EOG result;
 
+    if (params.size() < 11)
+        return (result.status = BOSStatus::BOS_ERROR);
 
+    std::array<uint8_t, 4> sampleBytes = {params[3], params[4], params[5], params[6]};
+    std::array<uint8_t, 4> filteredSampleBytes = {params[7], params[8], params[9], params[10]};
+
+    result.sample = BOSMessageCodec::bytesToFloat(sampleBytes);
+    result.filteredSample = BOSMessageCodec::bytesToFloat(filteredSampleBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H2BR0::EOGPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR0_EEGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    H2BR0_EEG result;
 
+    if (params.size() < 11)
+        return (result.status = BOSStatus::BOS_ERROR);
 
+    std::array<uint8_t, 4> sampleBytes = {params[3], params[4], params[5], params[6]};
+    std::array<uint8_t, 4> filteredSampleBytes = {params[7], params[8], params[9], params[10]};
+
+    result.sample = BOSMessageCodec::bytesToFloat(sampleBytes);
+    result.filteredSample = BOSMessageCodec::bytesToFloat(filteredSampleBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H2BR0::EEGPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR0_EMGCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    H2BR0_EMG result;
 
+    if (params.size() < 19)
+        return (result.status = BOSStatus::BOS_ERROR);
 
+    std::array<uint8_t, 4> sampleBytes = {params[3], params[4], params[5], params[6]};
+    std::array<uint8_t, 4> filteredSampleBytes = {params[7], params[8], params[9], params[10]};
+    std::array<uint8_t, 4> rectifiedSampleBytes = {params[11], params[12], params[13], params[14]};
+    std::array<uint8_t, 4> envelopeSampleBytes = {params[15], params[16], params[17], params[18]};
+
+    result.sample = BOSMessageCodec::bytesToFloat(sampleBytes);
+    result.filteredSample = BOSMessageCodec::bytesToFloat(filteredSampleBytes);
+    result.rectifiedSample = BOSMessageCodec::bytesToFloat(rectifiedSampleBytes);
+    result.envelopeSample = BOSMessageCodec::bytesToFloat(envelopeSampleBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H2BR0::EMGPromise.set_value(result);
+
+    return result.status;
 }
 /**************************************************************************************************/
 /* H2BR1 Message Codes Functions ******************************************************************/
