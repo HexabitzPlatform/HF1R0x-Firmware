@@ -59,6 +59,8 @@ int main()
     // H2AR3_Voltage voltage;
     // H2AR3_Current currentCR8450;   
     
+    // H2BR1_HR heartRate;
+    // H2BR1_SPO2 SPO2;
     
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
@@ -305,6 +307,24 @@ int main()
         // }
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
         /**************************************************************************************************/
+        // heartRate = H2BR1::RequestHR(1);
+        // if (heartRate.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "heartRate: " << static_cast<int>(heartRate.heartRate)
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // SPO2 = H2BR1::RequestSPO2(1);
+        // if (SPO2.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "SPO2: " << static_cast<int>(SPO2.SPO2)
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
 
     }
 

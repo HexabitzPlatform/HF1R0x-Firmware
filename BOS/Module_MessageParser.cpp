@@ -648,12 +648,36 @@ BOSStatus Module_MessageParser::handleH2AR3_CurrentCode(uint8_t dst, uint8_t sou
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR1_HRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    H2BR1_HR result;
 
+    if (params.size() < 6)
+        return BOSStatus::BOS_ERROR;
+
+    result.heartRate = params[5];
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H2BR1::HRPromise.set_value(result);
+
+    return BOSStatus::BOS_OK;
     
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2BR1_SPO2Code(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
+    H2BR1_SPO2 result;
 
+    if (params.size() < 6)
+        return BOSStatus::BOS_ERROR;
+
+    result.SPO2 = params[5];
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H2BR1::SPO2Promise.set_value(result);
+
+    return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
