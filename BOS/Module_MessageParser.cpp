@@ -132,6 +132,15 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
         handleH2AR3_CurrentCode(dst, source, params);
         break;
 
+        /* H2BR1 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H2BR1_HR_Sample:
+        handleH2BR1_HRCode(dst, source, params);
+        break;
+
+    case BOSMessageCode::CODE_H2BR1_SPO2_Sample:
+        handleH2BR1_SPO2Code(dst, source, params);
+        break;
+        
     default:
         std::cerr << "Module: Unhandled code.\n";
         return BOSStatus::BOS_ERROR;
@@ -634,3 +643,17 @@ BOSStatus Module_MessageParser::handleH2AR3_CurrentCode(uint8_t dst, uint8_t sou
 
     return result.status;
 }
+/**************************************************************************************************/
+/* H2BR1 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH2BR1_HRCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+
+    
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH2BR1_SPO2Code(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+
+}
+/**************************************************************************************************/
