@@ -1,6 +1,6 @@
 
 #include "BOS.h"
-std::vector<uint8_t> paramm={ };
+
 int main()
 {
     // Initialize GPIO PIN on Raspberry
@@ -56,6 +56,10 @@ int main()
  
     // H08R7_TOF distance;
 
+    // H2AR3_Voltage voltage;
+    // H2AR3_Current currentCR8450;   
+    
+    
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
@@ -65,7 +69,7 @@ int main()
 
         /**************************************************************************************************/
     
-        // voltage = cz::RequestVoltage(1);
+        // voltage = H05R0::RequestVoltage(1);
         // if (voltage.status == BOSStatus::BOS_OK)
         // {
         //     std::cout << "Battery Voltage: " << voltage.voltage
@@ -283,8 +287,25 @@ int main()
         // std::this_thread::sleep_for(std::chrono::milliseconds(500));     
     
         /**************************************************************************************************/
+        // voltage = H2AR3::RequestVoltage(1);
+        // if (voltage.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Voltage: " << voltage.volt
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-   
+        // currentCR8450 = H2AR3::RequestCurrent(1);
+        // if (currentCR8450.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Current from CR8450_1000 transformer: " << currentCR8450.current
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        /**************************************************************************************************/
+
     }
 
     return 0;

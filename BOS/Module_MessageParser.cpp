@@ -601,36 +601,36 @@ BOSStatus Module_MessageParser::handleH1FR5_HeightCode(uint8_t dst, uint8_t sour
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2AR3_VoltCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float volt = 0;
+    H2AR3_Voltage result;
 
     if (params.size() < 9)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
     std::array<uint8_t, 4> voltBytes = {params[5], params[6], params[7], params[8]};
 
-    volt = BOSMessageCodec::bytesToFloat(voltBytes);
+    result.volt = BOSMessageCodec::bytesToFloat(voltBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample RMS Volt] Received from Module: " << to_string(ModulePN::H2AR3)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "Volt: " << volt << " Volt\n\n";
+    // Set the promise result to unblock the waiting thread
+    H2AR3::VoltagePromise.set_value(result);
 
-    return BOSStatus::BOS_OK;
+    return result.status;
 }
 /**************************************************************************************************/
 BOSStatus Module_MessageParser::handleH2AR3_CurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    float current = 0;
+    H2AR3_Current result;
 
     if (params.size() < 9)
-        return BOSStatus::BOS_ERROR;
+        return (result.status = BOSStatus::BOS_ERROR);
 
     std::array<uint8_t, 4> currentBytes = {params[5], params[6], params[7], params[8]};
 
-    current = BOSMessageCodec::bytesToFloat(currentBytes);
+    result.current = BOSMessageCodec::bytesToFloat(currentBytes);
+    result.status = BOSStatus::BOS_OK;
 
-    std::cout << "[Sample RMS current] Received from Module: " << to_string(ModulePN::H2AR3)
-              << " , ID: " << static_cast<int>(source) << "\n";
-    std::cout << "current: " << current << " Amp\n\n";
+    // Set the promise result to unblock the waiting thread
+    H2AR3::CurrentPromise.set_value(result);
 
-    return BOSStatus::BOS_OK;
+    return result.status;
 }
