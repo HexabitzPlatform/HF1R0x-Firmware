@@ -79,6 +79,11 @@ enum class BOSMessageCode : uint16_t
     CODE_H0BR4_SAMPLE_MAG = 552,
     CODE_H0BR4_SAMPLE_TEMP = 553,
 
+    // H0FR7 - MOSFET 
+    CODE_H0FR7_ON = 770,
+    CODE_H0FR7_OFF = 771,
+    CODE_H0FR7_PWM = 772,
+
     // H14RA - PWM O/P Module
     CODE_H14RA_ON = 1000,
     CODE_H14RA_OFF = 1001,
