@@ -79,6 +79,16 @@ enum class BOSMessageCode : uint16_t
     CODE_H0BR4_SAMPLE_MAG = 552,
     CODE_H0BR4_SAMPLE_TEMP = 553,
 
+    // H14RA - PWM O/P Module
+    CODE_H14RA_ON = 1000,
+    CODE_H14RA_OFF = 1001,
+    CODE_H14RA_SPEED = 1002,
+    CODE_H14RA_PWM = 1003,
+
+    // H14R9 - PWM O/P + External Supply
+    CODE_H14R9_ANGLE = 1010,
+	CODE_H14R9_PWM = 1011,
+
     // H16R6 - RGB Led Matrix Display
     CODE_H16R6_SET_COLOR = 1100,
     CODE_H16R6_SET_ALL_COLOR = 1101,
