@@ -5,9 +5,22 @@ std::promise<H05R0_CellCurrent> H05R0::CurrentPromise;
 std::promise<H05R0_CellPower> H05R0::powerPromise;
 std::promise<H05R0_CellTemp> H05R0::TempPromise;
 std::promise<H05R0_CellCapacity> H05R0::CapacityPromise;
-std::promise<H05R0_SOC> H05R0::SOCPromise;
+std::promise<H05R0_CellStateOfCharge> H05R0::SOCPromise;
 std::promise<H05R0_CellAge> H05R0::AgePromise;
 std::promise<H05R0_CellCycles> H05R0::CyclesPromise;
+std::promise<H05R0_ChargingStatus> H05R0::StatusChargingPromise;
+std::promise<H05R0_ChargerCurrent> H05R0::ChargerCurrentPromise;
+std::promise<H05R0_VBUSVoltage> H05R0::VBUSVoltPromise;
+
+const char* charToString(Batterystate state)
+{
+    switch (state)
+    {
+        case Batterystate::charging:    return "Charging";
+        case Batterystate::discharging: return "Discharging";
+        default:                        return "Unknown";
+    }
+}
 
 /**************************************************************************************************/
 /* H05R0 User Interface ***************************************************************************/
@@ -182,20 +195,20 @@ H05R0_CellCapacity H05R0::RequestCapacity(uint8_t moduleID)
     return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /***************************************************************************************************/
- H05R0_SOC H05R0::RequestSOC(uint8_t moduleID)
+ H05R0_CellStateOfCharge H05R0::RequestStateOfCharge(uint8_t moduleID)
 {
     uint16_t wait = 0;
     uint16_t timeout = 300;
     uint16_t step = 2;
 
     // Reset promises to ensure no old value remains
-    SOCPromise = std::promise<H05R0_SOC>();
+    SOCPromise = std::promise<H05R0_CellStateOfCharge>();
 
     // Get futures to wait for response
-    std::future<H05R0_SOC> future = SOCPromise.get_future();
+    std::future<H05R0_CellStateOfCharge> future = SOCPromise.get_future();
 
     // Send request
-    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_STATE_OF_CHARGE);
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CELL_STATE_OF_CHARGE);
     if (status != BOSStatus::BOS_OK)
     {
         std::cerr << "Failed to send SOC request\n";
@@ -282,5 +295,107 @@ H05R0_CellCycles H05R0::RequestCycles(uint8_t moduleID)
 
     std::cerr << "Timeout while waiting for Cell Cycles\n";
     return {BOSStatus::BOS_ERR_TIMEOUT, 0};
+}
+/**************************************************************************************************/
+H05R0_ChargingStatus H05R0::RequestChargingStatus(uint8_t moduleID)
+{
+    uint16_t wait = 0;
+    uint16_t timeout = 200;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    StatusChargingPromise = std::promise<H05R0_ChargingStatus>();
+
+    // Get futures to wait for response
+    std::future<H05R0_ChargingStatus> future = StatusChargingPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CHARGING_STATUS);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Charging Status request\n";
+        return {status,Batterystate::error};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Charging Status\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, Batterystate::error};
+}
+/**************************************************************************************************/
+H05R0_ChargerCurrent H05R0::RequestChargerCurrent(uint8_t moduleID)
+{
+    uint16_t wait = 0;
+    uint16_t timeout = 200;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    ChargerCurrentPromise = std::promise<H05R0_ChargerCurrent>();
+
+    // Get futures to wait for response
+    std::future<H05R0_ChargerCurrent> future = ChargerCurrentPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_CHARGER_CURRENT);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send Charger Current request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for Charger Current\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
+}
+/***************************************************************************************************/
+H05R0_VBUSVoltage H05R0::RequestVBUSVoltage(uint8_t moduleID)
+{
+    uint16_t wait = 0;
+    uint16_t timeout = 200;
+    uint16_t step = 2;
+
+    // Reset promises to ensure no old value remains
+    VBUSVoltPromise = std::promise<H05R0_VBUSVoltage>();
+
+    // Get futures to wait for response
+    std::future<H05R0_VBUSVoltage> future = VBUSVoltPromise.get_future();
+
+    // Send request
+    BOSStatus status = Messaging::SendDataRequestToModule(moduleID, BOSMessageCode::CODE_H05R0_VBUS_VOLTAGE);
+    if (status != BOSStatus::BOS_OK)
+    {
+        std::cerr << "Failed to send VBUS Voltage request\n";
+        return {status, 0.0f};
+    }
+
+    // Wait for response
+    while (wait < timeout)
+    {
+        if (future.wait_for(std::chrono::milliseconds(step)) == std::future_status::ready)
+        {
+            return future.get();
+        }
+        wait += step;
+    }
+
+    std::cerr << "Timeout while waiting for VBUS Voltage\n";
+    return {BOSStatus::BOS_ERR_TIMEOUT, 0.0f};
 }
 /**************************************************************************************************/

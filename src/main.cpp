@@ -45,8 +45,11 @@ int main()
     // H05R0_CellPower power;
     // H05R0_CellTemp temp;
     // H05R0_CellVoltage voltage;
-    // H05R0_SOC soc;
-    
+    // H05R0_CellStateOfCharge soc;
+    // H05R0_ChargingStatus ChargingStatus;
+    // H05R0_ChargerCurrent ChargerCurrent;
+    // H05R0_VBUSVoltage VBUSVoltage;
+
     // H09R9_Temp Temp;
 
     // H1FR5_GetHeight height;
@@ -70,6 +73,7 @@ int main()
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
+        
     // Keep main thread alive indefinitely to allow background UART reading thread to run
     while (true)
     {
@@ -88,7 +92,8 @@ int main()
         // current = H05R0::RequestCurrent(1);
         // if (current.status == BOSStatus::BOS_OK)
         // {
-        //     std::cout << "Battery Current: " << current.current
+        //     std::cout << " Battery Current: " << current.current
+        //               << "\n Battery Current: " << charToString(current.batteryState)
         //               << "\n"
         //               << std::endl;
         // }
@@ -121,7 +126,7 @@ int main()
         // }
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        // soc = H05R0::RequestSOC(1);
+        // soc = H05R0::RequestStateOfCharge(1);
         // if (soc.status == BOSStatus::BOS_OK)
         // {
         //     std::cout << "Battery SOC: " << static_cast<int>(soc.SOC)
@@ -146,6 +151,42 @@ int main()
         //               << "\n"
         //               << std::endl;
         // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        
+        // ChargingStatus = H05R0::RequestChargingStatus(1);
+        // if (ChargingStatus.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Charging Status = " << charToString(ChargingStatus.statusCharging) 
+        //               << "\nCharging Status = " << static_cast<int>(ChargingStatus.statusCharging)
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // ChargerCurrent = H05R0::RequestChargerCurrent(1);
+        // if (ChargerCurrent.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "Charger Current: " << ChargerCurrent.chargerCurrent
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // VBUSVoltage = H05R0::RequestVBUSVoltage(1);
+        // if (temp.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "VBUS Voltage: " << VBUSVoltage.VBUSVolt
+        //               << "\n"
+        //               << std::endl;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+        // std::vector<uint8_t> param1={1};
+        // Messaging::SendMessagetoModule(1,BOSMessageCode::CODE_H05R0_ENABLE_3V3,param1);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(200));    
+
+        // std::vector<uint8_t> param2={1};
+        // Messaging::SendMessagetoModule(1,BOSMessageCode::CODE_H05R0_ENABLE_VBUS,param2);
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
         
 

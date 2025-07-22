@@ -189,9 +189,13 @@ private:
     BOSStatus handleH05R0_CellPowerCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellTemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellCapacityCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
-    BOSStatus handleH05R0_StateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH05R0_CellStateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellAgeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
     BOSStatus handleH05R0_CellCyclesCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH05R0_CheckChargingStatusCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH05R0_ReadChargerCurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+    BOSStatus handleH05R0_ReadVBUSVoltageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+
 
     // H08R7 - TOF
     BOSStatus handleH08R7_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);

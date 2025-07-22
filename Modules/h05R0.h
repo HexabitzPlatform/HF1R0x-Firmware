@@ -43,7 +43,7 @@ struct H05R0_CellCapacity
     float capacity = 0.0f;
 };
 
-struct H05R0_SOC
+struct H05R0_CellStateOfCharge
 {
     BOSStatus status;
     uint8_t SOC = 0;
@@ -61,6 +61,26 @@ struct H05R0_CellCycles
     uint16_t cycles = 0;
 };
 
+struct H05R0_ChargingStatus
+{
+    BOSStatus status;
+    Batterystate statusCharging;
+};
+
+struct H05R0_ChargerCurrent
+{
+    BOSStatus status;
+    float chargerCurrent = 0.0f;
+};
+
+struct H05R0_VBUSVoltage
+{
+    BOSStatus status;
+    float VBUSVolt = 0.0f;
+};
+
+const char* charToString(Batterystate state);
+
 class H05R0
 {
 public:
@@ -69,16 +89,23 @@ public:
     static std::promise<H05R0_CellPower> powerPromise;
     static std::promise<H05R0_CellTemp> TempPromise;
     static std::promise<H05R0_CellCapacity> CapacityPromise;
-    static std::promise<H05R0_SOC> SOCPromise;
+    static std::promise<H05R0_CellStateOfCharge> SOCPromise;
     static std::promise<H05R0_CellAge> AgePromise;
     static std::promise<H05R0_CellCycles> CyclesPromise;
+    static std::promise<H05R0_ChargingStatus> StatusChargingPromise;
+    static std::promise<H05R0_ChargerCurrent> ChargerCurrentPromise;
+    static std::promise<H05R0_VBUSVoltage> VBUSVoltPromise;
 
     static H05R0_CellVoltage RequestVoltage(uint8_t moduleID);
     static H05R0_CellCurrent RequestCurrent(uint8_t moduleID);
     static H05R0_CellPower RequestPower(uint8_t moduleID);
     static H05R0_CellTemp RequestTemp(uint8_t moduleID);
     static H05R0_CellCapacity RequestCapacity(uint8_t moduleID);
-    static H05R0_SOC RequestSOC(uint8_t moduleID);
+    static H05R0_CellStateOfCharge RequestStateOfCharge(uint8_t moduleID);
     static H05R0_CellAge RequestAge(uint8_t moduleID);
     static H05R0_CellCycles RequestCycles(uint8_t moduleID);
+    static H05R0_ChargingStatus RequestChargingStatus(uint8_t moduleID);
+    static H05R0_ChargerCurrent RequestChargerCurrent(uint8_t moduleID);
+    static H05R0_VBUSVoltage RequestVBUSVoltage(uint8_t moduleID);
+
 };

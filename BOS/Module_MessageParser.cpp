@@ -43,8 +43,8 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
         handleH05R0_CellCapacityCode(dst, source, params);
         break;
 
-    case BOSMessageCode::CODE_H05R0_STATE_OF_CHARGE:
-        handleH05R0_StateofChargeCode(dst, source, params);
+    case BOSMessageCode::CODE_H05R0_CELL_STATE_OF_CHARGE:
+        handleH05R0_CellStateofChargeCode(dst, source, params);
         break;
 
     case BOSMessageCode::CODE_H05R0_CELL_AGE:
@@ -54,6 +54,18 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
     case BOSMessageCode::CODE_H05R0_CELL_CYCLES:
         handleH05R0_CellCyclesCode(dst, source, params);
         break;
+
+    case BOSMessageCode::CODE_H05R0_CHARGING_STATUS:
+        handleH05R0_CheckChargingStatusCode(dst, source, params);
+        break;
+     
+    case BOSMessageCode::CODE_H05R0_CHARGER_CURRENT:
+        handleH05R0_ReadChargerCurrentCode(dst, source, params);
+        break;
+        
+    case BOSMessageCode::CODE_H05R0_VBUS_VOLTAGE:
+        handleH05R0_ReadVBUSVoltageCode(dst, source, params);
+        break;   
 
         /* H08R7 Message Codes  *******************************************************************/
     case BOSMessageCode::CODE_H08R7_SAMPLE_DISTANCE:
@@ -265,9 +277,9 @@ BOSStatus Module_MessageParser::handleH05R0_CellCapacityCode(uint8_t dst, uint8_
     return BOSStatus::BOS_OK;
 }
 /**************************************************************************************************/
-BOSStatus Module_MessageParser::handleH05R0_StateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+BOSStatus Module_MessageParser::handleH05R0_CellStateofChargeCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
 {
-    H05R0_SOC result;
+    H05R0_CellStateOfCharge result;
 
     if (params.size() < 6)
         return BOSStatus::BOS_ERROR;
@@ -315,6 +327,60 @@ BOSStatus Module_MessageParser::handleH05R0_CellCyclesCode(uint8_t dst, uint8_t 
 
     // Set the promise result to unblock the waiting thread
     H05R0::CyclesPromise.set_value(result);
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH05R0_CheckChargingStatusCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    H05R0_ChargingStatus result;
+
+    if (params.size() < 6)
+        return BOSStatus::BOS_ERROR;
+   
+    result.statusCharging = static_cast<Batterystate>(params[5]);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::StatusChargingPromise.set_value(result);
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH05R0_ReadChargerCurrentCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    H05R0_ChargerCurrent result;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> chargerCurrentBytes = {params[5], params[6], params[7], params[8]};
+
+    result.chargerCurrent = BOSMessageCodec::bytesToFloat(chargerCurrentBytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::ChargerCurrentPromise.set_value(result);
+
+    return BOSStatus::BOS_OK;
+}
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH05R0_ReadVBUSVoltageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    H05R0_VBUSVoltage result;
+
+    if (params.size() < 9)
+        return BOSStatus::BOS_ERROR;
+
+    std::array<uint8_t, 4> VBUSVoltBytes = {params[5], params[6], params[7], params[8]};
+
+    result.VBUSVolt = BOSMessageCodec::bytesToFloat(VBUSVoltBytes);
+
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H05R0::VBUSVoltPromise.set_value(result);
 
     return BOSStatus::BOS_OK;
 }
