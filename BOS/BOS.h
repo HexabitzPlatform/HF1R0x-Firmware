@@ -132,6 +132,8 @@ enum class ModulePN : uint8_t
 #include "H2AR3.h"
 #include "H2BR1.h"
 #include "H2BR0.h"
+#include <H08R6.h>
+
 /**************************************************************************************************/
 /******************************************  Class Definitions ************************************/
 /**************************************************************************************************/
@@ -197,8 +199,12 @@ private:
     BOSStatus handleH05R0_ReadVBUSVoltageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
 
 
-    // H08R7 - TOF
+    // H08R7 - TOF (VL53L1)
     BOSStatus handleH08R7_DistanceCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+
+    // H08R6 - TOF (VL53L8)
+    BOSStatus handleH08R6_DistanceAverageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);
+
 
     // H09R9 - Thermobile
     BOSStatus handleH09R9_TemperatureCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params);

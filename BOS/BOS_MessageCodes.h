@@ -66,6 +66,9 @@ enum class BOSMessageCode : uint16_t
     // H08R7x TOF (VL53L1)
     CODE_H08R7_SAMPLE_DISTANCE = 400,
 
+    // H08R6x TOF (VL53L8)
+    CODE_H08R6_SAMPLE_DISTANCE_AVRG = 421,
+
     // H09R0 - Thermocouple Temperature Sensor
 
     // H09R9 - Thermopile Sensor

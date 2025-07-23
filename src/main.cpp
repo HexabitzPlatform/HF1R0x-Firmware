@@ -70,6 +70,8 @@ int main()
     // H2BR0_EEG EEG;
     // H2BR0_EMG EMG;
 
+    // H08R6_DistanceAverage distanceAverage;
+
     /* RPI ID using explore feature*/
     PIConfig::piID = 2;
   
@@ -413,6 +415,18 @@ int main()
         // }
         // std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
+        /**************************************************************************************************/
+
+        // distanceAverage = H08R6::RequestDistanceAverage(1);
+        // if (distanceAverage.status == BOSStatus::BOS_OK)
+        // {
+        //     std::cout << "[Distance Average] \n Average = " << distanceAverage.average
+        //               << "\n";
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));     
+    
+        /**************************************************************************************************/
+        
 
     }
 

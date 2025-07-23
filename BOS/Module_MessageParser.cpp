@@ -71,6 +71,12 @@ BOSStatus Module_MessageParser::handleModuleMessageCode(uint8_t dst, uint8_t sou
     case BOSMessageCode::CODE_H08R7_SAMPLE_DISTANCE:
         handleH08R7_DistanceCode(dst, source, params);
         break;
+        
+        /* H08R6 Message Codes  *******************************************************************/
+    case BOSMessageCode::CODE_H08R6_SAMPLE_DISTANCE_AVRG:
+        handleH08R6_DistanceAverageCode(dst, source, params);
+        break;
+
         /* H09R0 Message Codes  *******************************************************************/
 
         /* H09R9 Message Codes  *******************************************************************/
@@ -402,6 +408,26 @@ BOSStatus Module_MessageParser::handleH08R7_DistanceCode(uint8_t dst, uint8_t so
 
     // Set the promise result to unblock the waiting thread
     H08R7::distancePromise.set_value(result);
+
+    return result.status;
+}
+/**************************************************************************************************/
+/* H08R6 Message Codes Functions ******************************************************************/
+/**************************************************************************************************/
+BOSStatus Module_MessageParser::handleH08R6_DistanceAverageCode(uint8_t dst, uint8_t source, const std::vector<uint8_t> &params)
+{
+    H08R6_DistanceAverage result;
+
+    if (params.size() < 7)
+        return (result.status = BOSStatus::BOS_ERROR);
+
+    std::array<uint8_t, 2> averageBytes = {params[5], params[6]};
+
+    result.average = BOSMessageCodec::bytesToUint16_t(averageBytes);
+    result.status = BOSStatus::BOS_OK;
+
+    // Set the promise result to unblock the waiting thread
+    H08R6::averagePromise.set_value(result);
 
     return result.status;
 }
